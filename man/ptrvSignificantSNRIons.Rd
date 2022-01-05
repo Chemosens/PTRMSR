@@ -13,7 +13,9 @@ ptrvSignificantSNRIons(
   multiplyNoiseBy = 3,
   removeNoise = FALSE,
   minimalDuration = 2,
-  maxPeaks = NULL
+  maxPeaks = NULL,
+  halfWindowSize = 5,
+  smoothMethod = "MovingAverage"
 )
 }
 \arguments{
@@ -34,6 +36,10 @@ ptrvSignificantSNRIons(
 \item{minimalDuration}{minimalDuration of a breathing cycle (2 by default - as a accelerated breathing frequency corresponds to 20 cycles and more by minut and a low frequency is 12 and less -)}
 
 \item{maxPeaks}{A number. Below this value, a peak is not considered as a peak}
+
+\item{halfWindowSize}{parameter used to determine the smooth for the peak-picking used in break detection}
+
+\item{smoothMethod}{NULL, "SavitzkyGolay" or "MovingAverage"}
 }
 \description{
 ptrvSignificantSNRIons

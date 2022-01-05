@@ -12,7 +12,9 @@ ptrvListSignificantSNRIons(
   noisePeriod = c(0, 25),
   removeNoise = TRUE,
   maxPeaks = NULL,
-  minimalDuration = 2
+  minimalDuration = 2,
+  halfWindowSize = 5,
+  smoothMethod = "MovingAverage"
 )
 }
 \arguments{
@@ -31,6 +33,10 @@ ptrvListSignificantSNRIons(
 \item{maxPeaks}{A number. Below this value, a peak is not considered as a peak}
 
 \item{minimalDuration}{minimalDuration of a breathing cycle (2 by default - as a accelerated breathing frequency corresponds to 20 cycles and more by minut and a low frequency is 12 and less -)}
+
+\item{halfWindowSize}{parameter used to determine the smooth for the peak-picking used in break detection}
+
+\item{smoothMethod}{NULL, "SavitzkyGolay" or "MovingAverage"}
 }
 \value{
 A list containing: resIons: the ration Signal/Noise for all ions; intersection: the ions significant in all files; union: the ions significant in at least one file.

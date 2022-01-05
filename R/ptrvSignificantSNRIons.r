@@ -5,14 +5,13 @@
 #' @param method "max" or "ttest" (TODO "tangente")
 #' @param removeNoise if TRUE, the noise is removed in the calculation of intensity by time
 #' @export
-ptrvSignificantSNRIons=function(dataset,method="max",referenceBreath,noisePeriod=c(0,30),correction="cycle",multiplyNoiseBy=3,removeNoise=FALSE,minimalDuration=2,maxPeaks=NULL)
+ptrvSignificantSNRIons=function(dataset,method="max",referenceBreath,noisePeriod=c(0,30),correction="cycle",multiplyNoiseBy=3,removeNoise=FALSE,minimalDuration=2,maxPeaks=NULL, halfWindowSize=5,smoothMethod="MovingAverage")
 {
-  result_deg=ptrvIntensityByTime(dataset=dataset,referenceBreath=referenceBreath,correction=correction,timePeriod=NULL,removeNoise=removeNoise,minimalDuration=minimalDuration,maxPeaks=maxPeaks)
-   # distribution du max=
+  result_deg=ptrvIntensityByTime(dataset=dataset,timeBlank=noisePeriod,referenceBreath=referenceBreath,correction=correction,timePeriod=NULL,removeNoise=removeNoise,minimalDuration=minimalDuration,maxPeaks=maxPeaks,halfWindowSize=halfWindowSize,smoothMethod=smoothMethod)
     if(method=="max")
   {
       res_blanc=ptrvIntensity(result_deg$res,timePeriod=noisePeriod)
-      res_deg=ptrvIntensity(result_deg$res,timePeriod=c(noisePeriod[2],max(result_deg$res[,"time"])))
+      res_deg=ptrvIntensity(result_deg$res,timePeriod=c(noisePeriod[2],max(result_deg$res[,"time"],na.rm=T)))
       blanc=res_blanc[,"max"];names(blanc)=res_blanc[,"ion"]
       degus=res_deg[,"max"];names(degus)=res_deg[,"ion"]
       snRatio=degus/blanc[names(degus)]

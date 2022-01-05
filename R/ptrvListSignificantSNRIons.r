@@ -13,7 +13,7 @@
 #' #sigIons=ptrvListSignificantSNRIons(listFiles=c("file.txt","file2.txt"),
 #' # referenceBreath="isoprene",noisePeriod=c(0,25))
 #' @importFrom stats wilcox.test
-ptrvListSignificantSNRIons=function(listFiles,metaData,dec_vec=rep(".",length(listFiles)),multiplyNoiseBy=3,noisePeriod=c(0,25),removeNoise=TRUE,maxPeaks=NULL,minimalDuration=2)
+ptrvListSignificantSNRIons=function(listFiles,metaData,dec_vec=rep(".",length(listFiles)),multiplyNoiseBy=3,noisePeriod=c(0,25),removeNoise=TRUE,maxPeaks=NULL,minimalDuration=2,halfWindowSize=5,smoothMethod="MovingAverage")
 {
   dataset=read.table(listFiles[1],sep="\t",header=T,dec=",")
   ions=colnames(dataset)[-c(1:3)]
@@ -23,7 +23,7 @@ ptrvListSignificantSNRIons=function(listFiles,metaData,dec_vec=rep(".",length(li
   {
     print(listFiles[i])
     dataset=read.table(listFiles[i],sep="\t",dec=dec_vec[i],header=T)
-    resIons[[i]]=ptrvSignificantSNRIons(dataset,referenceBreath=metaData[metaData[,"file"]==listFiles[i],"resp"],noisePeriod=noisePeriod,correction="cycle",multiplyNoiseBy = multiplyNoiseBy,removeNoise=removeNoise,maxPeaks=maxPeaks,minimalDuration=minimalDuration)$snRatio
+    resIons[[i]]=ptrvSignificantSNRIons(dataset,referenceBreath=metaData[metaData[,"file"]==listFiles[i],"resp"],noisePeriod=noisePeriod,correction="cycle",multiplyNoiseBy = multiplyNoiseBy,removeNoise=removeNoise,maxPeaks=maxPeaks,halfWindowSize=halfWindowSize,smoothMethod=smoothMethod,minimalDuration=minimalDuration)$snRatio
     product[i]=metaData[metaData[,"file"]==listFiles[i],"product"]
   }
   resSig=lapply(resIons,function(x){return(names(x[x>multiplyNoiseBy]))})
