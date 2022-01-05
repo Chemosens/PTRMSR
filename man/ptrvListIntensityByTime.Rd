@@ -52,6 +52,10 @@ ptrvListIntensityByTime(
 \item{breathRatio}{if TRUE, the ratio between the intensity of ion and the breath is calculated}
 
 \item{stat}{Statistic to be extracted for each ion in each file. Among c("sum","moy","sd","n","min","max","tmax","area")}
+
+\item{minimalDuration}{minimalDuration of a breathing cycle (2 by default - as a accelerated breathing frequency corresponds to 20 cycles and more by minut and a low frequency is 12 and less -)}
+
+\item{smoothMethod}{NULL, "SavitzkyGolay" or "MovingAverage"}
 }
 \value{
 a list containing : total intensity: AUC (or tmax, etc) in a long format, time: data containing the corrected timepoints, listRes: AUC in a wide format

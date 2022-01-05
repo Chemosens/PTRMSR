@@ -29,6 +29,8 @@ ptrvListSignificantSNRIons(
 \item{removeNoise}{if TRUE, the noise is removed in the calculation of intensity by time}
 
 \item{maxPeaks}{A number. Below this value, a peak is not considered as a peak}
+
+\item{minimalDuration}{minimalDuration of a breathing cycle (2 by default - as a accelerated breathing frequency corresponds to 20 cycles and more by minut and a low frequency is 12 and less -)}
 }
 \value{
 A list containing: resIons: the ration Signal/Noise for all ions; intersection: the ions significant in all files; union: the ions significant in at least one file.

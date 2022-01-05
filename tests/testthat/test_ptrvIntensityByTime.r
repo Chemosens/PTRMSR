@@ -91,7 +91,7 @@ p3=ggplot(data=timint[timint[,"ion"]==unique(timint[,"ion"])[3],],aes(xmin=xmin,
 p4=resultp$gg[[2]]
 grid.arrange(grobs=list(p1,p2,p3,p4),nrow=4)
 
-res1=ptrvIntensityByTime(ptrv,correction="cycle",referenceBreath=breath,smoothCycle="SavitzkyGolay",ion=c("m89.07743..C5H13O....Conc."))
+res1=ptrvIntensityByTime(ptrv,correction="cycle",referenceBreath=breath,smoothMethod="SavitzkyGolay",ion=c("m89.07743..C5H13O....Conc."))
 res=ptrvIntensityByTime(ptrv,correction="cycle",referenceBreath=breath,removeNoise=FALSE,ion=c("m89.07743..C5H13O....Conc."))
 ggplotly(res$gg$p_smoothcycle)
  p=res$gg$p_breath

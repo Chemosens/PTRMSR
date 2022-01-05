@@ -2,14 +2,17 @@
 % Please edit documentation in R/normalizeByEval.r
 \name{normalizeByEval}
 \alias{normalizeByEval}
-\title{@param intens data frame containing the column "file","product","subject","rep","ion","intensity" (optionally "file" and "time")
- @param ionToUse if NULL, all the ions are use to normalize, if a vector of names of ions, it is used to normalize
- @export}
+\title{normalizeByEval
+Divides each evaluation by the sum of its variables}
 \usage{
-normalizeByEval(intens, ionToUse = NULL)
+normalizeByEval(df, ionToUse = NULL)
+}
+\arguments{
+\item{df}{data frame containing the column "file","product","subject","rep","ion","intensity" (optionally "file" and "time")}
+
+\item{ionToUse}{if NULL, all the ions are use to normalize, if a vector of names of ions, it is used to normalize}
 }
 \description{
-@param intens data frame containing the column "file","product","subject","rep","ion","intensity" (optionally "file" and "time")
- @param ionToUse if NULL, all the ions are use to normalize, if a vector of names of ions, it is used to normalize
- @export
+normalizeByEval
+Divides each evaluation by the sum of its variables
 }

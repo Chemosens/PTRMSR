@@ -14,14 +14,19 @@
 #' @param SNR Signal noise ratio parameter used in peak picking
 #' @param ions vector contatining all ions to be used in the analysis (by default all ions are used)
 #' @param timeBlank vector of two numbers. Indicates the interval to take as a blank period.
+#' @param smoothMethod NULL, "SavitzkyGolay" or "MovingAverage"
+#' @param funAggregate "mean", "maximal" or "sum"
 #' @return a list containing the obtained result and ggplot object
 #' @export
+#' @inheritParams detectCycle
 #' @importFrom stats reshape
 #' @importFrom MSnbase smooth
 #' @importFrom reshape2 dcast
-ptrvIntensityByTime=function(dataset,referenceBreath=NULL,correction="none",timePeriod=NULL,timeStart=0,removeNoise=TRUE,timeBlank=c(0,30),halfWindowSize=10, maxPeaks=NULL,total=FALSE,breathRatio=FALSE,method="MAD",SNR=0,ions=NULL,smoothCycle=NULL,halfWindowSizeCycle=5,funAggregate="mean",smoothMethod="MovingAverage",minimalDuration=2)
+ptrvIntensityByTime=function(dataset,referenceBreath=NULL,correction="none",timePeriod=NULL,timeStart=0,removeNoise=TRUE,timeBlank=c(0,30),
+                             halfWindowSize=5, maxPeaks=NULL,total=FALSE,breathRatio=FALSE,method="MAD",SNR=0,ions=NULL,
+                             funAggregate="mean",smoothMethod="MovingAverage",minimalDuration=2)
 {
-  time=NULL
+  time=intensity=NULL
   p_sc=p_breath=NULL
    match.arg(correction,c("none","cycle"))
   if(is.null(referenceBreath)&correction=="cycle"){correction="none";print("No referenceBreath, the 'none' correction is chosen.")}
@@ -78,7 +83,7 @@ ptrvIntensityByTime=function(dataset,referenceBreath=NULL,correction="none",time
     if(!referenceBreath%in%unique(res[,"ion"])){stop("the reference breath is not one column of the dataset")}
 
     res1=res[res[,"ion"]==as.character(referenceBreath),]
-    cycles=detectCycle(res1=res1,maxPeaks=maxPeaks,smoothMethod=smoothMethod,method=method,halfWindowSize=halfWindowSize,maximum=max(dataset[,"RelTime"]),SNR=SNR,minimalDuration=minimalDuration)
+    cycles=detectCycle(df=res1,maxPeaks=maxPeaks,smoothMethod=smoothMethod,method=method,halfWindowSize=halfWindowSize,maximum=max(dataset[,"RelTime"]),SNR=SNR,minimalDuration=minimalDuration)
     gg_cycles=cycles$gg
     timeToUseForBreathing=cycles$cycles
     timeLab=1/2*(timeToUseForBreathing[-1]+timeToUseForBreathing[-length(timeToUseForBreathing)])
@@ -119,30 +124,32 @@ ptrvIntensityByTime=function(dataset,referenceBreath=NULL,correction="none",time
        #average of the noise to be removed
 
         avgNoise=mean(resultMeanT[resultMeanT[,"time"]<=timeBlank[2]&resultMeanT[,"time"]>=timeBlank[1]&resultMeanT[,"ion"]==ion,"intensity"],na.rm=T)
+
         resultMeanT[resultMeanT[,"ion"]==ion,"intensity"]=resultMeanT[resultMeanT[,"ion"]==ion,"intensity"]-avgNoise
-        if(!is.null(smoothCycle))
-        {
-          resultMeanT[!is.na(resultMeanT[,"intensity"])&resultMeanT[,"intensity"]<0,"intensity"]=0
-          spMT=new("Spectrum1",mz=resultMeanT[!is.na(resultMeanT[,"intensity"]),"time"],intensity=resultMeanT[!is.na(resultMeanT[,"intensity"]),"intensity"],centroided=F)
-          spMT2=MSnbase::smooth(spMT,method=smoothCycle,halfWindowSize = halfWindowSizeCycle)
-          resultMeanT2=rbind(resultMeanT2,data.frame(ion=ion,time=MSnbase::mz(spMT2),intensity=MSnbase::intensity(spMT2)))
-        }
+
+        # if(!is.null(smoothMethod))
+        # {
+        #   resultMeanT[!is.na(resultMeanT[,"intensity"])&resultMeanT[,"intensity"]<0,"intensity"]=0
+        #   spMT=new("Spectrum1",mz=resultMeanT[!is.na(resultMeanT[,"intensity"]),"time"],intensity=resultMeanT[!is.na(resultMeanT[,"intensity"]),"intensity"],centroided=F)
+        #   spMT2=MSnbase::smooth(spMT,method=smoothMethod,halfWindowSize = halfWindowSize)
+        #   resultMeanT2=rbind(resultMeanT2,data.frame(ion=ion,time=MSnbase::mz(spMT2),intensity=MSnbase::intensity(spMT2)))
+        # }
 
      }
-      if(!is.null(smoothCycle))
-      {
-        p_sc=ggplot(resultMeanT2[resultMeanT2[,"ion"]!=referenceBreath,],aes(x=time,y=intensity,group=ion,color=ion,name=ion))+geom_line()+theme_bw()+theme(legend.position="none")
-        p_breath=ggplot(resultMeanT2[resultMeanT2[,"ion"]==referenceBreath,],aes(x=time,y=intensity,group=ion,color=ion,name=ion))+geom_line()+theme_bw()+theme(legend.position="none")
-
-
-      }
-      else
-      {
+      # if(!is.null(smoothMethod))
+      # {
+      #   p_sc=ggplot(resultMeanT2[resultMeanT2[,"ion"]!=referenceBreath,],aes(x=time,y=intensity,group=ion,color=ion,name=ion))+geom_line()+theme_bw()+theme(legend.position="none")
+      #   p_breath=ggplot(resultMeanT2[resultMeanT2[,"ion"]==referenceBreath,],aes(x=time,y=intensity,group=ion,color=ion,name=ion))+geom_line()+theme_bw()+theme(legend.position="none")
+      #
+      #
+      # }
+      # else
+      # {
 
         p_sc=ggplot(resultMeanT[resultMeanT[,"ion"]!=referenceBreath,],aes(x=time,y=intensity,group=ion,color=ion,name=ion))+geom_line()+theme_bw()+theme(legend.position="none")
         p_breath=ggplot(resultMeanT[resultMeanT[,"ion"]==referenceBreath,],aes(x=time,y=intensity,group=ion,color=ion,name=ion))+geom_line()+theme_bw()+theme(legend.position="none")
 
-        }
+     # }
 
     }
     if(!removeNoise)

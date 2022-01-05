@@ -1,4 +1,13 @@
+#' sameTimePoints
+#' sameTimePoints
+#' @param df data frame with at least three columns (named as colTime, colDuration and colIntensity)
+#' @param colTime name of the column corresponding to time
+#' @param colDuration name of the column corresponding to duration
+#' @param colIntensity name of the column corresponding to intensity
+#' @param breakTimes vector of numerics corresponding to time breaks
+#' @param npoints number of points (to fill breakTimes automatically)
 #' @export
+#' @importFrom stats weighted.mean
 sameTimePoints=function(df,npoints=100,colTime="time",colDuration="duration",colIntensity="intensity",breakTimes=NULL)
 {
   df=df[order(df[,colTime]),]

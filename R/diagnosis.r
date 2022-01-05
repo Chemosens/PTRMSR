@@ -1,6 +1,9 @@
+#' diagnosis
+#' Return whether a list of files (in a specific repository) has the same number and the same name of columns (required to run ptrvList functions)
 #' @param listFiles list of files to be diagnosed
 #' @return a list containing ncol (the number of column in each file) and colnames (the colnames in each file). They should be identical.
 #' @export
+#' @importFrom stats sd median
 diagnosis=function(listFiles)
 {
   comparisonOfColumns=function(colnamesfiles)

@@ -1,5 +1,13 @@
+#'ptrvSameTimePoints
+#'returns a dataframe with the same timepoints
+#'@param df a data frame whose colnames are time, product, subject,rep, duration and intensity
+#'@param npoints number of timepoints to be obtained
+#'@param meanBySubject boolean indicating whether the mean by subject should be computed
+#'@param meanByRep boolean indicating whether the mean by replicate should be computed
+#'@param normalizeByTime boolean indicating whether the data should be normalized (T) or not
+#'@param breakTimes indicating the breaking time points. Default to seq(0,max(df$time),length.out=npoints)
 #'@export
-ptrvSameTimePoints=function(df,npoints=100,meanBySubject=TRUE,meanByRep=FALSE,normalizeByTime=FALSE,breakTimes=NULL,type="ptr")
+ptrvSameTimePoints=function(df,npoints=100,meanBySubject=TRUE,meanByRep=FALSE,normalizeByTime=FALSE,breakTimes=NULL)
 {
   if(is.null(breakTimes))
   {
@@ -95,7 +103,10 @@ ptrvSameTimePoints=function(df,npoints=100,meanBySubject=TRUE,meanByRep=FALSE,no
     df6=reshape(df5,varying=list(ions),times=ions,timevar="ion",v.names="intensity",direction="long")
     return(df6)
   }
-  else{return(df3)}
+  else
+  {
+    return(df3)
+  }
 
 }
 

@@ -1,37 +1,41 @@
-#'  @param intens data frame containing the column "file","product","subject","rep","ion","intensity" (optionally "file" and "time")
-#'  @param ionToUse if NULL, all the ions are use to normalize, if a vector of names of ions, it is used to normalize
-#'  @export
-normalizeByEval=function(intens,ionToUse=NULL)
+#'normalizeByEval
+#'Divides each evaluation by the sum of its variables
+#'@param df data frame containing the column "file","product","subject","rep","ion","intensity" (optionally "file" and "time")
+#'@param ionToUse if NULL, all the ions are use to normalize, if a vector of names of ions, it is used to normalize
+#'@export
+#'@importFrom graphics lines
+normalizeByEval=function(df,ionToUse=NULL)
 {
-if(is.null(ionToUse)){ions=unique(intens[,"ion"])}
+  s=NULL
+if(is.null(ionToUse)){ions=unique(df[,"ion"])}
   else{
     ions=ionToUse
-    intens=intens[intens[,"ion"]%in%ionToUse,]
+    df=df[df[,"ion"]%in%ionToUse,]
     }
 
-if("file"%in%colnames(intens))
+if("file"%in%colnames(df))
 {
-  wideIntens=dcast(intens[,c("file","product","subject","rep","ion","intensity")],file+product+subject+rep~ion,value.var="intensity",fun.aggregate=sum)
+  widedf=dcast(df[,c("file","product","subject","rep","ion","intensity")],file+product+subject+rep~ion,value.var="intensity",fun.aggregate=sum)
 }
 else
-{ print("in")
-  if(!"time"%in%colnames(intens))
+{
+  if(!"time"%in%colnames(s))
   {
-    wideIntens=dcast(intens[,c("product","subject","rep","ion","intensity")],product+subject+rep~ion,value.var="intensity",fun.aggregate=sum)
+    widedf=dcast(df[,c("product","subject","rep","ion","intensity")],product+subject+rep~ion,value.var="intensity",fun.aggregate=sum)
   }
-  if("time"%in%colnames(intens))
+  if("time"%in%colnames(df))
   {
-    wideIntens=dcast(intens[,c("product","subject","rep","time","ion","intensity")],product+subject+rep~ion+time,value.var="intensity",fun.aggregate=sum)
+    widedf=dcast(df[,c("product","subject","rep","time","ion","intensity")],product+subject+rep~ion+time,value.var="intensity",fun.aggregate=sum)
   }
 }
-newWide=wideIntens
-#print(summary(wideIntens))
+newWide=widedf
+#print(summary(widedf))
 ions=as.character(ions)
-sumIntens=apply(wideIntens[,ions],1,sum)
-newWide[,ions]=sweep(wideIntens[,ions],1,apply(wideIntens[,ions],1,sum),"/")
-newIntens=reshape(newWide,direction="long",v.names="intensity",timevar="ion",varying=list(ions),times=ions)
+sumdf=apply(widedf[,ions],1,sum)
+newWide[,ions]=sweep(widedf[,ions],1,apply(widedf[,ions],1,sum),"/")
+newdf=reshape(newWide,direction="long",v.names="intensity",timevar="ion",varying=list(ions),times=ions)
 
-res=list(intens=newIntens,sum=sumIntens)
+res=list(df=newdf,sum=sumdf)
 return(res)
 }
 

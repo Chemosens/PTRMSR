@@ -12,15 +12,13 @@ ptrvIntensityByTime(
   timeStart = 0,
   removeNoise = TRUE,
   timeBlank = c(0, 30),
-  halfWindowSize = 10,
+  halfWindowSize = 5,
   maxPeaks = NULL,
   total = FALSE,
   breathRatio = FALSE,
   method = "MAD",
   SNR = 0,
   ions = NULL,
-  smoothCycle = NULL,
-  halfWindowSizeCycle = 5,
   funAggregate = "mean",
   smoothMethod = "MovingAverage",
   minimalDuration = 2
@@ -54,6 +52,12 @@ ptrvIntensityByTime(
 \item{SNR}{Signal noise ratio parameter used in peak picking}
 
 \item{ions}{vector contatining all ions to be used in the analysis (by default all ions are used)}
+
+\item{funAggregate}{"mean", "maximal" or "sum"}
+
+\item{smoothMethod}{NULL, "SavitzkyGolay" or "MovingAverage"}
+
+\item{minimalDuration}{minimalDuration of a breathing cycle (2 by default - as a accelerated breathing frequency corresponds to 20 cycles and more by minut and a low frequency is 12 and less -)}
 }
 \value{
 a list containing the obtained result and ggplot object

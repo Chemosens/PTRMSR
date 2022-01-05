@@ -6,13 +6,13 @@ library(ggrepel)
 data("ptrvList")
 breath="m69.06989..isoprene...Conc."
 
-respca=totalPCA(ptrvList$totalIntensity,dataType="productMeans")
+respca=ptrvListPCA(ptrvList$totalIntensity,dataType="productMeans")
 plotPCAgg(respca,type="ind")
 plotPCAgg(respca,type="corCircle")
 plotPCAgg(respca,type="cor1")
 plotPCAgg(respca,type="cor2")
 
-respca=totalPCA(ptrvList$totalIntensity,dataType="raw")
+respca=ptrvListPCA(ptrvList$totalIntensity,dataType="raw")
 plotPCAgg(respca,type="ind")
 plotPCAgg(respca,type="ind",indSup="ell")
 plotPCAgg(respca,type="ind",indSup=c("points","ell"))
@@ -21,10 +21,10 @@ plotPCAgg(respca,type="corCircle")
 plotPCAgg(respca,type="cor1",n=90)
 plotPCAgg(respca,type="cor2")
 
-resbiplot=totalPCA(ptrvList$totalIntensity,dataType="productMeans",representation="DistanceBiplot")
+resbiplot=ptrvListPCA(ptrvList$totalIntensity,dataType="productMeans",representation="DistanceBiplot")
 plotPCAgg(resbiplot,type="biplot")
 
-resbiplot=totalPCA(ptrvList$totalIntensity,dataType="productMeans",representation="DistanceBiplot",option="Covariance")
+resbiplot=ptrvListPCA(ptrvList$totalIntensity,dataType="productMeans",representation="DistanceBiplot",option="Covariance")
 plotPCAgg(resbiplot,type="biplot")
 
 

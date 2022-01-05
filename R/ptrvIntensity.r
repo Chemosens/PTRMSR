@@ -4,7 +4,8 @@
 #' @export
 #' @title ptrvIntensity
 #' @importFrom reshape2 dcast
-ptrvIntensity=function(result,timePeriod=NULL,negativeAsNull=TRUE,smoothingParameter=NULL)
+#' @importFrom stats sd
+ptrvIntensity=function(result,timePeriod=NULL,negativeAsNull=TRUE)
 {
    if(is.null(timePeriod)){timePeriod=c(min(result[,"time"]),max(result[,"time"]))}
   if(negativeAsNull){result[result<0]=0}

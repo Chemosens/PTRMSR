@@ -4,12 +4,7 @@
 \alias{ptrvIntensity}
 \title{ptrvIntensity}
 \usage{
-ptrvIntensity(
-  result,
-  timePeriod = NULL,
-  negativeAsNull = TRUE,
-  smoothingParameter = NULL
-)
+ptrvIntensity(result, timePeriod = NULL, negativeAsNull = TRUE)
 }
 \arguments{
 \item{result}{is a result of ptrvIntensityByTime}

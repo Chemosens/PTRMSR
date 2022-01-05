@@ -8,11 +8,13 @@
 #'@param noisePeriodIBT noise period used during intensity by time calculation
 #'@param noisePeriodSig noise period used during significant ions calculation
 #'@param noisePeriodDS noise period used during the start detection
+#'@param detectingStart boolean specifying wether the detect start procedure should be done (TRUE) or not (FALSE)
 #'@importFrom gridExtra grid.arrange
 #'@return a list containing: the final data start0 (without breathing correction), start1 (with breathing correction) and a list of plots)
 #'@export
 ptrvReport=function(dataset,selecIons="evolving",listIons=NULL,referenceBreath,smoothMethod="MovingAverage",methodDetectStart="startPeakProportion",noisePeriodIBT=c(0,30),noisePeriodSig=c(0,30),noisePeriodDS=c(0,30),proportionOfMax=0.3,halfWindowSize=12,maxPeaks=30,startPeriod=c(20,60),detectingStart=FALSE,minimalDuration=2)
 {
+  intensity=NULL
   if(!is.null(listIons)){selecIons="namely"}
   ion=snratio=time=NULL
   #dataset=read.table(listFiles[1],sep="\t",dec=",",header=T)
@@ -60,7 +62,6 @@ ptrvReport=function(dataset,selecIons="evolving",listIons=NULL,referenceBreath,s
   {
     starts=sigion1
   }
-print("ahah")
   if(detectingStart==TRUE)
   {
     resds2=ptrvDetectStart(res=res_cyc,starts=starts, method=methodDetectStart,noisePeriod=noisePeriodDS,proportionOfMax=proportionOfMax,startPeriod=startPeriod)
@@ -84,7 +85,7 @@ print("ahah")
 
   }
 
-print("hoho")
+
   # All graphs
   p_breath=res_cyc$gg
   if(selecIons=="evolving")
@@ -95,7 +96,6 @@ print("hoho")
   {
     p_kineticIons=NULL
   }
-  print("huhu")
   if(detectingStart==TRUE)
   {
     p_detectStart=resds2$gg
@@ -104,7 +104,7 @@ print("hoho")
   {
     p_detectStart=NULL
   }
-   print("héhé")
+
   # Vizualization with curves
   #===============
   p1=ggplot(resTimeRaw,aes(x=time,y=intensity,group=ion,color=ion))+geom_line()+theme_bw()+ggtitle("Raw intensity")+geom_vline(xintercept=resds2$tx)

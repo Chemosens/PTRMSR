@@ -15,7 +15,6 @@
 #' @importFrom stats wilcox.test
 ptrvListSignificantSNRIons=function(listFiles,metaData,dec_vec=rep(".",length(listFiles)),multiplyNoiseBy=3,noisePeriod=c(0,25),removeNoise=TRUE,maxPeaks=NULL,minimalDuration=2)
 {
-
   dataset=read.table(listFiles[1],sep="\t",header=T,dec=",")
   ions=colnames(dataset)[-c(1:3)]
   resIons=list()

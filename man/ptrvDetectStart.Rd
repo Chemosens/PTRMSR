@@ -16,7 +16,6 @@ ptrvDetectStart(
   timeChoice = "interpolation",
   startPeriod = c(20, 50),
   smooth = FALSE,
-  halfWindowSize = 3,
   nPoints = 7,
   order = 1,
   firstAmongHighThreshold = 50
@@ -33,6 +32,8 @@ ptrvDetectStart(
 
 \item{multiplyNoiseBy}{Number higher than 1 (nb). If method "higherThanNoise" is chosen, the maximal (or averaged according to noiseStat) value obtained during the noise period is multiplied by this number to give the intensity to reach for returning the starting period.}
 
+\item{peakChoice}{"maxIntensity", "first" or "firstAmongHigh"}
+
 \item{statOfNoise}{"avg" or "max". If method "higherThanNoise" is chosen, the statistic obtained during the noise period to be multiplied by multiplyNoiseBy for returning the starting period.}
 
 \item{noisePeriod}{Vector of two numbers. If method "higherThanNoise" is chosen and length(starts)==1, the starting time will be the first time that the intensity reaches 3*the maximal value obtained during the noise period. If length(starts) > 1, the starting time will be the minimum value obtained with this method for all starts.}
@@ -43,7 +44,11 @@ ptrvDetectStart(
 
 \item{smooth}{If TRUE, the data is previously smoothed with the parameter halfWindowsSize}
 
-\item{halfWindowSize, }{half window size used for smoothing}
+\item{nPoints}{Number of points taken for smoothing}
+
+\item{order}{order of the derivative}
+
+\item{firstAmongHighThreshold}{percentage of the maximum value to be reached in order to be considered as a peak when peak choice is firstAmongHigh}
 }
 \description{
 ptrvDetectStart

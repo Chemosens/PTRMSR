@@ -9,7 +9,10 @@
 #' @param statOfNoise "avg" or "max". If method "higherThanNoise" is chosen, the statistic obtained during the noise period to be multiplied by multiplyNoiseBy for returning the starting period.
 #' @param timeChoice "interpolation", "lower","upper". The time obtained for reaching a given value can be a not observed time (but in a interval of two observed times). "interpolation" returns the not observed time, "lower" returns the lower limit of this interval, "upper" returns the upper limit of this interval
 #' @param smooth If TRUE, the data is previously smoothed with the parameter halfWindowsSize
-#' @param halfWindowSize, half window size used for smoothing
+#' @param nPoints Number of points taken for smoothing
+#' @param peakChoice "maxIntensity", "first" or "firstAmongHigh"
+#' @param firstAmongHighThreshold percentage of the maximum value to be reached in order to be considered as a peak when peak choice is firstAmongHigh
+#' @param order order of the derivative
 #' @export
 #' @importFrom signal sgolayfilt
 #' @examples
@@ -26,9 +29,10 @@
 #' ds=ptrvDetectStart(res=res_intensity$res,starts=ion, method="startPeakProportion",
 #' proportionOfMax=0.1,smooth=TRUE,startPeriod=c(20,150))
 
-ptrvDetectStart=function(res,starts,method="startPeakProportion",proportionOfMax=0.1,multiplyNoiseBy=3,peakChoice="maxIntensity",statOfNoise="max",noisePeriod=c(0,20),timeChoice="interpolation",startPeriod=c(20,50),smooth=FALSE,halfWindowSize=3,nPoints=7,order=1,firstAmongHighThreshold=50)
+ptrvDetectStart=function(res,starts,method="startPeakProportion",proportionOfMax=0.1,multiplyNoiseBy=3,peakChoice="maxIntensity",statOfNoise="max",noisePeriod=c(0,20),timeChoice="interpolation",startPeriod=c(20,50),smooth=FALSE,nPoints=7,order=1,firstAmongHighThreshold=50)
 {
-
+  order=NULL
+ intensity=sg1=sg2=sg3=sg4=intensity=NULL
   closestTime=function(vec,number,option="lower")
   {
     vec=vec[order(vec)]

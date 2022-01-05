@@ -3,13 +3,15 @@
 #' @param ions vector containing the names of the column to be considered as ions and to be analysed
 #' @return a list of plots (bars, boxplot, points)
 #' @importFrom plyr ddply
+#' @importFrom stats sd
+#' @importFrom utils head
 #' @export
 ptrvQCPlotSummary=function(df,ions=NULL)
 {
   if(is.null(ions)){ions=colnames(df)[-c(1:4)]}
   days=products=value=name=NULL
   data_summary <- function(data, varname, groupnames){
-   
+
     summary_func <- function(x, col){
       c(mean = mean(x[[col]], na.rm=TRUE),
         sd = sd(x[[col]], na.rm=TRUE),
@@ -20,7 +22,7 @@ ptrvQCPlotSummary=function(df,ions=NULL)
     #data_sum <- rename(data_sum, c("mean" = varname))
     return(data_sum)
   }
-  
+
   p_bar=p_boxplot=p_points=list()
   for(ion in ions)
   {

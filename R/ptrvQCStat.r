@@ -5,12 +5,12 @@
 #' @return a list of dataframes: avg for the average, std for standard deviations and cv for the coefficient of variations
 #' @export
 #' @importFrom plyr ddply
-
+#' @importFrom stats sd
 #' @importFrom stats kruskal.test
 ptrvQCStats=function(df,ions=NULL)
 {
   data_summary <- function(data, varname, groupnames){
-  
+
     summary_func <- function(x, col){
       c(mean = mean(x[[col]], na.rm=TRUE),
         sd = sd(x[[col]], na.rm=TRUE),
@@ -21,9 +21,9 @@ ptrvQCStats=function(df,ions=NULL)
     #data_sum <- rename(data_sum, c("mean" = varname))
     return(data_sum)
   }
-  
+
   if(is.null(ions)){ions=colnames(df)[-c(1:4)]}
-  
+
   for(ion in ions)
   {
     dfsum=data_summary(df[,c("days","products",ion)],varname=ion,groupnames=c("days","products"))

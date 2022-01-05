@@ -19,6 +19,12 @@ pickingPeaks(
 \item{col}{name of the column containing the abscissa ("mz" by default)}
 
 \item{signalPercentage}{of the centroid's intensity are used to calculate the refined m/z. By default the descend is stopped when the first signal that is equal or larger than the last observed one is encountered.}
+
+\item{nPoints}{n points required for smoothing  (see sgolayfilt)}
+
+\item{refineMz}{"descendPeak" (see MSn base::pickPeaks)}
+
+\item{method}{"MAD"}
 }
 \description{
 pickingPeaks

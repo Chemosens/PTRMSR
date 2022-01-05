@@ -11,7 +11,7 @@
 #'#plot(res)
 plot.ibm=function(x,subset=NULL,main="Mass spectra",xlab="Mass",ylab="Intensity",groupOption="no",xlim=NULL,ylim=NULL,type="l",...)
 {
-  name=NULL
+  name=intensity=NULL
   if(!is.null(subset)){x$df=x$df[x$df[,"name"] %in% subset,]}
   if(groupOption=="name"){group=x$df[,"name"]}
   if(groupOption=="no"){group=NULL}

@@ -1,3 +1,4 @@
+#' @importFrom stats sd
 ptrvListQC=function(listFiles,starts="")
 {
   for(i in 1:length(listFiles))

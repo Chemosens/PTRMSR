@@ -1,4 +1,6 @@
-#' @param df data frame with "ion","intensity","product","subject" columns,
+#' ptrvListHeatmap
+#' returns heatmap with rows as individuals and columns as ions
+#' @param df data frame with "ion","intensity","product","subject" columns
 #' @param log boolean indicated if the intensities should be logged (TRUE) or not (FALSE)
 #' @param ionToRemove vector of character containing ions to remove from the analysis
 #' @param normalizeByEval Boolean. By default TRUE
@@ -6,14 +8,22 @@
 #' @param fun.aggregate "mean", "max" or "sum" for regrouping according to the frmula
 #' @param clusterRows Boolean indicating whether the rows should be clustered
 #' @param clusterCols Boolean indicating whether the columns should be clustered
-#' @param showRownames Boolean indicating whether the rownames should be displayed
+#' @param breaks a sequence of numbers that covers the range of values in mat and is one element longer than color vector. Used for mapping values to colors. Useful, if needed to map certain values to certain colors, to certain values. If value is NA then the breaks are calculated automatically. When breaks do not cover the range of values, then any value larger than max(breaks) will have the largest color and any value lower than min(breaks) will get the lowest color.
+#' @param showColnames 	boolean specifying if column names are be shown.
+#' @param showRownames boolean specifying if row names are be shown.
+#' @param annotationRow "product" or "subject" (annotation shown on the left side fo the heatmap)
+#' @param scale "none","column" or "row". Character indicating if the values should be centered and scaled in either the row direction or the column direction, or none.
+#' @param cex integer. Size of the text.
+#' @param transpose boolean specifying if the matrix is previously transposed (TRUE) or not (FALSE)
+#' @importFrom stats as.formula
+#' @importFrom pheatmap pheatmap
 #' @export
-ptrvListHeatmap=function(df,log=FALSE,ionToUse=NULL,normalizeByEval=FALSE,ionToRemove=NULL,formula=as.formula(product+subject+rep~ion),fun.aggregate="mean",normalization="none",breaks=NULL,clusterRows=F,clusterCols=F,showRownames=F,showColnames=T,annotationRow="product",scale="column",cex=0.8,transpose=FALSE)
+ptrvListHeatmap=function(df,log=FALSE,normalizeByEval=FALSE,ionToRemove=NULL,formula=as.formula(product+subject+rep~ion),fun.aggregate="mean",breaks=NULL,clusterRows=F,clusterCols=F,showRownames=F,showColnames=T,annotationRow="product",scale="column",cex=0.8,transpose=FALSE)
 {
 
   if(log) { print("log"); df[,"intensity"]=log(df[,"intensity"])    }
   ionToUse=unique(df[,"ion"]); ionToUse=ionToUse[!ionToUse%in%ionToRemove]
-  if(normalizeByEval){df=normalizeByEval(df,ionToUse)$intens}
+  if(normalizeByEval){df=normalizeByEval(df,ionToUse)$df}
 
   if(fun.aggregate=="mean")
   {

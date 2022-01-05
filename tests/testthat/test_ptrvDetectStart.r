@@ -27,7 +27,7 @@ p=p+geom_vline(xintercept=rest$tx)
 ptrvDetectStart(res=res_intensity$res,starts=IonToUse, method="higherThanNoise",multiplyNoiseBy = 2)
 
 test_that("start peak proportion",
-          expect_true(round(rest$tx,digits=5)==33.03863)
+          expect_true(round(rest$tx,digits=5)==33.12689)
 )
 
 

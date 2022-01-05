@@ -31,6 +31,8 @@ ptrvReport(
 
 \item{referenceBreath}{name of the ion taken as reference for breathing}
 
+\item{smoothMethod}{NULL, "SavitzkyGolay" or "MovingAverage"}
+
 \item{methodDetectStart}{method to detect start (see \link{ptrvDetectStart}). If numeric, the}
 
 \item{noisePeriodIBT}{noise period used during intensity by time calculation}
@@ -46,6 +48,10 @@ ptrvReport(
 \item{maxPeaks}{A number. Below this value, a peak is not considered as a peak}
 
 \item{startPeriod}{Vector of two numbers. The starting time obtained has to be in this interval.}
+
+\item{detectingStart}{boolean specifying wether the detect start procedure should be done (TRUE) or not (FALSE)}
+
+\item{minimalDuration}{minimalDuration of a breathing cycle (2 by default - as a accelerated breathing frequency corresponds to 20 cycles and more by minut and a low frequency is 12 and less -)}
 }
 \value{
 a list containing: the final data start0 (without breathing correction), start1 (with breathing correction) and a list of plots)
