@@ -4,7 +4,7 @@ setwd("C:/INRA/Data/fichiersTXTPTREtalonnage")
 library(reshape2)
 library(gridExtra)
 library(ggplot2)
-library(chemosensR)
+library(PTRMSR)
 
 repo="C:/INRA/Data/fichiersTXTPTREtalonnage"
 dfs=ptrvQCGetDfs(repo)

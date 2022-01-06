@@ -3,7 +3,7 @@ library(plotly)
 library(reshape2)
 library(gridExtra)
 library(ggrepel)
-library(chemosensR)
+library(MSUtils)
 data("ptrvList")
 
 respcagg1=PCAgg(df=ptrvList$totalIntensity[,c("product","subject","rep","ion","intensity")],dataType="raw",option="Covariance",representation="TwoMaps",value.var="intensity",variable="ion")

@@ -9,7 +9,7 @@
 #'@importFrom rhdf5 h5read h5closeAll
 #'@examples
 #' #DONOTRUN
-#' #file <- dir(system.file(package = "chemosensR", dir = "extdata"),full.name=TRUE,pattern="h5$")
+#' #file <- dir(system.file(package = "PTRMSR", dir = "extdata"),full.name=TRUE,pattern="h5$")
 #' #ptr=ptrRead(file)
 ptrRead=function(file,wd=getwd(),mz=NULL,threshold=0,sumSpectraOnly=FALSE,integrationTable=NULL)
 {

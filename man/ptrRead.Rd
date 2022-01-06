@@ -31,6 +31,6 @@ Read .h5 file from PTR and return a list containing useful results
 }
 \examples{
 #DONOTRUN
-#file <- dir(system.file(package = "chemosensR", dir = "extdata"),full.name=TRUE,pattern="h5$")
+#file <- dir(system.file(package = "PTRMSR", dir = "extdata"),full.name=TRUE,pattern="h5$")
 #ptr=ptrRead(file)
 }

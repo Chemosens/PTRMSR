@@ -21,7 +21,8 @@ library(pheatmap)
 library(ggplot2)
 
 library(ellipse)
-install_github("https://github.com/ChemoSens/ChemoSensPrivate/CSUtils")
+# This step requires the installation of Rtools and devtools ! 
+install_github("https://github.com/ChemoSens/CSUtils")
 install_github("https://github.com/ChemoSens/PTRMSR")
 
 ``` 
@@ -219,7 +220,6 @@ BiocManager::install("MSnbase")
 BiocManager::install("rhdf5")
 install.packages("multcompView")
 #BiocManager::install("mzR")
-install_github("https://github.com/ChemoSens/ChemoSensPrivate/ChemosensR",             auth_token="d92a1193900767184efad9d26606bb1db9ad6ba9") 
 
 # FOR SHINY 
 setwd(paste0(.libPaths()[1],"/chemosensR/extdata"))

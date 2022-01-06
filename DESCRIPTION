@@ -11,4 +11,4 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1
 Depends: R (>= 3.5.0)
-Imports: MSnbase, gridExtra, plyr, ggforce,reshape2, rhdf5, stats, utils,ggplot2,pheatmap,chemosensR,signal
+Imports: MSnbase, gridExtra, plyr, ggforce,reshape2, rhdf5, stats, utils,ggplot2,pheatmap,CSUtils,signal

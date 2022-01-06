@@ -14,7 +14,7 @@
 #' @importFrom pheatmap pheatmap
 #' @importFrom utils tail
 #' @importFrom grDevices rainbow
-#' @importFrom chemosensR PCAgg gMapPlot CVAgg gDistributionPlot gGetLegend anovaTable gBarPlot runBy
+#' @importFrom CSUtils PCAgg gMapPlot CVAgg gDistributionPlot gGetLegend anovaTable gBarPlot runBy
 ptrvListPCA=function(df,ionToRemove=NULL,dataType="productMeans",normalizeByEval=FALSE,log=FALSE,axes=list(c(1,2)),representation="TwoMaps",option="Correlation",variableName="ion",scoreName="intensity",expandBiplot=NULL)
 {
   time=NULL
