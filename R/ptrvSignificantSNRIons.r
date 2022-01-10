@@ -8,7 +8,7 @@
 ptrvSignificantSNRIons=function(dataset,method="max",referenceBreath,noisePeriod=c(0,30),correction="cycle",multiplyNoiseBy=3,removeNoise=FALSE,minimalDuration=2,maxPeaks=NULL, halfWindowSize=5,smoothMethod="MovingAverage")
 {
   result_deg=ptrvIntensityByTime(dataset=dataset,timeBlank=noisePeriod,referenceBreath=referenceBreath,correction=correction,timePeriod=NULL,removeNoise=removeNoise,minimalDuration=minimalDuration,maxPeaks=maxPeaks,halfWindowSize=halfWindowSize,smoothMethod=smoothMethod)
-    if(method=="max")
+  if(method=="max")
   {
       res_blanc=ptrvIntensity(result_deg$res,timePeriod=noisePeriod)
       res_deg=ptrvIntensity(result_deg$res,timePeriod=c(noisePeriod[2],max(result_deg$res[,"time"],na.rm=T)))

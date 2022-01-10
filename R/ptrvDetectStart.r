@@ -31,8 +31,7 @@
 
 ptrvDetectStart=function(res,starts,method="startPeakProportion",proportionOfMax=0.1,multiplyNoiseBy=3,peakChoice="maxIntensity",statOfNoise="max",noisePeriod=c(0,20),timeChoice="interpolation",startPeriod=c(20,50),smooth=FALSE,nPoints=7,order=1,firstAmongHighThreshold=50)
 {
-  order=NULL
- intensity=sg1=sg2=sg3=sg4=intensity=NULL
+  intensity=sg1=sg2=sg3=sg4=intensity=NULL
   closestTime=function(vec,number,option="lower")
   {
     vec=vec[order(vec)]

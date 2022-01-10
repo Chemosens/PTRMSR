@@ -1,26 +1,25 @@
-remove.packages("chemosensR")
+
 library(devtools)
 library(MSnbase)
 library(reshape2)
 library(pheatmap)
 library(ggplot2)
-library(chemosensR)
+library(CSUtils)
 library(ellipse)
 library(plotly)
 
 #install_github("https://github.com/ChemoSens/ChemoSensPrivate/ChemosensR",auth_token="d92a1193900767184efad9d26606bb1db9ad6ba9")
-wd="C:/INRA/Data/Données Cantin/Cantin-DTS-PTRviewer" 
+wd="P:/PFLA/1254-AIC-SENSITIV/SEANCE1/PTR-S1"
 setwd(wd)
 listFiles=list.files(pattern="*.txt")[-1]
-metaData2=read.table("metaData2.csv",sep=";",header=T)
-head(metaData2[,-c(2:3)])
+metaData2=read.table("metaData3.csv",sep=";",header=T)
+head(metaData2)
 
-setwd(wd)
-referenceBreath="m69.06906..69.06906...Conc."
-sigIons=ptrvListSignificantSNRIons(listFiles=listFiles, referenceBreath =referenceBreath,noisePeriod=c(0,25))
+
+referenceBreath=metaData2[1,"resp"]
+sigIons=ptrvListSignificantSNRIons(listFiles=listFiles, metaData =metaData2,noisePeriod=c(0,25))
 ionSigUnique=sigIons$union
 
-setwd(wd)
 res_auc=ptrvListIntensityByTime(listFiles=listFiles,metaData=metaData2,ions=ionSigUnique)
 
 res_auc$listRes
