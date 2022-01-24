@@ -12,13 +12,14 @@ ptrvDetectStart(
   multiplyNoiseBy = 3,
   peakChoice = "maxIntensity",
   statOfNoise = "max",
-  noisePeriod = c(0, 20),
+  noisePeriod = NULL,
   timeChoice = "interpolation",
-  startPeriod = c(20, 50),
+  startPeriod = NULL,
   smooth = FALSE,
-  nPoints = 7,
+  nPoints = 0,
   order = 1,
-  firstAmongHighThreshold = 50
+  firstAmongHighThreshold = 50,
+  detectionThreshold = NULL
 )
 }
 \arguments{
@@ -49,11 +50,38 @@ ptrvDetectStart(
 \item{order}{order of the derivative}
 
 \item{firstAmongHighThreshold}{percentage of the maximum value to be reached in order to be considered as a peak when peak choice is firstAmongHigh}
+
+\item{detectionThreshold}{intensity value to be reached to be considered as a peak (default to NULL corresponds to 0)}
+}
+\value{
+a list containing:
+- tx (the obtained starting time);
+- tx_vec (when several starting ions -parameter starts- are selected, return tx for each starting ion);
+- gg a ggplot object displaying the intensity along time and the starting time chosen
+- diagnosis : 'ok' if there was no problem by selecting the start, 'maxPeakTooLow','timeFoundAfterPeak' or 'firstNotMax' if some ambiguity is possible
 }
 \description{
-ptrvDetectStart
+This function allows to estimate the beginning of a peak with three different methods. All these methods depends on the selection of a peak in a specific windows (given by "StartPeriod").
+ Sometimes, this StartPeriod contains several peaks. In this case, we select peaks that are high enough.
+This quantity is defined as a percent of the maximale peak intensity: a value of 100 indicates that only the maximale peak is considered; a value of 0 indicates that the first detected peak is considered.
+A value of 50 indicates that the first peak higher than 50% of the maximale intensity is considered.
+ The user should use cautiously this option.
+
+ Then, three methods are available: "startPeakProportion" and "higherThanNoise" are two methods based on the time (t_imax) obtained for the maximale intensity of the peak. It research t0 as close as possible as t_imax, but with a intensity lower than a given intensity threshold.
+ In startPeakProportion, this threshold is calculated as a proportion of the maximale intensity. This proportion (between 0 and 1) is defined in the proportionOfMax parameter.
+ In higherThanNoise, this threshold is calculated by multiplying the noise estimated by a number (defined by multiplyNoiseBy)
+ The noise can be estimated with different methods:
+ - as the average or maximale intensity (statOfNoise="avg" or "max") of a given period (defined in noisePeriod)
+ - as the estimation of blank during the total dataframe (statOfNoise="bl")
+ - as the estimation of blank during the period defined in noisePeriod (statOfNoise="blperiod")
+
+A last method is based on derivation of the spectra. It finds out where the derivative of order defined by "order" parameter is maximale
 }
 \examples{
+# Example without breathing correction
+
+
+# Example with breathing correction
 data(ptrv)
 res_intensity=ptrvIntensityByTime(ptrv,referenceBreath="m69.06989..isoprene...Conc.",
 correction = "cycle",removeNoise=FALSE,breathRatio = FALSE)
@@ -61,7 +89,7 @@ ion="m115.11139..C7H15O....Conc."
 ds=ptrvDetectStart(res=res_intensity$res,starts=ion, method="startPeakProportion")
 ds=ptrvDetectStart(res=res_intensity$res,starts=ion, method="higherThanNoise",startPeriod=c(20,150))
 ds=ptrvDetectStart(res=res_intensity$res,starts=ion, method="higherThanNoise",statOfNoise="avg",
-multiplyNoiseBy=1.6,timeChoice="lower")
+multiplyNoiseBy=1.6,timeChoice="lower",startPeriod=c(20,150))
 ds=ptrvDetectStart(res=res_intensity$res,starts=ion, method="higherThanNoise",statOfNoise="avg",
 multiplyNoiseBy=1.6,smooth=TRUE,startPeriod=c(20,150))
 ds=ptrvDetectStart(res=res_intensity$res,starts=ion, method="startPeakProportion",
