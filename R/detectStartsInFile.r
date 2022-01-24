@@ -8,9 +8,6 @@
 #' @param manual manual results obtained (as a vector of the same length as startPeaks)
 #' @param endPeaks if NULL, the end of the peak period is given by the next start in startPeaks
 #' @param ion name of the column corresponding to the ion to analyse
-#' @param rit
-#'
-#'
 #' @return a list containing dfres (dataframe with the obtained times), gg (a graphic representing the obtained intensities and starting time points, diagnosis)
 #' @inheritParams ptrvDetectStart
 #' @export

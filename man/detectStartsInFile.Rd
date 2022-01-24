@@ -52,8 +52,6 @@ detectStartsInFile(
 \item{firstAmongHighThreshold}{percentage of the maximum value to be reached in order to be considered as a peak when peak choice is firstAmongHigh}
 
 \item{manual}{manual results obtained (as a vector of the same length as startPeaks)}
-
-\item{rit}{}
 }
 \value{
 a list containing dfres (dataframe with the obtained times), gg (a graphic representing the obtained intensities and starting time points, diagnosis)
