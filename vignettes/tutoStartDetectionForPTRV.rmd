@@ -12,10 +12,10 @@ knitr::opts_chunk$set(echo = TRUE)
 \tableofcontents 
 
 # Installation and requirements
-This vignette shows how to use PTRMSR package to detect the start of peaks. 
+This vignette shows how to use PTRMSR package to detect starts of peaks. 
 First, the package should be installed. 
 
-```{r, eval=FALSE,echo=TRUE,warning=FALSE,message=FALSE}
+```{r, eval=FALSE,echo=FALSE,warning=FALSE,message=FALSE}
 library(devtools)
 install_github("www.github.com/ChemoSens/PTRMSR")
 ```
@@ -80,11 +80,11 @@ p=ggplot(dfgg,aes(x=time,y=intensity,color=file))+geom_line()+
 }
 
 
-totalResultsFun=function(files,method,ion,nPoints=31,startPeaks,statOfNoise="blperiod",
+totalResultsFun=function(files,method,ion,nPoints=31,statOfNoise="blperiod",
                          smooth=TRUE,proportionOfMax=0.0032,peakChoice="firstAmongHigh",
                          detectionThreshold=3,multiplyNoiseBy=2.7,thresholdOut=0.3,
                          firstAmongHighThreshold=10,
-  stat3=read.xlsx(xlsxFile="C:/Users/capeltier/Desktop/DataAnalysis/Christopher PTR/Caroline_Peltier/Statistique_3.xlsx"))
+  stat3=read.xlsx(xlsxFile="C:/Users/capeltier/Desktop/DataAnalysis/Christopher PTR/Caroline_Peltier/Statistique_3.xlsx"),tempsSequences=read.xlsx(xlsxFile="C:/Users/capeltier/Desktop/DataAnalysis/Christopher PTR/Caroline_Peltier/Temps_sequence.xlsx",startRow=6)[1:2,])
 {
     finalMatrix=matrix(NA,length(files),length(startPeaks));
     rownames(finalMatrix)=files;colnames(finalMatrix)=paste0("pic",1:length(startPeaks))
@@ -104,7 +104,7 @@ totalResultsFun=function(files,method,ion,nPoints=31,startPeaks,statOfNoise="blp
         }
         if(is.null(stat3)){manual=NULL}
         ptrFile_i=read.table(file,sep="\t",header=T)
-        startPeaks=startPeaks
+        startPeaks=tempsSequences[tempsSequences[,"Temps.apparition"]==substr(file,8,11),-1]
         resds=detectStartsInFile(ptrFile_i,ion=ion,startPeaks=startPeaks,
                                  endPeaks=NULL,methods=method,
                                  nPoints=nPoints,multiplyNoiseBy=multiplyNoiseBy,
@@ -143,11 +143,11 @@ grid.arrange(res61$p+ggtitle("61 points of smooth")+
                xlim(102,106),res31$p +ggtitle("31 points of smooth")+
                xlim(102,106),res0$p+ggtitle("no smooth")+xlim(102,106))
 ```
-The showSurimposedData also return the estimated noise for each file
+The function showSurimposedData also return the estimated noise for each file.
 
 ```{r, eval=TRUE,warning=FALSE}
 res31$noise
-mean(res31$noise)*1.6
+mean(res31$noise)
 ```
 ## Selecting the firstAmongHigh threshold
 This is a priori threshold: default to 10. If 0, the first peak is taken. If 100, only the max peak is taken. 
@@ -250,38 +250,40 @@ They can be plotted
 ```{r, eval=TRUE,fig.height=2.5}
 res$gg
 ```
-
-```{r, eval=TRUE,warning=FALSE}
-res=detectStartsInFile(ptrFile_i=ptrvFile_i,ion=ion,startPeaks=startPeaks,
-        methods=c("startPeakProportion","higherThanNoise"),
-        nPoints=31,smooth=TRUE,
-        multiplyNoiseBy=2.576 ,statOfNoise="blperiod",
-        proportionOfMax=0.005,
-        peakChoice="firstAmongHigh",detectionThreshold=detectionThreshold,
-        firstAmongHighThreshold=10)
-
+Interactivity is also possible
+```{r, eval=FALSE}
+ggplotly(res$gg)
 ```
+
 The results can be summarized. 
 ```{r, eval=TRUE}
 summary(res$dfres)
 ```
 
 # Getting all problematic peaks for several files
+
+totalResultFun is a function dedicated to the automatization of detectStartsInFile for a list of files.
 ```{r, eval=FALSE}
 setwd("C:/Users/capeltier/Desktop/DataAnalysis/Christopher PTR/Caroline_Peltier/A1")
 filesToTest=list.files()
 restest=totalResultsFun(files=filesToTest,nPoints=31,statOfNoise="blperiod"
                               ,smooth=TRUE,ion=ion,proportionOfMax=0.005,
                               method="higherThanNoise",peakChoice="firstAmongHigh",
-                              startPeaks=startPeaks,detectionThreshold=1.5,
-                              multiplyNoiseBy=1.6,stat3=NULL,
+                              detectionThreshold=3,
+                              multiplyNoiseBy=2.7,
                         firstAmongHighThreshold=10)
 summary(restest)
-summary(factor(restest$diagnosis))
+summary(factor(restest$diagnosis2))
+restest[restest[,"diagnosis2"]=="maxPeakTooLow",]
+setwd("C:/Users/capeltier/Desktop/DataAnalysis/Christopher PTR/Caroline_Peltier")
+write.table(file="problematicFiles.csv",
+            restest[restest[,"diagnosis2"]=="maxPeakTooLow",][,c("file","pic")],
+            sep=";",row.names=F)
 ```
 
 
-```{r, eval=TRUE}
+
+```{r, eval=FALSE}
 restest[restest$diagnosis%in%c("maxPeakTooLow"),c("pic","file")]
 ```
 
@@ -290,26 +292,37 @@ restest[restest$diagnosis%in%c("maxPeakTooLow"),c("pic","file")]
 ```{r, eval=FALSE,warning=FALSE}
 setwd("C:/Users/capeltier/Desktop/DataAnalysis/Christopher PTR/Caroline_Peltier/A1")
 filesToTest=files
-mnb=seq(1.63,1.74,length.out=20);resnoise=list()
+mnb=seq(1.5,3,length.out=20);resnoise=list()
 for(i in 1:length(mnb))
 {
 resnoise[[i]]=totalResultsFun(filesToTest,nPoints=31,statOfNoise="blperiod"
                               ,smooth=TRUE,ion=ion,proportionOfMax=0.005,
                               method="higherThanNoise",peakChoice="firstAmongHigh",
-                              startPeaks=startPeaks,detectionThreshold=detectionThreshold,
+                              detectionThreshold=detectionThreshold,
                               multiplyNoiseBy=mnb[i],stat3=NULL,
                         firstAmongHighThreshold=10)
 }
+respeak=list()
+pom=seq(0.001,0.01,length.out=20)
+for(i in 1:length(mnb))
+{
+respeak[[i]]=totalResultsFun(files=filesToTest,nPoints=31,statOfNoise="blperiod",
+              smooth=TRUE,ion=ion,proportionOfMax=pom[i],
+              method="startPeakProportion",peakChoice="firstAmongHigh",
+              detectionThreshold=detectionThreshold,multiplyNoiseBy=2.7,
+                        firstAmongHighThreshold=10,stat3=NULL)
+}
+
 ```
 ## Getting a pattern for peakProportion method
 
 ```{r, eval=FALSE,warning=FALSE}
 respeak=list()
-pom=seq(0.0064,0.0072,length.out=20)
+pom=seq(0.001,0.01,length.out=20)
 for(i in 1:length(mnb))
 {
 respeak[[i]]=totalResultsFun(files=filesToTest,nPoints=31,statOfNoise="blperiod",
-              smooth=TRUE,ion=ion,startPeaks=startPeaks,proportionOfMax=pom[i],
+              smooth=TRUE,ion=ion,proportionOfMax=pom[i],
               method="startPeakProportion",peakChoice="firstAmongHigh",
               detectionThreshold=detectionThreshold,multiplyNoiseBy=2.7,
                         firstAmongHighThreshold=10,stat3=NULL)
@@ -325,7 +338,7 @@ for(i in 1:length(mnb))
 {
   for(j in 1:length(pom))
   {
-      difference[i,j]=median(respeak[[j]][,"resp"]-resnoise[[i]][,"resp_higherThanNoise"],
+      difference[i,j]=median(respeak[[j]][,"startPeakProportion"]-resnoise[[i]][,"higherThanNoise"],
                              na.rm=T)
   }
 }
@@ -354,16 +367,19 @@ nbNaMnb=rep(NA,length(mnb));names(nbNaMnb)=rownames(difference)
 nbNaPom=rep(NA,length(pom));names(nbNaPom)=colnames(difference)
 for(i in 1:length(mnb))
 {
-  nbNaMnb[i]=sum(is.infinite(resnoise[[i]][,"resp_higherThanNoise"]))
+  nbNaMnb[i]=sum(is.infinite(resnoise[[i]][,"higherThanNoise"]))
 }
 for(j in 1:length(pom))
 {
-  nbNaPom[j]=sum(is.infinite(respeak[[j]][,"resp"]))
+  nbNaPom[j]=sum(is.infinite(respeak[[j]][,"startPeakProportion"]))
 }
+summary(nbNaMnb)
+summary(nbNaPom)
+nbNaMnb
+nbNaPom
 ```
 
 # Comparison to manual results with detectStartsInFile (and result)
-
 Results can be compared to results obtained manually
 ```{r, eval=TRUE,warning=FALSE}
 data(manual)

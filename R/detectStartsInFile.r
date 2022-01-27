@@ -1,14 +1,19 @@
+#' Detects several starts in one file
 #' Detects several starts in one file (according to a vector of theoretical stimulation times)
 #' @param methods Choose among c("higherThanNoise","startPeakProportion","higherDerivative")
 #' @param nPoints number of points required in the smoothing function
 #' @param multiplyNoiseBy required if method='higherThanNoise' is chosen
-#' @param statOfNoise Required if method='higherThanNoise'. Statistic to be multiplied by multiplyByNoise ('max' or 'avg'). Can also be 'bl' if corresponding to the estimation of noise during the whole evaluation or 'blper' if
-#' @param startPeaks a vector containing the starts for all files
+#' @param statOfNoise required if method='higherThanNoise'. Statistic to be multiplied by multiplyByNoise ('max' or 'avg'). Can also be 'bl' if corresponding to the estimation of noise during the whole evaluation or 'blper' if
+#' @param startPeaks a vector containing the stimulation times (theoretical starts) for all files
 #' @param ptrFile_i data frame exported from ptrViewer
 #' @param manual manual results obtained (as a vector of the same length as startPeaks)
 #' @param endPeaks if NULL, the end of the peak period is given by the next start in startPeaks
 #' @param ion name of the column corresponding to the ion to analyse
-#' @return a list containing dfres (dataframe with the obtained times), gg (a graphic representing the obtained intensities and starting time points, diagnosis)
+#' @return a list containing
+#' \itemize{
+#' \item dfres (dataframe with the obtained times)
+#' \item gg (a graphic representing the obtained intensities and the obtained starting times, diagnosis)
+#' }
 #' @inheritParams ptrvDetectStart
 #' @export
 detectStartsInFile=function(ptrFile_i,ion,startPeaks,endPeaks=NULL,methods=c("higherThanNoise","startPeakProportion","higherDerivative"),

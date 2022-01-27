@@ -14,8 +14,8 @@
 #' @param firstAmongHighThreshold percentage of the maximum value to be reached in order to be considered as a peak when peak choice is firstAmongHigh
 #' @param order order of the derivative
 #' @param detectionThreshold intensity value to be reached to be considered as a peak (default to NULL corresponds to 0)
-#' @description This function allows to estimate the beginning of a peak with three different methods. All these methods depends on the selection of a peak in a specific windows (given by "StartPeriod").
-#'  Sometimes, this StartPeriod contains several peaks. In this case, we select peaks that are high enough.
+#' @description This function allows to estimate the beginning of a peak with three different methods. All these methods depend on the selection of a peak in a specific windows (given by "startPeriod").
+#'  Sometimes, this startPeriod contains several peaks. In this case, we select peaks that are high enough.
 #' This quantity is defined as a percent of the maximale peak intensity: a value of 100 indicates that only the maximale peak is considered; a value of 0 indicates that the first detected peak is considered.
 #' A value of 50 indicates that the first peak higher than 50% of the maximale intensity is considered.
 #'  The user should use cautiously this option.
@@ -24,16 +24,20 @@
 #'  In startPeakProportion, this threshold is calculated as a proportion of the maximale intensity. This proportion (between 0 and 1) is defined in the proportionOfMax parameter.
 #'  In higherThanNoise, this threshold is calculated by multiplying the noise estimated by a number (defined by multiplyNoiseBy)
 #'  The noise can be estimated with different methods:
-#'  - as the average or maximale intensity (statOfNoise="avg" or "max") of a given period (defined in noisePeriod)
-#'  - as the estimation of blank during the total dataframe (statOfNoise="bl")
-#'  - as the estimation of blank during the period defined in noisePeriod (statOfNoise="blperiod")
+#'  \itemize{
+#'  \item as the average or maximale intensity (statOfNoise="avg" or "max") of a given period (defined in noisePeriod)
+#'  \item as the estimation of blank during the total dataframe (statOfNoise="bl")
+#'  \item as the estimation of blank during the period defined in noisePeriod (statOfNoise="blperiod")
+#'  }
 #'
 #' A last method is based on derivation of the spectra. It finds out where the derivative of order defined by "order" parameter is maximale
 #' @return a list containing:
-#' - tx (the obtained starting time);
-#' - tx_vec (when several starting ions -parameter starts- are selected, return tx for each starting ion);
-#' - gg a ggplot object displaying the intensity along time and the starting time chosen
-#' - diagnosis : 'ok' if there was no problem by selecting the start, 'maxPeakTooLow','timeFoundAfterPeak' or 'firstNotMax' if some ambiguity is possible
+#' \itemize{
+#' \item tx (the obtained starting time);
+#' \item tx_vec (when several starting ions -parameter starts- are selected, return tx for each starting ion);
+#' \item gg a ggplot object displaying the intensity along time and the starting time chosen
+#' \item diagnosis : 'ok' if there was no problem by selecting the start, 'maxPeakTooLow','timeFoundAfterPeak' or 'firstNotMax' if some ambiguity is possible
+#' }
 #' @export
 #' @importFrom signal sgolayfilt
 #' @examples
@@ -41,7 +45,8 @@
 #'
 #'data(longDf)
 #' starts=longDf[1,"ion"]
-#' res_higherThanNoise=ptrvDetectStart(res=longDf,starts=starts,startPeriod=c(33.6, 48),method="higherThanNoise",multiplyNoiseBy=1.5,noisePeriod=c(10,30),statOfNoise="avg",peakChoice="firstAmongHigh",nPoints=31,smooth=TRUE,firstAmongHighThreshold=50)
+#' res_higherThanNoise=ptrvDetectStart(res=longDf,starts=starts,startPeriod=c(33.6, 48),method="higherThanNoise",
+#' multiplyNoiseBy=1.5,noisePeriod=c(10,30),statOfNoise="avg",peakChoice="firstAmongHigh",nPoints=31,smooth=TRUE,firstAmongHighThreshold=50)
 #' res_higherThanNoise$potentialPeaks
 #' # Example with breathing correction
 #' data(ptrv)
@@ -255,6 +260,7 @@ ptrvDetectStart=function(res,starts,method="startPeakProportion",proportionOfMax
           {
             if(length(indexes)==0)
             {
+              tx_tmp=NA
               diagnosis[start]="IntensityNotReached"
             }
             if(length(indexes)!=0)
@@ -270,11 +276,11 @@ ptrvDetectStart=function(res,starts,method="startPeakProportion",proportionOfMax
                     tx_tmp=chooseTime(resion=resion,t0=t0,ind=ind,Ix=Ix,timeChoice=timeChoice)
                   }
                   if(t0>t_peak){ t0=tx_tmp=NA; diagnosis[start]="IntensityNotReached"}
-                }else{tx_tmp=NA}
+                }else{tx_tmp=NA;diagnosis[start]="IntensityNotReached"}
               }else{tx_tmp=NA}
-            }else{tx_tmp=NA}
+            }
           }else{tx_tmp=NA}
-        }else{tx_tmp=NA}
+        }
         if(method=="higherDerivative")
         {
           inPeriod=resion[,"time"]<startPeriod[2]&resion[,"time"]>startPeriod[1]

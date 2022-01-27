@@ -2,7 +2,8 @@
 % Please edit documentation in R/detectStartsInFile.r
 \name{detectStartsInFile}
 \alias{detectStartsInFile}
-\title{Detects several starts in one file (according to a vector of theoretical stimulation times)}
+\title{Detects several starts in one file
+Detects several starts in one file (according to a vector of theoretical stimulation times)}
 \usage{
 detectStartsInFile(
   ptrFile_i,
@@ -27,7 +28,7 @@ detectStartsInFile(
 
 \item{ion}{name of the column corresponding to the ion to analyse}
 
-\item{startPeaks}{a vector containing the starts for all files}
+\item{startPeaks}{a vector containing the stimulation times (theoretical starts) for all files}
 
 \item{endPeaks}{if NULL, the end of the peak period is given by the next start in startPeaks}
 
@@ -37,7 +38,7 @@ detectStartsInFile(
 
 \item{multiplyNoiseBy}{required if method='higherThanNoise' is chosen}
 
-\item{statOfNoise}{Required if method='higherThanNoise'. Statistic to be multiplied by multiplyByNoise ('max' or 'avg'). Can also be 'bl' if corresponding to the estimation of noise during the whole evaluation or 'blper' if}
+\item{statOfNoise}{required if method='higherThanNoise'. Statistic to be multiplied by multiplyByNoise ('max' or 'avg'). Can also be 'bl' if corresponding to the estimation of noise during the whole evaluation or 'blper' if}
 
 \item{smooth}{If TRUE, the data is previously smoothed with the parameter halfWindowsSize}
 
@@ -54,8 +55,13 @@ detectStartsInFile(
 \item{manual}{manual results obtained (as a vector of the same length as startPeaks)}
 }
 \value{
-a list containing dfres (dataframe with the obtained times), gg (a graphic representing the obtained intensities and starting time points, diagnosis)
+a list containing
+\itemize{
+\item dfres (dataframe with the obtained times)
+\item gg (a graphic representing the obtained intensities and the obtained starting times, diagnosis)
+}
 }
 \description{
+Detects several starts in one file
 Detects several starts in one file (according to a vector of theoretical stimulation times)
 }
