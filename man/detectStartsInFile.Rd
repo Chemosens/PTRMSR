@@ -2,8 +2,7 @@
 % Please edit documentation in R/detectStartsInFile.r
 \name{detectStartsInFile}
 \alias{detectStartsInFile}
-\title{Detects several starts in one file
-Detects several starts in one file (according to a vector of theoretical stimulation times)}
+\title{Detects several starts in one file}
 \usage{
 detectStartsInFile(
   ptrFile_i,
@@ -62,6 +61,5 @@ a list containing
 }
 }
 \description{
-Detects several starts in one file
 Detects several starts in one file (according to a vector of theoretical stimulation times)
 }

@@ -1,4 +1,5 @@
 #' Detects several starts in one file
+#'
 #' Detects several starts in one file (according to a vector of theoretical stimulation times)
 #' @param methods Choose among c("higherThanNoise","startPeakProportion","higherDerivative")
 #' @param nPoints number of points required in the smoothing function
