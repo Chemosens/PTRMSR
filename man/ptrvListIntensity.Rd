@@ -9,7 +9,20 @@ ptrvListIntensity(
   metaData = NULL,
   format = "wide",
   correction = "cycle",
-  stat = "area"
+  stat = "area",
+  halfWindowSize = 5,
+  total = FALSE,
+  breathRatio = FALSE,
+  method = "MAD",
+  SNR = 0,
+  ions = NULL,
+  funAggregate = "mean",
+  smoothMethod = "MovingAverage",
+  minimalDuration = 2,
+  minExpi = NULL,
+  maxInspi = NULL,
+  forMinExpiDivideMaxIntBy = 5,
+  forMaxInspiDivideMaxIntBy = 4
 )
 }
 \arguments{
@@ -22,6 +35,32 @@ ptrvListIntensity(
 \item{correction}{"cycle" by default.}
 
 \item{stat}{"area" by default but can also be tmax or max}
+
+\item{halfWindowSize}{parameter used to determine the smooth for the peak-picking used in break detection}
+
+\item{total}{if TRUE, the total intensity is calculated and added as a supplementary column}
+
+\item{breathRatio}{if TRUE, the ratio between the intensity of ion and the breath is calculated}
+
+\item{method}{method used for peak picking ("MAD" by default)}
+
+\item{SNR}{Signal noise ratio parameter used in peak picking}
+
+\item{ions}{vector contatining all ions to be used in the analysis (by default all ions are used)}
+
+\item{funAggregate}{"mean", "maximal" or "sum"}
+
+\item{smoothMethod}{NULL, "SavitzkyGolay" or "MovingAverage"}
+
+\item{minimalDuration}{minimalDuration of a breathing cycle (2 by default - as a accelerated breathing frequency corresponds to 20 cycles and more by minut and a low frequency is 12 and less -)}
+
+\item{minExpi}{minimal value for an expiry intensity to be detected as an expiry (blue dotted line in the plot).}
+
+\item{maxInspi}{maximal intensity of the original curve required to be considered as a breathing peak (purple dotted line in the plot)}
+
+\item{forMinExpiDivideMaxIntBy}{default to 5. When minExpi is null, it is evaluated as the ratio of the maximal intensity and forMinIntensityDivideMaxIntBy}
+
+\item{forMaxInspiDivideMaxIntBy}{default to 5. When minExpi is null, it is evaluated as the ratio of the maximal intensity and forMinIntensityDivideMaxIntBy}
 }
 \description{
 ptrvListIntensity

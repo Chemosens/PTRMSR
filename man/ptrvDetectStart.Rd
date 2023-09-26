@@ -86,8 +86,10 @@ A last method is based on derivation of the spectra. It finds out where the deri
 
 data(longDf)
 starts=longDf[1,"ion"]
-res_higherThanNoise=ptrvDetectStart(res=longDf,starts=starts,startPeriod=c(33.6, 48),method="higherThanNoise",
-multiplyNoiseBy=1.5,noisePeriod=c(10,30),statOfNoise="avg",peakChoice="firstAmongHigh",nPoints=31,smooth=TRUE,firstAmongHighThreshold=50)
+res_higherThanNoise=ptrvDetectStart(res=longDf,starts=starts,startPeriod=c(33.6, 48),
+method="higherThanNoise",
+multiplyNoiseBy=1.5,noisePeriod=c(10,30),statOfNoise="avg",peakChoice="firstAmongHigh",nPoints=31,
+smooth=TRUE,firstAmongHighThreshold=50)
 res_higherThanNoise$potentialPeaks
 # Example with breathing correction
 data(ptrv)
@@ -95,7 +97,8 @@ res_intensity=ptrvIntensityByTime(ptrv,referenceBreath="m69.06989..isoprene...Co
 correction = "cycle",removeNoise=FALSE,breathRatio = FALSE)
 ion="m115.11139..C7H15O....Conc."
 ds=ptrvDetectStart(res=res_intensity$res,starts=ion, method="startPeakProportion")
-ds=ptrvDetectStart(res=res_intensity$res,starts=ion, method="higherThanNoise",startPeriod=c(20,150),noisePeriod=c(20,150))
+ds=ptrvDetectStart(res=res_intensity$res,starts=ion, method="higherThanNoise",startPeriod=c(20,150),
+noisePeriod=c(20,150))
 ds=ptrvDetectStart(res=res_intensity$res,starts=ion, method="higherThanNoise",statOfNoise="avg",
 multiplyNoiseBy=1.6,timeChoice="lower",noisePeriod=c(20,150))
 ds=ptrvDetectStart(res=res_intensity$res,starts=ion, method="higherThanNoise",statOfNoise="avg",

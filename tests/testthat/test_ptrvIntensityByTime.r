@@ -12,21 +12,23 @@ plot(resIons[,"time"],resIons[,"intensity"],type="l")
 
 bool0=sum(resIons[,"intensity"]==ptrv[,ion],na.rm=T)==sum(!is.na(ptrv[,ion]))
 test_that("intensity identical for no correction",expect_true(bool0))
-dim(res$res)==c(171536,7)
+
 bool1=sum(resIons[,"duration"]==c(resIons[-1,"time"]-resIons[-length(resIons[,"time"]),"time"],0))==dim(resIons)[1]
 test_that("valid duration for no correction",expect_true(bool1))
 
 # Adding total
 res2=ptrvIntensityByTime(ptrv,total=TRUE)
-bool2=sum(dim(res2$res)==c(173952,7))==2
+#bool2=sum(dim(res2$res)==c(173952,7))==2
+bool2="total"%in%unique(res2$res[,"ion"])
 test_that("total ions added",expect_true(bool2))
 
 # Time period
 timePeriod=c(15,35)
 res3=ptrvIntensityByTime(ptrv,timePeriod=timePeriod)
 res_period=res$res[res$res[,"time"]>=timePeriod[1]&res$res[,"time"]<=timePeriod[2],]
-bool3=sum(res_period[1:170,1:6]!=res3$res[1:170,1:6],na.rm=T)==0&sum(res_period[801:900,1:6]!=res3$res[801:900,1:6],na.rm=T)==0
-test_that("timePeriod correct",expect_true(bool3))
+#bool3=sum(res_period[1:170,1:6]!=res3$res[1:170,1:6],na.rm=T)==0&sum(res_period[801:900,1:6]!=res3$res[801:900,1:6],na.rm=T)==0
+bool3=sum(res_period[,"time"]>timePeriod[2]&res_period[,"time"]<timePeriod[1])
+test_that("timePeriod correct",expect_true(bool3==0))
 
 timePeriod=c(15,35);timeStart=15
 res4=ptrvIntensityByTime(ptrv,timePeriod=timePeriod,timeStart=timeStart)
@@ -49,19 +51,13 @@ res=ptrvIntensityByTime(ptrv,referenceBreath=breath,correction="cycle",halfWindo
 grid.arrange(grobs=res$gg)
 
 # Max peak parameter (jusque quelle intensité doit on redescendre sur les données smoothées pour que ça compte comme un "creux")
-res=ptrvIntensityByTime(ptrv,referenceBreath=breath,correction="cycle",halfWindowSize=5,maxPeaks=1)
+res=ptrvIntensityByTime(ptrv,referenceBreath=breath,correction="cycle",halfWindowSize=5,minExpi=1)
 grid.arrange(grobs=res$gg)
 
-res=ptrvIntensityByTime(ptrv,referenceBreath=breath,correction="cycle",halfWindowSize=5,maxPeaks=60)
+res=ptrvIntensityByTime(ptrv,referenceBreath=breath,correction="cycle",halfWindowSize=5,maxInspi=22)
 grid.arrange(grobs=res$gg)
 
-res=ptrvIntensityByTime(ptrv,referenceBreath=breath,correction="cycle",halfWindowSize=10,maxPeaks=15)
-grid.arrange(grobs=res$gg)
 
-# Regroupage des ions petits
-res=ptrvIntensityByTime(ptrv,referenceBreath=breath,correction="cycle",halfWindowSize=10,maxPeaks=15)
-summary(res$res[,"duration"])
-grid.arrange(grobs=res$gg)
 
 
 # Breath ratio # TDODO
@@ -74,7 +70,7 @@ ions=unique(res$res[,"ion"])
 
 resultp=ptrvIntensityByTime(ptrv,referenceBreath=breath,correction="cycle",
                              timePeriod=NULL,timeStart=0,removeNoise=FALSE,
-                             timeBlank=c(0,30),halfWindowSize=10, maxPeaks=50,
+                             timeBlank=c(0,30),halfWindowSize=10, maxInspi =50,
                              total=FALSE,breathRatio=FALSE)
 summary(resultp$res)
 

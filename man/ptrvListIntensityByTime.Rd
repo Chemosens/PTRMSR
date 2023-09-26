@@ -7,6 +7,8 @@ A function automizing all pretreatements for}
 \usage{
 ptrvListIntensityByTime(
   listFiles,
+  timeCol = "RelTime",
+  colToRemove = c("AbsTime", "Cycle"),
   removeBlankTime = FALSE,
   ions = NULL,
   dec_vec = rep(".", length(listFiles)),
@@ -15,17 +17,24 @@ ptrvListIntensityByTime(
   correction = "cycle",
   timeBlank = c(0, 30),
   halfWindowSize = 5,
-  maxPeaks = NULL,
   method = "MAD",
   total = FALSE,
   breathRatio = FALSE,
   stat = "area",
   minimalDuration = 2,
-  smoothMethod = "MovingAverage"
+  smoothMethod = "MovingAverage",
+  minExpi = NULL,
+  maxInspi = NULL,
+  forMinExpiDivideMaxIntBy = 5,
+  forMaxInspiDivideMaxIntBy = 4
 )
 }
 \arguments{
 \item{listFiles}{list of the file names to be imported}
+
+\item{timeCol}{name of the column of dataset containing the time}
+
+\item{colToRemove}{vector containing the names of the columns of datasets to be removed in the analysis (column that are neither the time nor ions names)}
 
 \item{removeBlankTime}{boolean. If TRUE, the time of blank time is substracted from the time column}
 
@@ -43,8 +52,6 @@ ptrvListIntensityByTime(
 
 \item{halfWindowSize}{parameter used to determine the smooth for the peak-picking used in break detection}
 
-\item{maxPeaks}{A number. Below this value, a peak is not considered as a peak}
-
 \item{method}{method used for peak picking ("MAD" by default)}
 
 \item{total}{if TRUE, the total intensity is calculated and added as a supplementary column}
@@ -56,6 +63,14 @@ ptrvListIntensityByTime(
 \item{minimalDuration}{minimalDuration of a breathing cycle (2 by default - as a accelerated breathing frequency corresponds to 20 cycles and more by minut and a low frequency is 12 and less -)}
 
 \item{smoothMethod}{NULL, "SavitzkyGolay" or "MovingAverage"}
+
+\item{minExpi}{minimal value for an expiry intensity to be detected as an expiry (blue dotted line in the plot).}
+
+\item{maxInspi}{maximal intensity of the original curve required to be considered as a breathing peak (purple dotted line in the plot)}
+
+\item{forMinExpiDivideMaxIntBy}{default to 5. When minExpi is null, it is evaluated as the ratio of the maximal intensity and forMinIntensityDivideMaxIntBy}
+
+\item{forMaxInspiDivideMaxIntBy}{default to 5. When minExpi is null, it is evaluated as the ratio of the maximal intensity and forMinIntensityDivideMaxIntBy}
 }
 \value{
 a list containing : total intensity: AUC (or tmax, etc) in a long format, time: data containing the corrected timepoints, listRes: AUC in a wide format

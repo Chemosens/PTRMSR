@@ -14,7 +14,7 @@
 #' @importFrom pheatmap pheatmap
 #' @importFrom utils tail
 #' @importFrom grDevices rainbow
-#' @importFrom CSUtils PCAgg gMapPlot CVAgg gDistributionPlot gGetLegend anovaTable gBarPlot runBy
+#' @importFrom CSUtils PCAgg gMapPlot CVAgg gDistributionPlot gGetLegend gBarPlot runBy
 ptrvListPCA=function(df,ionToRemove=NULL,dataType="productMeans",normalizeByEval=FALSE,log=FALSE,axes=list(c(1,2)),representation="TwoMaps",option="Correlation",variableName="ion",scoreName="intensity",expandBiplot=NULL)
 {
   time=NULL
@@ -22,7 +22,8 @@ ptrvListPCA=function(df,ionToRemove=NULL,dataType="productMeans",normalizeByEval
    ionToUse=unique(df[,variableName]); ionToUse=ionToUse[!ionToUse%in%ionToRemove]
    df=df[df[,variableName]%in% ionToUse,]
    if(log) { df[,scoreName]=log(df[,scoreName])    }
-   if(normalizeByEval){df=normalizeByEval(df,ionToUse)$intens}
+   if(normalizeByEval){df=normalizeByEval(df,ionToUse)$df}
+   print(df[1,])
     result=PCAgg(df,dataType=dataType,option=option,representation=representation,value.var=scoreName,variable=variableName,axes=axes,expandBiplot=expandBiplot)
   return(result)
 }

@@ -13,13 +13,16 @@ ptrvSignificantSNRIons(
   multiplyNoiseBy = 3,
   removeNoise = FALSE,
   minimalDuration = 2,
-  maxPeaks = NULL,
   halfWindowSize = 5,
-  smoothMethod = "MovingAverage"
+  smoothMethod = "MovingAverage",
+  minExpi = NULL,
+  maxInspi = NULL,
+  forMinExpiDivideMaxIntBy = 5,
+  forMaxInspiDivideMaxIntBy = 4
 )
 }
 \arguments{
-\item{dataset}{whose names are IN THIS ORDER:AbsTime, RelTime, Cycle, Ion1,... ,Ionp.}
+\item{dataset}{whose names are IN THIS ORDER: RelTime, Cycle, Ion1,... ,Ionp.}
 
 \item{method}{"max" or "ttest" (TODO "tangente")}
 
@@ -35,11 +38,17 @@ ptrvSignificantSNRIons(
 
 \item{minimalDuration}{minimalDuration of a breathing cycle (2 by default - as a accelerated breathing frequency corresponds to 20 cycles and more by minut and a low frequency is 12 and less -)}
 
-\item{maxPeaks}{A number. Below this value, a peak is not considered as a peak}
-
 \item{halfWindowSize}{parameter used to determine the smooth for the peak-picking used in break detection}
 
 \item{smoothMethod}{NULL, "SavitzkyGolay" or "MovingAverage"}
+
+\item{minExpi}{minimal value for an expiry intensity to be detected as an expiry (blue dotted line in the plot).}
+
+\item{maxInspi}{maximal intensity of the original curve required to be considered as a breathing peak (purple dotted line in the plot)}
+
+\item{forMinExpiDivideMaxIntBy}{default to 5. When minExpi is null, it is evaluated as the ratio of the maximal intensity and forMinIntensityDivideMaxIntBy}
+
+\item{forMaxInspiDivideMaxIntBy}{default to 5. When minExpi is null, it is evaluated as the ratio of the maximal intensity and forMinIntensityDivideMaxIntBy}
 }
 \description{
 ptrvSignificantSNRIons

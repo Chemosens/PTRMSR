@@ -4,9 +4,11 @@
 #' @param format "wide" by default
 #' @param correction "cycle" by default.
 #' @param stat "area" by default but can also be tmax or max
+#' @inheritParams ptrvIntensityByTime
 #' @importFrom utils read.table
 #' @export
-ptrvListIntensity=function(listFiles,metaData=NULL,format="wide",correction="cycle",stat="area")
+ptrvListIntensity=function(listFiles,metaData=NULL,format="wide",correction="cycle",stat="area", halfWindowSize=5, total=FALSE,breathRatio=FALSE,method="MAD",SNR=0,ions=NULL,
+                           funAggregate="mean",smoothMethod="MovingAverage",minimalDuration=2,minExpi=NULL,maxInspi=NULL,forMinExpiDivideMaxIntBy=5,forMaxInspiDivideMaxIntBy=4)
 {
   res=data.frame()
   for(i in 1:length(listFiles))
@@ -16,7 +18,11 @@ ptrvListIntensity=function(listFiles,metaData=NULL,format="wide",correction="cyc
     dataset=read.table(file,sep='\t',header=T)
     metaInfo=metaData[metaData[,"file"]==file,]
     print(metaInfo)
-    result_all=ptrvIntensityByTime(dataset=dataset,referenceBreath=metaInfo["resp"],correction=correction,timePeriod=c(0,metaInfo["finTimeSens_s"]),removeNoise=TRUE,timeBlank = as.numeric(metaInfo["miseEnBouche_s"]))
+    result_all=ptrvIntensityByTime(dataset=dataset,referenceBreath=metaInfo["resp"],correction=correction,timePeriod=c(0,metaInfo["finTimeSens_s"]),
+                                   removeNoise=TRUE,timeBlank = as.numeric(metaInfo["miseEnBouche_s"]),
+                                   halfWindowSize=halfWindowSize, total=total,breathRatio=breathRatio,method=method,SNR=SNR,ions=ions,
+                                   funAggregate= funAggregate,smoothMethod=smoothMethod,minimalDuration=minimalDuration,
+                                   minExpi= minExpi,maxInspi=maxInspi,forMinExpiDivideMaxIntBy=forMinExpiDivideMaxIntBy,forMaxInspiDivideMaxIntBy=forMaxInspiDivideMaxIntBy)
     #result_all_none=ptrvIntensityByTime(dataset=dataset,referenceBreath=breath,correction="none",timePeriod=c(0,120),removeNoise=FALSE,timeBlank = 36)
     if(correction=="cycle")
     {

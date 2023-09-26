@@ -12,15 +12,15 @@
 #'@importFrom gridExtra grid.arrange
 #'@return a list containing: the final data start0 (without breathing correction), start1 (with breathing correction) and a list of plots)
 #'@export
-ptrvReport=function(dataset,selecIons="evolving",listIons=NULL,referenceBreath,smoothMethod="MovingAverage",methodDetectStart="startPeakProportion",noisePeriodIBT=c(0,30),noisePeriodSig=c(0,30),noisePeriodDS=c(0,30),proportionOfMax=0.3,halfWindowSize=12,maxPeaks=30,startPeriod=c(20,60),detectingStart=FALSE,minimalDuration=2)
+ptrvReport=function(dataset,selecIons="evolving",listIons=NULL,referenceBreath,smoothMethod="MovingAverage",methodDetectStart="startPeakProportion",noisePeriodIBT=c(0,30),noisePeriodSig=c(0,30),noisePeriodDS=c(0,30),proportionOfMax=0.3,halfWindowSize=12,startPeriod=c(20,60),detectingStart=FALSE,minimalDuration=2,minExpi=NULL,maxInspi=NULL,forMinExpiDivideMaxIntBy=4,forMaxInspiDivideMaxIntBy=5)
 {
   intensity=NULL
   if(!is.null(listIons)){selecIons="namely"}
   ion=snratio=time=NULL
   #dataset=read.table(listFiles[1],sep="\t",dec=",",header=T)
-  res_raw=ptrvIntensityByTime(dataset=dataset,referenceBreath=referenceBreath,correction="none",timePeriod=NULL,timeStart=0,removeNoise=FALSE,timeBlank=noisePeriodIBT,halfWindowSize=halfWindowSize,smoothMethod=smoothMethod, maxPeaks=maxPeaks,method="MAD",total=FALSE,breathRatio=FALSE,minimalDuration=minimalDuration)
-  res_cyc=ptrvIntensityByTime(dataset=dataset,referenceBreath=referenceBreath,correction="cycle",timePeriod=NULL,timeStart=0,removeNoise=TRUE,timeBlank=noisePeriodIBT,halfWindowSize=halfWindowSize,smoothMethod=smoothMethod, maxPeaks=maxPeaks,method="MAD",total=FALSE,breathRatio=FALSE,minimalDuration=minimalDuration)
-  res_bratio=ptrvIntensityByTime(dataset=dataset,referenceBreath=referenceBreath,correction="cycle",timePeriod=NULL,timeStart=0,removeNoise=TRUE,timeBlank=noisePeriodIBT,halfWindowSize=halfWindowSize,smoothMethod=smoothMethod, maxPeaks=maxPeaks,method="MAD",total=FALSE,breathRatio=TRUE,minimalDuration=minimalDuration)
+  res_raw=ptrvIntensityByTime(dataset=dataset,referenceBreath=referenceBreath,correction="none",timePeriod=NULL,timeStart=0,removeNoise=FALSE,timeBlank=noisePeriodIBT,halfWindowSize=halfWindowSize,smoothMethod=smoothMethod, method="MAD",total=FALSE,breathRatio=FALSE,minimalDuration=minimalDuration,minExpi=minExpi,maxInspi=maxInspi,forMinExpiDivideMaxIntBy=forMinExpiDivideMaxIntBy,forMaxInspiDivideMaxIntBy=forMaxInspiDivideMaxIntBy)
+  res_cyc=ptrvIntensityByTime(dataset=dataset,referenceBreath=referenceBreath,correction="cycle",timePeriod=NULL,timeStart=0,removeNoise=TRUE,timeBlank=noisePeriodIBT,halfWindowSize=halfWindowSize,smoothMethod=smoothMethod, method="MAD",total=FALSE,breathRatio=FALSE,minimalDuration=minimalDuration,minExpi=minExpi,maxInspi=maxInspi,forMinExpiDivideMaxIntBy=forMinExpiDivideMaxIntBy,forMaxInspiDivideMaxIntBy=forMaxInspiDivideMaxIntBy)
+  res_bratio=ptrvIntensityByTime(dataset=dataset,referenceBreath=referenceBreath,correction="cycle",timePeriod=NULL,timeStart=0,removeNoise=TRUE,timeBlank=noisePeriodIBT,halfWindowSize=halfWindowSize,smoothMethod=smoothMethod, method="MAD",total=FALSE,breathRatio=TRUE,minimalDuration=minimalDuration,minExpi=minExpi,maxInspi=maxInspi,forMinExpiDivideMaxIntBy=forMinExpiDivideMaxIntBy,forMaxInspiDivideMaxIntBy=forMaxInspiDivideMaxIntBy)
   resBreathRaw=res_raw$res[res_raw$res[,"ion"]==referenceBreath,]
   resBreathCyc=res_cyc$res[res_cyc$res[,"ion"]==referenceBreath,]
   resBreathBratio=res_bratio$res[res_bratio$res[,"ion"]==referenceBreath,]

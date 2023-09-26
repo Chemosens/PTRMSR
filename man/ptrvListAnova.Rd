@@ -12,9 +12,9 @@ ptrvListAnova(
   normalizeByEval = FALSE,
   model = "intensity~product+(1|subject)+(1|product:subject)",
   alpha = 0.05,
-  columns = c("G_Mean", "F_Product", "P_Product", "F_Product_Significance",
-    "SE_Product", "R2", "P_ShapiroWilks", "P_Levene_Product", "Mean_Product",
-    "Group_Product", "P_Subject")
+  columns = c("G_Mean", "F_Product", "P_Product", "F_Product_Significance", "SE_Product",
+    "R2", "P_ShapiroWilks", "P_Levene_Product", "Mean_Product", "Group_Product",
+    "P_Subject")
 )
 }
 \arguments{

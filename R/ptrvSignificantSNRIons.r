@@ -5,9 +5,10 @@
 #' @param method "max" or "ttest" (TODO "tangente")
 #' @param removeNoise if TRUE, the noise is removed in the calculation of intensity by time
 #' @export
-ptrvSignificantSNRIons=function(dataset,method="max",referenceBreath,noisePeriod=c(0,30),correction="cycle",multiplyNoiseBy=3,removeNoise=FALSE,minimalDuration=2,maxPeaks=NULL, halfWindowSize=5,smoothMethod="MovingAverage")
+ptrvSignificantSNRIons=function(dataset,method="max",referenceBreath,noisePeriod=c(0,30),correction="cycle",multiplyNoiseBy=3,removeNoise=FALSE,minimalDuration=2, halfWindowSize=5,smoothMethod="MovingAverage",minExpi=NULL,maxInspi=NULL,forMinExpiDivideMaxIntBy=5,forMaxInspiDivideMaxIntBy=4)
 {
-  result_deg=ptrvIntensityByTime(dataset=dataset,timeBlank=noisePeriod,referenceBreath=referenceBreath,correction=correction,timePeriod=NULL,removeNoise=removeNoise,minimalDuration=minimalDuration,maxPeaks=maxPeaks,halfWindowSize=halfWindowSize,smoothMethod=smoothMethod)
+  print("in")
+  result_deg=ptrvIntensityByTime(dataset=dataset,timeBlank=noisePeriod,referenceBreath=referenceBreath,correction=correction,timePeriod=NULL,removeNoise=removeNoise,minimalDuration=minimalDuration,halfWindowSize=halfWindowSize,smoothMethod=smoothMethod,minExpi=minExpi,maxInspi=maxInspi,forMinExpiDivideMaxIntBy=forMinExpiDivideMaxIntBy,forMaxInspiDivideMaxIntBy=forMaxInspiDivideMaxIntBy)
   if(method=="max")
   {
       res_blanc=ptrvIntensity(result_deg$res,timePeriod=noisePeriod)

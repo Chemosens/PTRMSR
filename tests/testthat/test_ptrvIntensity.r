@@ -62,13 +62,13 @@ ggplotly(p)
 
 
 # validation de l'option "maxPeaks" qui donne
-res_max=ptrvIntensityByTime(dataset=ptrv,
-                        referenceBreath=breath,
-                        correction="cycle",
-                        timePeriod=c(0,120),
-                        timeStart=0,removeNoise=FALSE,timeBlank=c(0,30),
-                        halfWindowSize=5,
-                        maxPeaks=50)
+ res_max=ptrvIntensityByTime(dataset=ptrv,
+                         referenceBreath=breath,
+                         correction="cycle",
+                         timePeriod=c(0,120),
+                         timeStart=0,removeNoise=FALSE,timeBlank=c(0,30),
+                         halfWindowSize=5,
+                         maxInspi=50)
 
 
 p_resp_raw=p_resp_raw+geom_vline(xintercept=res_max$res$time,color="red")

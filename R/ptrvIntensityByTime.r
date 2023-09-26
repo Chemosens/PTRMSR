@@ -1,13 +1,12 @@
 #' @title ptrvIntensityByTime
 #' @description Calculates the intensity by time for PTRViewer files. The calculation can be done by breathing cycle or on raw data.Breathing cycles are calculated on a reference ion (referenceBreath) with peak picking algorithms
-#' @param dataset whose names are IN THIS ORDER:AbsTime, RelTime, Cycle, Ion1,... ,Ionp.
+#' @param dataset whose names are IN THIS ORDER: RelTime, Cycle, Ion1,... ,Ionp.
 #' @param referenceBreath name of the ion taken as reference for breathing
 #' @param correction "none" or "cycle". See Details.
 #' @param timePeriod vector containing starting and stopping point to get the statistics
 #' @param timeStart timeStart is a value to be removed of the relTime column
 #' @param removeNoise if TRUE, the averaged intensity obtained during the timeBlank period is removed from the signal
 #' @param halfWindowSize parameter used to determine the smooth for the peak-picking used in break detection
-#' @param maxPeaks A number. Below this value, a peak is not considered as a peak
 #' @param total if TRUE, the total intensity is calculated and added as a supplementary column
 #' @param breathRatio if TRUE, the ratio between the intensity of ion and the breath is calculated
 #' @param method method used for peak picking ("MAD" by default)
@@ -16,35 +15,44 @@
 #' @param timeBlank vector of two numbers. Indicates the interval to take as a blank period.
 #' @param smoothMethod NULL, "SavitzkyGolay" or "MovingAverage"
 #' @param funAggregate "mean", "maximal" or "sum"
+#' @param timeCol name of the column of dataset containing the time
+#' @param colToRemove vector containing the names of the columns of datasets to be removed in the analysis (column that are neither the time nor ions names)
 #' @return a list containing the obtained result and ggplot object
 #' @export
 #' @inheritParams detectCycle
 #' @importFrom stats reshape
 #' @importFrom MSnbase smooth
 #' @importFrom reshape2 dcast
-ptrvIntensityByTime=function(dataset,referenceBreath=NULL,correction="none",timePeriod=NULL,timeStart=0,removeNoise=TRUE,timeBlank=c(0,30),
-                             halfWindowSize=5, maxPeaks=NULL,total=FALSE,breathRatio=FALSE,method="MAD",SNR=0,ions=NULL,
-                             funAggregate="mean",smoothMethod="MovingAverage",minimalDuration=2)
+ptrvIntensityByTime=function(dataset,timeCol="RelTime",colToRemove=c("AbsTime","Cycle"),referenceBreath=NULL,correction="none",timePeriod=NULL,timeStart=0,removeNoise=TRUE,timeBlank=c(0,30),
+                             halfWindowSize=5, total=FALSE,breathRatio=FALSE,method="MAD",SNR=0,ions=NULL,
+                             funAggregate="mean",smoothMethod="MovingAverage",minimalDuration=2,
+                             minExpi=NULL,maxInspi=NULL,forMinExpiDivideMaxIntBy=4,forMaxInspiDivideMaxIntBy=5)
 {
+
   time=intensity=NULL
   p_sc=p_breath=NULL
-   match.arg(correction,c("none","cycle"))
+  match.arg(correction,c("none","cycle"))
   if(is.null(referenceBreath)&correction=="cycle"){correction="none";print("No referenceBreath, the 'none' correction is chosen.")}
-  if(is.null(ions)){ions=colnames(dataset)[-c(1:3)]}else{ions=unique(c(referenceBreath,ions))}
-  if(!is.null(ions))
+  if(is.null(ions)){ions=colnames(dataset)[-which(colnames(dataset)%in%c(timeCol,colToRemove))]}else{ions=unique(c(referenceBreath,ions))}
+  dataset=dataset[,-which(colnames(dataset)%in%colToRemove)]
+   if(!is.null(ions))
   {
     if(correction=="cycle")
     {
-      if(!referenceBreath%in%colnames(dataset)){stop("No breathing ion in the dataset")}
+      if(!referenceBreath%in%colnames(dataset)){
+        print(colnames(dataset))
+        print("reference")
+        print(referenceBreath)
+        stop("No breathing ion in the dataset")}
     }
     if(sum(ions%in%colnames(dataset))!=length(ions)){print(ions%in%colnames(dataset));stop("some ions are not in the dataset")}
-    dataset=dataset[,c("AbsTime","RelTime","Cycle",ions)]
+    dataset=dataset[,c(timeCol,ions)]
   }
   if(!is.null(timePeriod))
   {
-      dataset=dataset[dataset[,"RelTime"]<timePeriod[2]&dataset[,"RelTime"]>timePeriod[1],]
+      dataset=dataset[dataset[,timeCol]<timePeriod[2]&dataset[,timeCol]>timePeriod[1],]
   }
-  dataset[,"RelTime"]=dataset[,"RelTime"]-timeStart
+  dataset[,timeCol]=dataset[,timeCol]-timeStart
   indexIons=which(colnames(dataset)%in%ions)
   dataset[,ions]=apply(dataset[,ions],2,as.numeric)
 
@@ -62,9 +70,9 @@ ptrvIntensityByTime=function(dataset,referenceBreath=NULL,correction="none",time
      dataset[,indexIons2]=sweep(dataset[,indexIons2],1,dataset[,referenceBreath],FUN="/")
     }
 
-    dataset[,"duration"]=c(dataset[-1,"RelTime"]-dataset[-c(length(dataset[,"RelTime"])),"RelTime"],0)
+    dataset[,"duration"]=c(dataset[-1,timeCol]-dataset[-c(length(dataset[,timeCol])),timeCol],0)
     res=reshape(dataset,direction="long",varying=list(indexIons2),times=colnames(dataset)[indexIons2],v.names="intensity")
-    colnames(res)=c("abs","time","cycle","duration","ion","intensity","id")
+    colnames(res)=c("time","duration","ion","intensity","id")
     res2=res
     p_sc=ggplot(res,aes(x=time,y=intensity,group=ion,color=ion,name=ion))+geom_line()+theme_bw()+theme(legend.position="none")
     if(is.null(referenceBreath))
@@ -77,13 +85,25 @@ ptrvIntensityByTime=function(dataset,referenceBreath=NULL,correction="none",time
   }
   if(correction=="cycle")
   {
+   # print(ions)
+   # print(colnames(dataset))
 
     res=reshape(dataset,direction="long",varying=list(ions),times=ions,v.names="intensity")
-    colnames(res)=c("abs","time","cycle","ion","intensity","id")
-    if(!referenceBreath%in%unique(res[,"ion"])){stop("the reference breath is not one column of the dataset")}
 
+   # print(res[1,])
+   # print("ok")
+    colnames(res)=c("time","ion","intensity","id")
+
+    if(!referenceBreath%in%unique(res[,"ion"])){
+      print(unique(res[,"ion"]))
+      print("reference")
+      print(referenceBreath)
+      stop("the reference breath is not one column of the dataset")}
     res1=res[res[,"ion"]==as.character(referenceBreath),]
-    cycles=detectCycle(df=res1,maxPeaks=maxPeaks,smoothMethod=smoothMethod,method=method,halfWindowSize=halfWindowSize,maximum=max(dataset[,"RelTime"]),SNR=SNR,minimalDuration=minimalDuration)
+
+    cycles=detectCycle(df=res1,smoothMethod=smoothMethod,method=method,halfWindowSize=halfWindowSize,maximum=max(dataset[,timeCol]),SNR=SNR,minimalDuration=minimalDuration, minExpi=minExpi,maxInspi=maxInspi,forMinExpiDivideMaxIntBy=forMinExpiDivideMaxIntBy,forMaxInspiDivideMaxIntBy=forMaxInspiDivideMaxIntBy)
+   # cycles=detectCycle(df=res1,maxPeaks=maxPeaks,smoothMethod=smoothMethod,method=method,halfWindowSize=5,maximum=max(dataset[,"RelTime"]),SNR=SNR,minimalDuration=0.5)
+
     gg_cycles=cycles$gg
     timeToUseForBreathing=cycles$cycles
     timeLab=1/2*(timeToUseForBreathing[-1]+timeToUseForBreathing[-length(timeToUseForBreathing)])
@@ -93,39 +113,54 @@ ptrvIntensityByTime=function(dataset,referenceBreath=NULL,correction="none",time
     # Cycle decomposition
     res[,"cycle"]=cut(res[,"time"],breaks=timeToUseForBreathing,labels=timeLab)
 
+     res=res[,-which(colnames(res)=="id")]
+  # print(res[1:5,])
+  # print(res[is.na(res[,"cycle"]),])
+  # res=res[!is.na(res[,"cycle"]),]
+  # print(colnames(res))
+   res=res[!is.na(res[,"intensity"]),]
+  # res[,"cycle"]=as.factor(res[,"cycle"])
+  # print(funAggregate)
+  # summary(res)
+   res=res[,c("cycle","ion","intensity")]
+  # res[,"ion"]=as.factor(res[,"ion"])
     # Statistics by cycle
     if(funAggregate=="sum")
     {
-      resultMeanT=dcast(res,cycle+ion~.,value.var="intensity",fun.aggregate=function(x){return(sum(x,na.rm=T))})
+      resultMeanT=dcast(res,formula=cycle+ion~.,value.var="intensity",fun.aggregate=function(x){return(sum(x,na.rm=T))})
     }
     if(funAggregate=="mean")
     {
-      resultMeanT=dcast(res,cycle+ion~.,value.var="intensity",fun.aggregate=function(x){return(mean(x,na.rm=T))})
+      resultMeanT=dcast(res,formula=as.formula(cycle+ion~.),value.var="intensity",fun.aggregate=function(x){return(mean(x,na.rm=T))})
     }
+
     if(funAggregate=="max")
     {
-      resultMeanT=dcast(res,cycle+ion~.,value.var="intensity",fun.aggregate=function(x){return(max(x,na.rm=T))})
+      resultMeanT=dcast(res,formula=cycle+ion~.,value.var="intensity",fun.aggregate=function(x){return(max(x,na.rm=T))})
     }
-    colnames(resultMeanT)=c("time","ion","intensity")
 
+    colnames(resultMeanT)=c("time","ion","intensity")
     resultMeanT=merge(resultMeanT[!is.na(resultMeanT[,"time"]),],df_duration,by="time",all.x=T)
     resultMeanT[,"time"]=as.numeric(as.character(resultMeanT[,"time"]))
-
+    maxNoise=sdNoise=avgNoise=rep(NA,length(unique(res[,"ion"])));
+    names(avgNoise)=names(maxNoise)=names(sdNoise)=unique(res[,"ion"])
+  #  print("beforeRemoved")
     if(removeNoise)
     {
       if(!is.null(timePeriod))
       {
-
         if(timeBlank[1]<timePeriod[1]||timeBlank[2]>timePeriod[2]){stop("No noise possible with timeblank not in the chosen interval")}
       }
-      resultMeanT2=NULL
-     for(ion in unique(res[,"ion"]))
+     resultMeanT2=NULL
+      for(ion in unique(res[,"ion"]))
       {
        #average of the noise to be removed
+        maxNoise[ion]=max(resultMeanT[resultMeanT[,"time"]<=timeBlank[2]&resultMeanT[,"time"]>=timeBlank[1]&resultMeanT[,"ion"]==ion,"intensity"],na.rm=T)
+        avgNoise[ion]=mean(resultMeanT[resultMeanT[,"time"]<=timeBlank[2]&resultMeanT[,"time"]>=timeBlank[1]&resultMeanT[,"ion"]==ion,"intensity"],na.rm=T)
+        sdNoise[ion]=sd(resultMeanT[resultMeanT[,"time"]<=timeBlank[2]&resultMeanT[,"time"]>=timeBlank[1]&resultMeanT[,"ion"]==ion,"intensity"],na.rm=T)
 
-        avgNoise=mean(resultMeanT[resultMeanT[,"time"]<=timeBlank[2]&resultMeanT[,"time"]>=timeBlank[1]&resultMeanT[,"ion"]==ion,"intensity"],na.rm=T)
 
-        resultMeanT[resultMeanT[,"ion"]==ion,"intensity"]=resultMeanT[resultMeanT[,"ion"]==ion,"intensity"]-avgNoise
+        resultMeanT[resultMeanT[,"ion"]==ion,"intensity"]=resultMeanT[resultMeanT[,"ion"]==ion,"intensity"]-avgNoise[ion]
 
         # if(!is.null(smoothMethod))
         # {
@@ -145,10 +180,8 @@ ptrvIntensityByTime=function(dataset,referenceBreath=NULL,correction="none",time
       # }
       # else
       # {
-
         p_sc=ggplot(resultMeanT[resultMeanT[,"ion"]!=referenceBreath,],aes(x=time,y=intensity,group=ion,color=ion,name=ion))+geom_line()+theme_bw()+theme(legend.position="none")
         p_breath=ggplot(resultMeanT[resultMeanT[,"ion"]==referenceBreath,],aes(x=time,y=intensity,group=ion,color=ion,name=ion))+geom_line()+theme_bw()+theme(legend.position="none")
-
      # }
 
     }
@@ -171,7 +204,7 @@ ptrvIntensityByTime=function(dataset,referenceBreath=NULL,correction="none",time
     }
 
     res2=resultMeanT
-    return(list(res=res2,gg=list(p_smoothbreath=gg_cycles$p2,p_cyclelimits=gg_cycles$p3,p_smoothcycle=p_sc,p_breath=p_breath),correction=correction))
+    return(list(res=res2,gg=list(p_smoothbreath=gg_cycles$p2,p_cyclelimits=gg_cycles$p3,p_smoothcycle=p_sc,p_breath=p_breath),correction=correction, maxNoise=maxNoise,sdNoise=sdNoise,avgNoise=avgNoise))
   }
 
 }

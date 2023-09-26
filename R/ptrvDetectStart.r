@@ -45,8 +45,10 @@
 #'
 #'data(longDf)
 #' starts=longDf[1,"ion"]
-#' res_higherThanNoise=ptrvDetectStart(res=longDf,starts=starts,startPeriod=c(33.6, 48),method="higherThanNoise",
-#' multiplyNoiseBy=1.5,noisePeriod=c(10,30),statOfNoise="avg",peakChoice="firstAmongHigh",nPoints=31,smooth=TRUE,firstAmongHighThreshold=50)
+#' res_higherThanNoise=ptrvDetectStart(res=longDf,starts=starts,startPeriod=c(33.6, 48),
+#' method="higherThanNoise",
+#' multiplyNoiseBy=1.5,noisePeriod=c(10,30),statOfNoise="avg",peakChoice="firstAmongHigh",nPoints=31,
+#' smooth=TRUE,firstAmongHighThreshold=50)
 #' res_higherThanNoise$potentialPeaks
 #' # Example with breathing correction
 #' data(ptrv)
@@ -54,7 +56,8 @@
 #' correction = "cycle",removeNoise=FALSE,breathRatio = FALSE)
 #' ion="m115.11139..C7H15O....Conc."
 #' ds=ptrvDetectStart(res=res_intensity$res,starts=ion, method="startPeakProportion")
-#' ds=ptrvDetectStart(res=res_intensity$res,starts=ion, method="higherThanNoise",startPeriod=c(20,150),noisePeriod=c(20,150))
+#' ds=ptrvDetectStart(res=res_intensity$res,starts=ion, method="higherThanNoise",startPeriod=c(20,150),
+#' noisePeriod=c(20,150))
 #' ds=ptrvDetectStart(res=res_intensity$res,starts=ion, method="higherThanNoise",statOfNoise="avg",
 #' multiplyNoiseBy=1.6,timeChoice="lower",noisePeriod=c(20,150))
 #' ds=ptrvDetectStart(res=res_intensity$res,starts=ion, method="higherThanNoise",statOfNoise="avg",
@@ -186,6 +189,7 @@ ptrvDetectStart=function(res,starts,method="startPeakProportion",proportionOfMax
   if(method=="higherThanNoise"&statOfNoise=="avg"&is.null(noisePeriod)){stop("Please enter a noise period for statOfNoise='avg'")}
   if(method=="higherThanNoise"&statOfNoise=="max"&is.null(noisePeriod)){stop("Please enter a noise period for statOfNoise='max'")}
   if(smooth==FALSE && nPoints!=0){nPoints=0;message("smooth = FALSE and nPoints!=0; nPoints was replaced by 0")}
+
   # Initializations
   intensity=sg1=sg2=sg3=sg4=intensity=NULL
   ion=time=NULL
@@ -198,6 +202,7 @@ ptrvDetectStart=function(res,starts,method="startPeakProportion",proportionOfMax
  # {
     for(start in starts)
     {
+      if(!start%in%unique(res[,"ion"])){stop(paste0(start," not in ion column"))}
       resion=res[res[,"ion"]==start,]
       resion=resion[!is.na(resion[,"intensity"]),]
       resion=resion[order(resion[,"time"]),]

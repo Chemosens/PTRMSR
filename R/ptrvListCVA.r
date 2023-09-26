@@ -6,7 +6,7 @@
 #' @param option "OneWayANOVA" or "TwoWayANOVA"
 #' @param axes a list of couples of integers corresponding to the maps to be obtained
 #' @export
-#' @importFrom CSUtils PCAgg gMapPlot CVAgg gDistributionPlot gGetLegend anovaTable gBarPlot runBy
+#' @importFrom CSUtils PCAgg gMapPlot CVAgg gDistributionPlot gGetLegend gBarPlot runBy
 ptrvListCVA=function(df,ionToRemove=NULL,option="OneWayANOVA",normalizeByEval=FALSE, log=FALSE,axes=c(1,2))
 {
   time=NULL

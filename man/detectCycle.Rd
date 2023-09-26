@@ -3,23 +3,28 @@
 \name{detectCycle}
 \alias{detectCycle}
 \title{detectCycle
-Detects breathing cycles (negative peaks with smoothing methods)}
+Detects breathing cycles (negative peaks with smoothing methods). A breaking cycle begins half of an inspiration, then a full expiration, then an last half of inspiration}
 \usage{
 detectCycle(
   df,
-  maxPeaks = NULL,
+  minExpi = NULL,
+  maxInspi = NULL,
   smoothMethod = "MovingAverage",
   method = "MAD",
   halfWindowSize = 5,
   maximum = NULL,
   SNR = 0,
-  minimalDuration = 2
+  minimalDuration = 2,
+  forMinExpiDivideMaxIntBy = 4,
+  forMaxInspiDivideMaxIntBy = 5
 )
 }
 \arguments{
-\item{df}{dataframe with colnames as 'intensity','time'}
+\item{df}{dataframe with two columns whose colnames are 'intensity','time'}
 
-\item{maxPeaks}{minimal intensity of the original curve (not the opposite) required to be considered as a peak}
+\item{minExpi}{minimal value for an expiry intensity to be detected as an expiry (blue dotted line in the plot).}
+
+\item{maxInspi}{maximal intensity of the original curve required to be considered as a breathing peak (purple dotted line in the plot)}
 
 \item{smoothMethod}{smoothing method. Among "MovingAverage" or "SavitzkyGolay". See MSnbase::smooth for more details.}
 
@@ -32,8 +37,12 @@ detectCycle(
 \item{SNR}{signal noise ratio (0 by default) required to be considered as a peak}
 
 \item{minimalDuration}{minimalDuration of a breathing cycle (2 by default - as a accelerated breathing frequency corresponds to 20 cycles and more by minut and a low frequency is 12 and less -)}
+
+\item{forMinExpiDivideMaxIntBy}{default to 5. When minExpi is null, it is evaluated as the ratio of the maximal intensity and forMinIntensityDivideMaxIntBy}
+
+\item{forMaxInspiDivideMaxIntBy}{default to 5. When minExpi is null, it is evaluated as the ratio of the maximal intensity and forMinIntensityDivideMaxIntBy}
 }
 \description{
 detectCycle
-Detects breathing cycles (negative peaks with smoothing methods)
+Detects breathing cycles (negative peaks with smoothing methods). A breaking cycle begins half of an inspiration, then a full expiration, then an last half of inspiration
 }

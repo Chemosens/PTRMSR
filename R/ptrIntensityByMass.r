@@ -5,7 +5,7 @@
 #'@param breaks breaks to be used
 #'@param rt vector of two numbers (min time and max time). If NULL (default), no time limits.
 #'@param by step of time for integration of the chromatogram. Default 0.1
-#'@export 
+#'@export
 #'@examples
 #'data(ptr)
 #'#ptrIntensityByMass(ptr)
@@ -14,7 +14,7 @@ ptrIntensityByMass=function(ptr,type="exactMass",rt=NULL,integrationTable=NULL,b
   if(type=="integration")
   {
     MassAxis=ptr$MassAxis
-    tofData=ptr$TofData
+   tofData=ptr$TofData
     time=ptr$Time
     if(is.null(integrationTable))
     {
@@ -38,34 +38,39 @@ ptrIntensityByMass=function(ptr,type="exactMass",rt=NULL,integrationTable=NULL,b
     {
       print(label)
       masses_label=MassAxis[
-        MassAxis>=integrationTable[integrationTable[,"name"]==label,"inf"] 
+        MassAxis>=integrationTable[integrationTable[,"name"]==label,"inf"]
         &MassAxis<=integrationTable[integrationTable[,"name"]==label,"sup"]
-      ] 
+      ]
       tofSubset=tofData[which(MassAxis%in%masses_label),,]
-     
+
       if(is.null(rt))
       {
         sumSubset=sum(apply(tofSubset,2:3,function(x)
         {return(sum(x))}))
       }
       if(!is.null(rt))
-      { 
+      {
         ndim=dim(tofSubset)[2:3]
-        print(ndim)
-        mtime=matrix(as.numeric(ptr$Time),nrow=ndim[1],ncol=ndim[2])
-        indtime=mtime<rt[2]&mtime>rt[1]
-        sumSubset=sum(apply(tofSubset,1,function(x)
-        {   return(sum(x[indtime]))}))
-        sumNoSubset=sum(apply(tofSubset,1,function(x)
-        {   return(sum(x))}))
+     #   print(ndim)
+        if(!is.na(ndim[2]))
+        {
+          mtime=matrix(as.numeric(time),nrow=ndim[1],ncol=ndim[2])
+          indtime=mtime<rt[2]&mtime>rt[1]
+          sumSubset=sum(apply(tofSubset,1,function(x)
+          {   return(sum(x[indtime]))}))
+          sumNoSubset=sum(apply(tofSubset,1,function(x)
+          {   return(sum(x))}))
+        }
+        else{sumSubset=NA}
+
 
       }
-    
-      
+
+
       line=c(label,integrationTable[integrationTable[,"name"]==label,"mz"],sumSubset)
       resdf=rbind(resdf,line)
     }
-    
+
     colnames(resdf)=c("name","mz","intensity")
     rownames(resdf)=NULL
   }
@@ -91,7 +96,7 @@ ptrIntensityByMass=function(ptr,type="exactMass",rt=NULL,integrationTable=NULL,b
         return(sumSubset)
       }
     }
-    
+
     # For loop
     t0=Sys.time()
     #if(loop=="for")
@@ -104,22 +109,22 @@ ptrIntensityByMass=function(ptr,type="exactMass",rt=NULL,integrationTable=NULL,b
       }
       resdf=data.frame(mz=ptr$MassAxis,intensity=res)
     #}
-   
+
     Sys.time()-t0
     # lapply
     # parallelisation
     #, FUN = function(i){return()})
-    #   cl = parallel:::makeCluster(7) 
+    #   cl = parallel:::makeCluster(7)
     #   clusterExport(cl, "tofData")
-    #   Wboot_list = pblapply(seq(dim(tofData)[1]), 
+    #   Wboot_list = pblapply(seq(dim(tofData)[1]),
     #                         FUN=function(i){return(selectTimes(i,tofData=tofData,rt=c(1,30)))},
-    #                         cl = cl) 
+    #                         cl = cl)
     #   W = Reduce("cbind", lapply(Wboot_list, function(x) Reduce("c", x)))
     #   parallel:::stopCluster(cl)
-      # 
-     
+      #
+
     }
-  
+
   if(type=="sumSpectrum")
   {
     if(!is.null(rt))
@@ -138,12 +143,12 @@ ptrIntensityByMass=function(ptr,type="exactMass",rt=NULL,integrationTable=NULL,b
       MassAxis=ptr$MassAxis
       for(label in integrationTable[,"name"])
       {
-      
-        massesindex=which(MassAxis>=integrationTable[integrationTable[,"name"]==label,"inf"] 
+
+        massesindex=which(MassAxis>=integrationTable[integrationTable[,"name"]==label,"inf"]
           &MassAxis<=integrationTable[integrationTable[,"name"]==label,"sup"])
         intens=sum(ptr$SumSpectrum[massesindex])
         mzi=mean(MassAxis[massesindex])
-      
+
         line=c(mzi,intens,label)
         resdf=rbind(resdf,line)
         colnames(resdf)=c("mz","intensity","name")
@@ -154,10 +159,10 @@ ptrIntensityByMass=function(ptr,type="exactMass",rt=NULL,integrationTable=NULL,b
       resdf=data.frame(ptr$MassAxis,ptr$SumSpectrum)
       colnames(resdf)=c("mz","intensity")
     }
-   
+
   }
   resdf=as.data.frame(resdf)
-  print(summary(resdf))
+ # print(summary(resdf))
   resdf[,"intensity"]=as.numeric(resdf[,"intensity"])
   resdf[,"mz"]=as.numeric(resdf[,"mz"])
   res=list(df=resdf)

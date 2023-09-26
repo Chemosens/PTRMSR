@@ -11,10 +11,13 @@ ptrvListSignificantSNRIons(
   multiplyNoiseBy = 3,
   noisePeriod = c(0, 25),
   removeNoise = TRUE,
-  maxPeaks = NULL,
   minimalDuration = 2,
   halfWindowSize = 5,
-  smoothMethod = "MovingAverage"
+  smoothMethod = "MovingAverage",
+  minExpi = NULL,
+  maxInspi = NULL,
+  forMinExpiDivideMaxIntBy = 4,
+  forMaxInspiDivideMaxIntBy = 5
 )
 }
 \arguments{
@@ -30,13 +33,19 @@ ptrvListSignificantSNRIons(
 
 \item{removeNoise}{if TRUE, the noise is removed in the calculation of intensity by time}
 
-\item{maxPeaks}{A number. Below this value, a peak is not considered as a peak}
-
 \item{minimalDuration}{minimalDuration of a breathing cycle (2 by default - as a accelerated breathing frequency corresponds to 20 cycles and more by minut and a low frequency is 12 and less -)}
 
 \item{halfWindowSize}{parameter used to determine the smooth for the peak-picking used in break detection}
 
 \item{smoothMethod}{NULL, "SavitzkyGolay" or "MovingAverage"}
+
+\item{minExpi}{minimal value for an expiry intensity to be detected as an expiry (blue dotted line in the plot).}
+
+\item{maxInspi}{maximal intensity of the original curve required to be considered as a breathing peak (purple dotted line in the plot)}
+
+\item{forMinExpiDivideMaxIntBy}{default to 5. When minExpi is null, it is evaluated as the ratio of the maximal intensity and forMinIntensityDivideMaxIntBy}
+
+\item{forMaxInspiDivideMaxIntBy}{default to 5. When minExpi is null, it is evaluated as the ratio of the maximal intensity and forMinIntensityDivideMaxIntBy}
 }
 \value{
 A list containing: resIons: the ration Signal/Noise for all ions; intersection: the ions significant in all files; union: the ions significant in at least one file.
