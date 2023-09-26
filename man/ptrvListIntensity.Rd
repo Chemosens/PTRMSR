@@ -7,6 +7,9 @@
 ptrvListIntensity(
   listFiles,
   metaData = NULL,
+  sep = "\\t",
+  timeCol = "RelTime",
+  colToRemove = c("AbsTime", "Cycle"),
   format = "wide",
   correction = "cycle",
   stat = "area",
@@ -22,13 +25,24 @@ ptrvListIntensity(
   minExpi = NULL,
   maxInspi = NULL,
   forMinExpiDivideMaxIntBy = 5,
-  forMaxInspiDivideMaxIntBy = 4
+  forMaxInspiDivideMaxIntBy = 4,
+  nameBreathMeta = "resp",
+  nameEndMeta = "finTimeSens_s",
+  nameInMouthMeta = "miseEnBouche_s",
+  nameFileMeta = "file",
+  removeNoise = TRUE
 )
 }
 \arguments{
-\item{listFiles}{vector containing the file names of the files to be read}
+\item{listFiles}{vector containing the file names of the files to be read (they are read by read.table function, header=TRUE). Please add an header to your file containing the time ("RelTime" by default -can be modified in colTime variable) a column by ion}
 
-\item{metaData}{metaData required #TODO}
+\item{metaData}{metaData required containing a line per file in listFiles, then a column specifying the ion to follow for breathing (in a column named as the parameter nameBreathMeta -default to resp- ), the total duration of the evaluation (in a column named as nameEndMeta -default to finTimeSens_s-), the moment of tasting (to define the noise, in a column named as nameInMouthMeta, default to 'miseEnBouche_s')}
+
+\item{sep}{separator(has to be the same for all files in listFiles). Default to tabulation.}
+
+\item{timeCol}{name of the column of dataset containing the time}
+
+\item{colToRemove}{vector containing the names of the columns of datasets to be removed in the analysis (column that are neither the time nor ions names)}
 
 \item{format}{"wide" by default}
 
@@ -61,6 +75,16 @@ ptrvListIntensity(
 \item{forMinExpiDivideMaxIntBy}{default to 5. When minExpi is null, it is evaluated as the ratio of the maximal intensity and forMinIntensityDivideMaxIntBy}
 
 \item{forMaxInspiDivideMaxIntBy}{default to 5. When minExpi is null, it is evaluated as the ratio of the maximal intensity and forMinIntensityDivideMaxIntBy}
+
+\item{nameBreathMeta}{default to "resp". Name of the metaData column containing the ion corresponding to breathing for each file}
+
+\item{nameEndMeta}{default to "finTimeSens_s". Name of the metaData column containing the end of the tasting}
+
+\item{nameInMouthMeta}{default to "miseEnBouche_s". Name of the column of metaData file containing the time of the beginning of the tasting (after the blank)}
+
+\item{nameFileMeta}{default to "file". Name of the column of metaData file containing the names of the files (with their extension ! for example file1.txt)}
+
+\item{removeNoise}{if TRUE, the averaged intensity obtained during the timeBlank period is removed from the signal}
 }
 \description{
 ptrvListIntensity

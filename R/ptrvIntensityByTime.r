@@ -34,7 +34,7 @@ ptrvIntensityByTime=function(dataset,timeCol="RelTime",colToRemove=c("AbsTime","
   match.arg(correction,c("none","cycle"))
   if(is.null(referenceBreath)&correction=="cycle"){correction="none";print("No referenceBreath, the 'none' correction is chosen.")}
   if(is.null(ions)){ions=colnames(dataset)[-which(colnames(dataset)%in%c(timeCol,colToRemove))]}else{ions=unique(c(referenceBreath,ions))}
-  dataset=dataset[,-which(colnames(dataset)%in%colToRemove)]
+  if(any(colnames(dataset)%in%colToRemove)){dataset=dataset[,-which(colnames(dataset)%in%colToRemove)]}
    if(!is.null(ions))
   {
     if(correction=="cycle")
