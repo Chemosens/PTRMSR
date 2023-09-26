@@ -11,4 +11,5 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.3
 Depends: R (>= 3.5.0)
-Imports: MSnbase, gridExtra, plyr, reshape2, rhdf5, stats, utils,ggplot2,pheatmap,CSUtils,signal,car, lme4, lmerTest, lsmeans, multcomp
+VignetteBuilder: knitr
+Imports: MSnbase, knitr,gridExtra, plyr, reshape2, rhdf5, stats, utils,ggplot2,pheatmap,CSUtils,signal,car, lme4, lmerTest, lsmeans, multcomp

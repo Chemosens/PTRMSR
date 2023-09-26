@@ -54,7 +54,11 @@ ptrvIntensityByTime=function(dataset,timeCol="RelTime",colToRemove=c("AbsTime","
   }
   dataset[,timeCol]=dataset[,timeCol]-timeStart
   indexIons=which(colnames(dataset)%in%ions)
-  dataset[,ions]=apply(dataset[,ions],2,as.numeric)
+  if(length(ions)>1)
+  {
+    dataset[,ions]=apply(dataset[,ions],2,as.numeric)
+  }
+  else{dataset[,ions]=as.numeric(dataset[,ions])}
 
   if(total)
   {
