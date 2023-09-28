@@ -50,3 +50,5 @@ test_that("cycles avec duration minimale 1",expect_true(sum(diff(cycles$cycles)<
 cycles=detectCycle(df=res1,smoothMethod="MovingAverage",method="MAD",halfWindowSize=5,maximum=NULL,SNR=0,minimalDuration=2)
 test_that("cycles avec duration minimale",expect_true(sum(diff(cycles$cycles)<2)==0))
 
+
+

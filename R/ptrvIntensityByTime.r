@@ -52,6 +52,7 @@ ptrvIntensityByTime=function(dataset,timeCol="RelTime",colToRemove=c("AbsTime","
   {
       dataset=dataset[dataset[,timeCol]<timePeriod[2]&dataset[,timeCol]>timePeriod[1],]
   }
+  dataset[,timeCol]=as.numeric(as.character(dataset[,timeCol]))
   dataset[,timeCol]=dataset[,timeCol]-timeStart
   indexIons=which(colnames(dataset)%in%ions)
   if(length(ions)>1)
@@ -73,9 +74,9 @@ ptrvIntensityByTime=function(dataset,timeCol="RelTime",colToRemove=c("AbsTime","
     {
      dataset[,indexIons2]=sweep(dataset[,indexIons2],1,dataset[,referenceBreath],FUN="/")
     }
-
+    dataset=as.data.frame(dataset)
     dataset[,"duration"]=c(dataset[-1,timeCol]-dataset[-c(length(dataset[,timeCol])),timeCol],0)
-    res=reshape(dataset,direction="long",varying=list(indexIons2),times=colnames(dataset)[indexIons2],v.names="intensity")
+    res=reshape(dataset,direction="long",timevar="ion",varying=list(indexIons2),times=colnames(dataset)[indexIons2],v.names="intensity")
     colnames(res)=c("time","duration","ion","intensity","id")
     res2=res
     p_sc=ggplot(res,aes(x=time,y=intensity,group=ion,color=ion,name=ion))+geom_line()+theme_bw()+theme(legend.position="none")
@@ -89,46 +90,37 @@ ptrvIntensityByTime=function(dataset,timeCol="RelTime",colToRemove=c("AbsTime","
   }
   if(correction=="cycle")
   {
-   # print(ions)
-   # print(colnames(dataset))
 
-    res=reshape(dataset,direction="long",varying=list(ions),times=ions,v.names="intensity")
-
-   # print(res[1,])
-   # print("ok")
+    dataset=as.data.frame(dataset)
+    dataset[,timeCol]=as.numeric(as.character(dataset[,timeCol]))
+    res=reshape(dataset,direction="long",varying=list(ions),timevar="ion",times=ions,v.names="intensity")
     colnames(res)=c("time","ion","intensity","id")
 
     if(!referenceBreath%in%unique(res[,"ion"])){
       print(unique(res[,"ion"]))
       print("reference")
       print(referenceBreath)
-      stop("the reference breath is not one column of the dataset")}
-    res1=res[res[,"ion"]==as.character(referenceBreath),]
+      stop("the reference breath is not one column of the dataset")
+      }
 
+    res1=res[res[,"ion"]==as.character(referenceBreath),c("time","intensity")]
+    colnames(res1)=c("time","intensity")
+    #print(res1)
     cycles=detectCycle(df=res1,smoothMethod=smoothMethod,method=method,halfWindowSize=halfWindowSize,maximum=max(dataset[,timeCol]),SNR=SNR,minimalDuration=minimalDuration, minExpi=minExpi,maxInspi=maxInspi,forMinExpiDivideMaxIntBy=forMinExpiDivideMaxIntBy,forMaxInspiDivideMaxIntBy=forMaxInspiDivideMaxIntBy)
    # cycles=detectCycle(df=res1,maxPeaks=maxPeaks,smoothMethod=smoothMethod,method=method,halfWindowSize=5,maximum=max(dataset[,"RelTime"]),SNR=SNR,minimalDuration=0.5)
 
     gg_cycles=cycles$gg
     timeToUseForBreathing=cycles$cycles
-    timeLab=1/2*(timeToUseForBreathing[-1]+timeToUseForBreathing[-length(timeToUseForBreathing)])
-    duration=diff(timeToUseForBreathing)
-    df_duration=data.frame(time=timeLab,duration=duration)
-
-    # Cycle decomposition
-    res[,"cycle"]=cut(res[,"time"],breaks=timeToUseForBreathing,labels=timeLab)
-
-     res=res[,-which(colnames(res)=="id")]
-  # print(res[1:5,])
-  # print(res[is.na(res[,"cycle"]),])
-  # res=res[!is.na(res[,"cycle"]),]
-  # print(colnames(res))
-   res=res[!is.na(res[,"intensity"]),]
-  # res[,"cycle"]=as.factor(res[,"cycle"])
-  # print(funAggregate)
-  # summary(res)
-   res=res[,c("cycle","ion","intensity")]
-  # res[,"ion"]=as.factor(res[,"ion"])
-    # Statistics by cycle
+    if(length(timeToUseForBreathing)>1)
+    {
+      timeLab=1/2*(timeToUseForBreathing[-1]+timeToUseForBreathing[-length(timeToUseForBreathing)])
+      duration=diff(timeToUseForBreathing)
+      df_duration=data.frame(time=timeLab,duration=duration)
+      res[,"cycle"]=cut(res[,"time"],breaks=timeToUseForBreathing,labels=timeLab)
+      res=res[,-which(colnames(res)=="id")]
+      res=res[!is.na(res[,"intensity"]),]
+      res=res[,c("cycle","ion","intensity")]
+      # Statistics by cycle
     if(funAggregate=="sum")
     {
       resultMeanT=dcast(res,formula=cycle+ion~.,value.var="intensity",fun.aggregate=function(x){return(sum(x,na.rm=T))})
@@ -209,6 +201,19 @@ ptrvIntensityByTime=function(dataset,timeCol="RelTime",colToRemove=c("AbsTime","
 
     res2=resultMeanT
     return(list(res=res2,gg=list(p_smoothbreath=gg_cycles$p2,p_cyclelimits=gg_cycles$p3,p_smoothcycle=p_sc,p_breath=p_breath),correction=correction, maxNoise=maxNoise,sdNoise=sdNoise,avgNoise=avgNoise))
+    }
+    else
+    {
+      warning("No cycle was detected. The 'none' correction was conducted. If you want to modify the parameters to detect cycles, you can see the graph corresponding to the previous parameters in the results: res$detectCycle$gg$p3 for the graph and the restriction on the peak Table (res$detectCycle$peakTable) in order to understand why no peaks have been detected")
+      res=ptrvIntensityByTime(dataset,timeCol=timeCol,colToRemove=colToRemove,referenceBreath=NULL,correction="none",timePeriod=timePeriod,timeStart=timeStart,removeNoise=removeNoise,timeBlank=timeBlank,
+                                   halfWindowSize=halfWindowSize, total=total,breathRatio=breathRatio,method=method,SNR=SNR,ions=ions,
+                                   funAggregate=funAggregate,smoothMethod=smoothMethod,minimalDuration=minimalDuration,
+                                   minExpi=minExpi,maxInspi=maxInspi,forMinExpiDivideMaxIntBy=forMinExpiDivideMaxIntBy,forMaxInspiDivideMaxIntBy=forMaxInspiDivideMaxIntBy)
+
+
+      res[["detectCycle"]]=cycles
+      return(res)
+    }
   }
 
 }

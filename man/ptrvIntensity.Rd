@@ -7,7 +7,7 @@
 ptrvIntensity(result, timePeriod = NULL, negativeAsNull = TRUE)
 }
 \arguments{
-\item{result}{is a result of ptrvIntensityByTime}
+\item{result}{is a result of ptrvIntensityByTime$res}
 
 \item{timePeriod}{vector with two numbers indicating an interval to calculate the intensities}
 

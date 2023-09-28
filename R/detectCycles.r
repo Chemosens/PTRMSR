@@ -23,16 +23,19 @@ detectCycle=function(df,minExpi=NULL,maxInspi=NULL,smoothMethod="MovingAverage",
 
   # The spectra is returned for identifying Inspirations
   sp1=new("Spectrum1",mz=df[!is.na(df[,"intensity"]),"time"],intensity=maxInt-df[!is.na(df[,"intensity"]),"intensity"],centroided=F)
-  sp2=MSnbase::smooth(sp1,method=smoothMethod,halfWindowSize = halfWindowSize)
-  dfsp2=data.frame(time=MSnbase::mz(sp1),intensity=MSnbase::intensity(sp2))
-  p2=ggplot(dfsp2,aes(x=time,y=intensity))+geom_line()+theme_bw()+ggtitle("Smoothed data for breathing")
+  spSmoothed=MSnbase::smooth(sp1,method=smoothMethod,halfWindowSize = halfWindowSize)
+  dfspSmoothed=data.frame(time=MSnbase::mz(sp1),intensity=MSnbase::intensity(spSmoothed))
+  p2=ggplot(dfspSmoothed,aes(x=time,y=intensity))+geom_line()+theme_bw()+ggtitle("Smoothed data for breathing")
   p2=p2+geom_hline(yintercept=maxInt-maxInspi,col="purple",linetype = "dotted")
   p2=p2+geom_hline(yintercept=maxInt-minExpi,col="blue",linetype = "dashed")
-  respicks=MSnbase::pickPeaks(sp2,method=method,SNR=SNR)
+   respicks=MSnbase::pickPeaks(spSmoothed,method=method,SNR=SNR)
 
   # selecting only the peaks that are higher than a given quantity (maxInt-maxInspi on the reversed spectra)
-  timeToUseForBreathing=unique(c(0,MSnbase::mz(respicks)[MSnbase::intensity(respicks)>maxInt-maxInspi]))
+ interestingTimes=MSnbase::mz(respicks)[MSnbase::intensity(respicks)>maxInt-maxInspi]
+  if(length(interestingTimes)==0){warning("no peak detected. Maybe choose maxInspi higher ?(or forMaxInspiDivideMaxIntBy")}
+  timeToUseForBreathing=unique(c(0,interestingTimes))
   if(!is.null(maximum)){ timeToUseForBreathing=unique(c(0,timeToUseForBreathing,maximum))}
+
 
   # removing too low picks # Back to real data (and not the reversed one)
   maxIntensityPerCycle=Inspiration=rep(NA,length(timeToUseForBreathing)-1)
@@ -43,7 +46,7 @@ detectCycle=function(df,minExpi=NULL,maxInspi=NULL,smoothMethod="MovingAverage",
     maxIntensityPerCycle[i]=max(intensityPerCycle,na.rm=T)
     Inspiration[i]=df[df[,"time"]==timeToUseForBreathing[i+1] ,"intensity"]
   }
- # print("ok")
+
   durationPerCycle= diff(timeToUseForBreathing)
   peakTable=cbind(start=timeToUseForBreathing[-length(timeToUseForBreathing)],stop=timeToUseForBreathing[-1],duration=durationPerCycle,maxIntensity=maxIntensityPerCycle,Inspiration=Inspiration)
   # Removing time cycles lower than minimalDuration
@@ -51,22 +54,16 @@ detectCycle=function(df,minExpi=NULL,maxInspi=NULL,smoothMethod="MovingAverage",
   peakTable[,"toRemove"]=FALSE
   peakTable[durationPerCycle<minimalDuration|Inspiration>maxInspi|maxIntensityPerCycle<minExpi,"toRemove"]=TRUE
   removingStrangeCycles=which(durationPerCycle<minimalDuration|Inspiration>maxInspi|maxIntensityPerCycle<minExpi)+1
- # print("removing")
   if(length(removingStrangeCycles)!=0)
   {
     timeToUseForBreathing=timeToUseForBreathing[-removingStrangeCycles]
   }
-#  print("removed")
   finalPeakTable=cbind(start=timeToUseForBreathing[-length(timeToUseForBreathing)],stop=timeToUseForBreathing[-1],
                        duration=diff(timeToUseForBreathing),maxIntensity=maxIntensityPerCycle[-c(removingStrangeCycles-1)])
 
-
-
   # p3 is the original data frame with the selected peaks
 
-
   p3=ggplot(df,aes(x=time,y=intensity))+geom_line()+theme_bw()+ggtitle("Raw data and breathing cycle limits")
- # print("p3")
   for(k in 1:length(timeToUseForBreathing))
   {
     p3=p3+geom_vline(xintercept=timeToUseForBreathing[k],col="red")
@@ -76,6 +73,8 @@ detectCycle=function(df,minExpi=NULL,maxInspi=NULL,smoothMethod="MovingAverage",
 
   param=c(minExpi=minExpi,maxInspi=maxInspi,smoothMethod=smoothMethod,method=method,
           halfWindowSize=halfWindowSize,maximum=maximum,SNR=SNR,minimalDuration=minimalDuration,forMinExpiDivideMaxIntBy=forMinExpiDivideMaxIntBy,forMaxInspiDivideMaxIntBy=forMaxInspiDivideMaxIntBy)
- # print("detectCycle ok")
+
+  if(length(timeToUseForBreathing)==1){warning("No peak was detected. Please change the parameters: minimalDuration (is it in the proper unity?),
+                                               maxInspi or minExpi (is that coherent with the data?). ")}
  return(list(cycles=timeToUseForBreathing,gg=list(p2=p2,p3=p3),finalPeakTable=finalPeakTable,peakTable=peakTable,param=param))
 }

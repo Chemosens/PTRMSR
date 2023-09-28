@@ -1,4 +1,4 @@
-#' @param  result is a result of ptrvIntensityByTime
+#' @param  result is a result of ptrvIntensityByTime$res
 #' @param negativeAsNull If TRUE, all negative value are replaced by 0
 #' @param  timePeriod vector with two numbers indicating an interval to calculate the intensities
 #' @export

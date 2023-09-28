@@ -2,52 +2,103 @@
 title: "Using PTRMSR for automatizing pre-processing"
 output:
   pdf_document: default
-  html_document: default
+  toc: true
 ---
+
+
+\tableofcontents
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Premiliminary work
+# Introduction and settings
 This vignette shows how to use PTRMSR package to read .txt files, calculate AUC and return statistical analyses. 
-This command updates the chemosensR package
-```{r, eval=TRUE}
-# library(PTRMSR)
-library(devtools)
-# library(MSnbase)
-# library(reshape2)
-# library(pheatmap)
-# library(ggplot2)
-# library(ellipse)
-# # This step requires the installation of Rtools and devtools ! 
-# install_github("https://github.com/ChemoSens/CSUtils")
-install_github("https://github.com/ChemoSens/PTRMSR")
 
+```{r, eval=FALSE}
+if (!require("devtools", quietly = TRUE))
+    install.packages("devtools")
+
+library(devtools)
+install_github("https://github.com/ChemoSens/PTRMSR")
 ``` 
 
-Then, chemosensR should be loaded.
+Then, the PTRMSR package should be loaded.
 
-```{r, eval=TRUE}
+```{r, eval=FALSE}
 library(PTRMSR)
 ``` 
 
-## Meta-data
+# Step 1: Observing the data for one or two files
+## Outputs for one given file
+It could be interesting to see the raw data of one file. In this purpose, the function ptrReport returns several plots which could help to interpretation. 
+```{r,eval=FALSE}
+wd="C:/INRA/Data/Donnees Cantin/Cantin-DTS-PTRviewer" 
+setwd(wd)
+listFiles=list.files(pattern="*.txt")
+referenceBreath="m69.06906 (69.06906) (Conc)"
+file=listFiles[3]
+dataset=read.table(file=file,header=TRUE,sep="\t",check.names=FALSE)
+report=ptrvReport(dataset,selecIons="evolving",
+                  listIons=NULL,
+                  referenceBreath=referenceBreath,
+                  methodDetectStart="startPeakProportion",
+                  noisePeriodIBT=c(0,30),noisePeriodSig=c(0,30),
+                  noisePeriodDS=c(0,30),
+                  proportionOfMax=0.3,halfWindowSize=4,forMinExpiDivideMaxIntBy = 7,forMaxInspiDivideMaxIntBy =)
+names(report$gg)
+report$gg$p_breath$p_cyclelimits
+report$gg$p_breath$p_smoothbreath
+```
+
+Regarding the breathing cycle detection, these two outputs gives the results of cycle limits and the smooth data for breathing (useful to adjust the parameters halfWindowSize and maxPeaks)
+
+```{r,eval=FALSE}
+plot(report$gg$p_breath$p_cyclelimits)
+plot(report$gg$p_breath$p_smoothbreath)
+```
+
+Regarding the ions distributions
+```{r,eval=FALSE}
+plot(report$gg$p_curves$p_raw)
+plot(report$gg$p_curves$p_cycle)
+```
+
+Regarding the breathing ion distribution
+```{r,eval=FALSE}
+plot(report$gg$p_curves$p_breath_raw)
+plot(report$gg$p_curves$p_breath_cycle)
+```
+
+Do not hesitate to use plotly for interactive graphs
+```{r,eval=FALSE}
+library(plotly)
+ggplotly(report$gg$p_curves$p_breath_raw)
+```
+
+
+# Step 2: Reading and filling meta-data
+
+## Loading metadata
 All the data files (.txt from ptrViewer) and the metadata file (.csv) should be in a single repository (wd)
-```{r, eval=TRUE}
+```{r, eval=FALSE}
 wd="C:/INRA/Data/Donnees Cantin/Cantin-DTS-PTRviewer" 
 setwd(wd)
 listFiles=list.files(pattern="*.txt")[-1]
 metaData2=read.table("metaData2.csv",sep=";",header=T)
 head(metaData2[,-c(2:3)])
 ```
+
+## Checks
+
+
 ## Analysis of PTR-Viewer files
 
 ### Selection of relevant ions only
 This function returns the names of ions whose maximal intensity is 3 times higher than the maximal intensity during the noise period. It returns a list containing (i) a list containing for each file the ratio maximal intensity during the tasting/maximal intensity during the noise period, (ii) a vector (intersection) containing the ions which are significant in all files (iii) a vector (union) containing the ions which are significant in at least one file
-```{r, eval=TRUE}
+```{r, eval=FALSE}
 setwd(wd)
-referenceBreath="m69.06906..69.06906...Conc."
+
 sigIons=ptrvListSignificantSNRIons(listFiles=listFiles[1:4],
                metaData=metaData2,noisePeriod=c(0,25))
 ionSigUnique=sigIons$union
@@ -125,47 +176,7 @@ ptrvListHeatmap(df=ptrvList$totalIntensity,formula=as.formula(product+subject~io
 
 ```
 
-## Outputs for one given file
-It could be interesting to see the raw data of one file. In this purpose, the function ptrReport returns several plots which could help to interpretation. 
-```{r,eval=FALSE}
-setwd(wd)
-file=listFiles[1]
-dataset=read.table(file=file,header=TRUE,sep="\t")
-report=ptrvReport(dataset,selecIons="evolving",
-                  listIons=ionSigUnique[1:3],
-                  referenceBreath=referenceBreath,
-                  methodDetectStart="startPeakProportion",
-                  noisePeriodIBT=c(0,30),noisePeriodSig=c(0,30),
-                  noisePeriodDS=c(0,30),
-                  proportionOfMax=0.3,halfWindowSize=12,maxPeaks=30)
-names(report$gg)
-report$gg$p_breath
-```
 
-Regarding the breathing cycle detection, these two outputs gives the results of cycle limits and the smooth data for breathing (useful to adjust the parameters halfWindowSize and maxPeaks)
-
-```{r,eval=FALSE}
-plot(report$gg$p_breath$p_cyclelimits)
-plot(report$gg$p_breath$p_smoothbreath)
-```
-
-Regarding the ions distributions
-```{r,eval=FALSE}
-plot(report$gg$p_curves$p_raw)
-plot(report$gg$p_curves$p_cycle)
-```
-
-Regarding the breathing ion distribution
-```{r,eval=FALSE}
-plot(report$gg$p_curves$p_breath_raw)
-plot(report$gg$p_curves$p_breath_cycle)
-```
-
-Do not hesitate to use plotly for interactive graphs
-```{r,eval=FALSE}
-library(plotly)
-ggplotly(report$gg$p_curves$p_breath_raw)
-```
 
 ## Appendix
 ### Help for filling meta-data
@@ -206,23 +217,3 @@ metaData[,"finTimeSens_s"]=finTS
 metaData[,"product"]=product;metaData[,"subject"]=suj;metaData[,"rep"]=repet
 write.table(metaData,file="metaData2.csv",sep=";",row.names=F,dec=".")
 ```
-##Installing chemosensR (to be done only one time)
-As a first step, chemosensR package should be installed. As chemosensR is on a private GitHub repository, this step required the use of a token which is send to the user.
-
-```{r, eval=FALSE}
-install.packages("devtools")
-library(devtools)
-install_github("MahieuB/MultiResponseR") 
-if (!requireNamespace("BiocManager", quietly = TRUE))
-  install.packages("BiocManager")
-BiocManager::install("MSnbase")
-BiocManager::install("rhdf5")
-install.packages("multcompView")
-#BiocManager::install("mzR")
-
-# FOR SHINY 
-setwd(paste0(.libPaths()[1],"/chemosensR/extdata"))
-then open the .R file and run
-```  
-
-Then, the package has to be loaded with library function. Contrarily to the previous installation, this step of loading is required at any use of chemosensR package. 
