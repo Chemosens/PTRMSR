@@ -3,7 +3,6 @@ ptrv2=ptrv
 ions=colnames(ptrv2)[-c(1:3)]
 res=reshape(ptrv2,direction="long",varying=list(ions),times=ions,v.names="intensity")
 colnames(res)=c("abs","time","cycle","ion","intensity","id")
-referenceBreath="m69.06906..69.06906...Conc."
 referenceBreath="m69.06989..isoprene...Conc."
 res1=res[res[,"ion"]==as.character(referenceBreath),]
 cyclesDefault=detectCycle(df=res1)
@@ -50,5 +49,32 @@ test_that("cycles avec duration minimale 1",expect_true(sum(diff(cycles$cycles)<
 cycles=detectCycle(df=res1,smoothMethod="MovingAverage",method="MAD",halfWindowSize=5,maximum=NULL,SNR=0,minimalDuration=2)
 test_that("cycles avec duration minimale",expect_true(sum(diff(cycles$cycles)<2)==0))
 
+# adding a feature for detecting cycles: the use of hypersmoothed curves resulting in
+sum(res1[,"time"]<6)
+cycles=detectCycle(df=res1,smoothMethod="MovingAverage",
+                   method="MAD",halfWindowSize=5,
+                   maximum=NULL,SNR=0,minimalDuration=2,mobileMinExpi = 100,mobileK=0.6)
+cycles$gg$p2
+cycles$gg$p3
 
+
+cycles=detectCycle(df=res1,smoothMethod="MovingAverage",
+                   method="MAD",halfWindowSize=5,
+                   maximum=NULL,SNR=0,minimalDuration=2,mobileMinExpi = 100,mobileK=1)
+cycles$gg$p2
+cycles$gg$p3
+
+cycles=detectCycle(df=res1,smoothMethod="MovingAverage",
+                   method="MAD",halfWindowSize=5,
+                   maximum=NULL,SNR=0,minimalDuration=2,mobileMaxInspi=100,mobileK=0.5)
+cycles$gg$p2
+cycles$gg$p3
+
+cycles=detectCycle(df=res1,smoothMethod="MovingAverage",
+                   method="MAD",halfWindowSize=5,
+                   maximum=NULL,SNR=0,minimalDuration=2,mobileMaxInspi=100,mobileMinExpi=100,mobileK=0.5)
+cycles$gg$p2
+cycles$gg$p3
+cycles$cycles
+cycles$finalPeakTable
 

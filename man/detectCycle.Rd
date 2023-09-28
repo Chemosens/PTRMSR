@@ -16,7 +16,10 @@ detectCycle(
   SNR = 0,
   minimalDuration = 2,
   forMinExpiDivideMaxIntBy = 4,
-  forMaxInspiDivideMaxIntBy = 5
+  forMaxInspiDivideMaxIntBy = 5,
+  mobileMinExpi = NULL,
+  mobileMaxInspi = NULL,
+  mobileK = 1
 )
 }
 \arguments{
@@ -41,6 +44,12 @@ detectCycle(
 \item{forMinExpiDivideMaxIntBy}{default to 5. When minExpi is null, it is evaluated as the ratio of the maximal intensity and forMinIntensityDivideMaxIntBy}
 
 \item{forMaxInspiDivideMaxIntBy}{default to 5. When minExpi is null, it is evaluated as the ratio of the maximal intensity and forMinIntensityDivideMaxIntBy}
+
+\item{mobileMinExpi}{a integer higher than 3. If not NULL, the minimal intensity required for an expiration is a mobile one, defined by an mobile average (on the number of points defined in mobileMinExpi) + mobileStd * mobile standard deviations (on the same number of points)}
+
+\item{mobileMaxInspi}{a integer higher than 3. If not NULL, the maximal intensity required for an inspiration is a mobile one, defined by an mobile average (on the number of points defined in mobileMinExpi) - mobileK * mobile standard deviations (on the same number of points)}
+
+\item{mobileK}{default to 2. a number to be used in mobileMinExpi or mobileMaxInspi if not NULL}
 }
 \description{
 detectCycle
