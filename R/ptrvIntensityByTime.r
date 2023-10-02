@@ -35,7 +35,7 @@ ptrvIntensityByTime=function(dataset,timeCol="RelTime",colToRemove=c("AbsTime","
   if(is.null(referenceBreath)&correction=="cycle"){correction="none";print("No referenceBreath, the 'none' correction is chosen.")}
   if(is.null(ions)){ions=colnames(dataset)[-which(colnames(dataset)%in%c(timeCol,colToRemove))]}else{ions=unique(c(referenceBreath,ions))}
   if(any(colnames(dataset)%in%colToRemove)){dataset=dataset[,-which(colnames(dataset)%in%colToRemove)]}
-   if(!is.null(ions))
+  if(!is.null(ions))
   {
     if(correction=="cycle")
     {
@@ -76,9 +76,10 @@ ptrvIntensityByTime=function(dataset,timeCol="RelTime",colToRemove=c("AbsTime","
     }
     dataset=as.data.frame(dataset)
     dataset[,"duration"]=c(dataset[-1,timeCol]-dataset[-c(length(dataset[,timeCol])),timeCol],0)
-    res=reshape(dataset,direction="long",timevar="ion",varying=list(indexIons2),times=colnames(dataset)[indexIons2],v.names="intensity")
+     res=reshape(dataset,direction="long",timevar="ion",varying=list(indexIons2),times=colnames(dataset)[indexIons2],v.names="intensity")
     colnames(res)=c("time","duration","ion","intensity","id")
     res2=res
+
     p_sc=ggplot(res,aes(x=time,y=intensity,group=ion,color=ion,name=ion))+geom_line()+theme_bw()+theme(legend.position="none")
     if(is.null(referenceBreath))
     {
@@ -93,6 +94,7 @@ ptrvIntensityByTime=function(dataset,timeCol="RelTime",colToRemove=c("AbsTime","
 
     dataset=as.data.frame(dataset)
     dataset[,timeCol]=as.numeric(as.character(dataset[,timeCol]))
+
     res=reshape(dataset,direction="long",varying=list(ions),timevar="ion",times=ions,v.names="intensity")
     colnames(res)=c("time","ion","intensity","id")
 
@@ -106,14 +108,17 @@ ptrvIntensityByTime=function(dataset,timeCol="RelTime",colToRemove=c("AbsTime","
     res1=res[res[,"ion"]==as.character(referenceBreath),c("time","intensity")]
     colnames(res1)=c("time","intensity")
     #print(res1)
-    cycles=detectCycle(df=res1,smoothMethod=smoothMethod,method=method,halfWindowSize=halfWindowSize,maximum=max(dataset[,timeCol]),SNR=SNR,minimalDuration=minimalDuration, minExpi=minExpi,maxInspi=maxInspi,forMinExpiDivideMaxIntBy=forMinExpiDivideMaxIntBy,forMaxInspiDivideMaxIntBy=forMaxInspiDivideMaxIntBy)
+    cycles=detectCycle(df=res1,smoothMethod=smoothMethod,method=method,halfWindowSize=halfWindowSize,timePeriod=timePeriod,SNR=SNR,minimalDuration=minimalDuration, minExpi=minExpi,maxInspi=maxInspi,forMinExpiDivideMaxIntBy=forMinExpiDivideMaxIntBy,forMaxInspiDivideMaxIntBy=forMaxInspiDivideMaxIntBy)
    # cycles=detectCycle(df=res1,maxPeaks=maxPeaks,smoothMethod=smoothMethod,method=method,halfWindowSize=5,maximum=max(dataset[,"RelTime"]),SNR=SNR,minimalDuration=0.5)
 
     gg_cycles=cycles$gg
     timeToUseForBreathing=cycles$cycles
+  #  print(timeToUseForBreathing)
     if(length(timeToUseForBreathing)>1)
     {
       timeLab=1/2*(timeToUseForBreathing[-1]+timeToUseForBreathing[-length(timeToUseForBreathing)])
+      timeLab[timeLab<timePeriod[1]]=timePeriod[1]
+      timeLab[timeLab>timePeriod[2]]=timePeriod[2]
       duration=diff(timeToUseForBreathing)
       df_duration=data.frame(time=timeLab,duration=duration)
       res[,"cycle"]=cut(res[,"time"],breaks=timeToUseForBreathing,labels=timeLab)

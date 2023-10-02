@@ -7,7 +7,7 @@
 #' @param SNR signal noise ratio (0 by default) required to be considered as a peak
 #' @param minimalDuration minimalDuration of a breathing cycle (2 by default - as a accelerated breathing frequency corresponds to 20 cycles and more by minut and a low frequency is 12 and less -)
 #' @param halfWindowSize required for the smoothing method. Integer corresponding to the half window size to consider.
-#' @param maximum last value to attribue to the breathing cycle (end of tasting for example)
+#' @param timePeriod vector containing the first and last value to attribue to the breathing cycle (start and end of tasting for example). Default to min(time) and max(time)
 #' @param df dataframe with two columns whose colnames are 'intensity','time'
 #' @param forMinExpiDivideMaxIntBy default to 5. When minExpi is null, it is evaluated as the ratio of the maximal intensity and forMinIntensityDivideMaxIntBy
 #' @param forMaxInspiDivideMaxIntBy default to 5. When minExpi is null, it is evaluated as the ratio of the maximal intensity and forMinIntensityDivideMaxIntBy
@@ -17,10 +17,14 @@
 #' @export
 #' @importFrom stats embed
 detectCycle=function(df,minExpi=NULL,maxInspi=NULL,smoothMethod="MovingAverage",method="MAD",
-                     halfWindowSize=5,maximum=NULL,SNR=0,minimalDuration=2,forMinExpiDivideMaxIntBy=4,
+                     halfWindowSize=5,timePeriod=NULL,SNR=0,minimalDuration=2,forMinExpiDivideMaxIntBy=4,
                      forMaxInspiDivideMaxIntBy=5,mobileMinExpi=NULL,mobileMaxInspi=NULL,mobileK=1)
 {
   x=NULL;y=NULL
+  if(is.null(timePeriod)){timePeriod[1]=min(df[,"time"],na.rm=T);timePeriod[2]=max(df[,"time"],na.rm=T)}
+  if(is.na(timePeriod[1])){timePeriod[1]=min(df[,"time"],na.rm=T)}
+  if(is.na(timePeriod[2])){timePeriod[2]=max(df[,"time"],na.rm=T)}
+
  # print("in detectCycle")
   time=intensity=NULL
   maxInt=max(df[!is.na(df[,"intensity"]),"intensity"])
@@ -80,7 +84,7 @@ detectCycle=function(df,minExpi=NULL,maxInspi=NULL,smoothMethod="MovingAverage",
   }
 
   respicks=MSnbase::pickPeaks(spSmoothed,method=method,SNR=SNR)
-print(length(maxInspi))
+
 
   # selecting only the peaks that are higher than a given quantity (maxInt-maxInspi on the reversed spectra)
   if(is.null(mobileMaxInspi))
@@ -93,18 +97,26 @@ print(length(maxInspi))
   }
 
   if(length(interestingTimes)==0){warning("no peak detected. Maybe choose maxInspi higher ?(or forMaxInspiDivideMaxIntBy")}
-  timeToUseForBreathing=unique(c(0,interestingTimes))
-  if(!is.null(maximum)){ timeToUseForBreathing=unique(c(0,timeToUseForBreathing,maximum))}
 
 
+  timeToUseForBreathing=unique(c(timePeriod[1],interestingTimes,timePeriod[2]))
+
+# print(timeToUseForBreathing)
+# print(length(timeToUseForBreathing))
   # removing too low picks # Back to real data (and not the reversed one)
   maxIntensityPerCycle=Inspiration=minExpiCycle=maxInspiCycle=rep(NA,length(timeToUseForBreathing)-1)
  # print("before")
   for(i in 1:(length(timeToUseForBreathing)-1))
   {
-    intensityPerCycle=df[df[,"time"]>=timeToUseForBreathing[i]  & df[,"time"]<timeToUseForBreathing[i+1],"intensity"]
+   # print(i)
+    intensityPerCycle=df[df[,"time"]>=timeToUseForBreathing[i]  & df[,"time"]<=timeToUseForBreathing[i+1],"intensity"]
     maxIntensityPerCycle[i]=max(intensityPerCycle,na.rm=T)
-    Inspiration[i]=df[df[,"time"]==timeToUseForBreathing[i+1] ,"intensity"]
+    dfInt=df[df[,"time"]==timeToUseForBreathing[i+1] ,"intensity"]
+    if(length(dfInt)==1)
+    {
+      Inspiration[i]=dfInt
+    }
+
     if(!is.null(mobileMinExpi)){minExpiCycle[i]=mean(minExpi[df[,"time"]==timeToUseForBreathing[i+1]],na.rm=T)}
     if(!is.null(mobileMaxInspi)){maxInspiCycle[i]=mean(maxInspi[df[,"time"]==timeToUseForBreathing[i+1]],na.rm=T)}
   }
@@ -172,7 +184,7 @@ print(length(maxInspi))
   }
 
   param=c(minExpi=minExpi,maxInspi=maxInspi,smoothMethod=smoothMethod,method=method,
-          halfWindowSize=halfWindowSize,maximum=maximum,SNR=SNR,minimalDuration=minimalDuration,forMinExpiDivideMaxIntBy=forMinExpiDivideMaxIntBy,forMaxInspiDivideMaxIntBy=forMaxInspiDivideMaxIntBy)
+          halfWindowSize=halfWindowSize,timePeriod=timePeriod,SNR=SNR,minimalDuration=minimalDuration,forMinExpiDivideMaxIntBy=forMinExpiDivideMaxIntBy,forMaxInspiDivideMaxIntBy=forMaxInspiDivideMaxIntBy)
 
   if(length(timeToUseForBreathing)==1){warning("No peak was detected. Please change the parameters: minimalDuration (is it in the proper unity?),
                                                maxInspi or minExpi (is that coherent with the data?). ")}
