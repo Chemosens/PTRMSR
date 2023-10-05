@@ -17,37 +17,41 @@
 #' @param funAggregate "mean", "maximal" or "sum"
 #' @param timeCol name of the column of dataset containing the time
 #' @param colToRemove vector containing the names of the columns of datasets to be removed in the analysis (column that are neither the time nor ions names)
-#' @return a list containing the obtained result and ggplot object
+#' @return a list containing the obtained result (res), ggplot object containing different plots (gg) and, if correction='cycle' the cycle results are also added (detectCycle)
 #' @export
 #' @inheritParams detectCycle
 #' @importFrom stats reshape
 #' @importFrom MSnbase smooth
 #' @importFrom reshape2 dcast
-ptrvIntensityByTime=function(dataset,timeCol="RelTime",colToRemove=c("AbsTime","Cycle"),referenceBreath=NULL,correction="none",timePeriod=NULL,timeStart=0,removeNoise=TRUE,timeBlank=c(0,30),
-                             halfWindowSize=5, total=FALSE,breathRatio=FALSE,method="MAD",SNR=0,ions=NULL,
-                             funAggregate="mean",smoothMethod="MovingAverage",minimalDuration=2,
-                             minExpi=NULL,maxInspi=NULL,forMinExpiDivideMaxIntBy=4,forMaxInspiDivideMaxIntBy=5)
+ptrvIntensityByTime=function(dataset,timeCol="RelTime",colToRemove=c("AbsTime","Cycle"),correction="none",referenceBreath=NULL,timePeriod=NULL,
+                             ions=NULL,funAggregate="mean",removeNoise=TRUE,timeBlank=c(0,30),total=FALSE,breathRatio=FALSE,
+                             minExpi=NULL,maxInspi=NULL,smoothMethod="MovingAverage",minimalDuration=2,forMinExpiDivideMaxIntBy=4,forMaxInspiDivideMaxIntBy=5,halfWindowSize=5, method="MAD",SNR=0,timeStart=0)
 {
 
   time=intensity=NULL
   p_sc=p_breath=NULL
   match.arg(correction,c("none","cycle"))
   if(is.null(referenceBreath)&correction=="cycle"){correction="none";print("No referenceBreath, the 'none' correction is chosen.")}
-  if(is.null(ions)){ions=colnames(dataset)[-which(colnames(dataset)%in%c(timeCol,colToRemove))]}else{ions=unique(c(referenceBreath,ions))}
-  if(any(colnames(dataset)%in%colToRemove)){dataset=dataset[,-which(colnames(dataset)%in%colToRemove)]}
-  if(!is.null(ions))
-  {
-    if(correction=="cycle")
+  if(is.null(ions)){
+    indToRemove=which(colnames(dataset)%in%c(timeCol,colToRemove))
+    if(length(indToRemove)>0)
     {
-      if(!referenceBreath%in%colnames(dataset)){
-        print(colnames(dataset))
-        print("reference")
-        print(referenceBreath)
-        stop("No breathing ion in the dataset")}
+      ions=colnames(dataset)[-indToRemove]
     }
-    if(sum(ions%in%colnames(dataset))!=length(ions)){print(ions%in%colnames(dataset));stop("some ions are not in the dataset")}
-    dataset=dataset[,c(timeCol,ions)]
+
+    }else{ions=unique(c(referenceBreath,ions))}
+  if(any(colnames(dataset)%in%colToRemove)){dataset=dataset[,-which(colnames(dataset)%in%colToRemove)]}
+  if(correction=="cycle")
+  {
+    if(!referenceBreath%in%colnames(dataset)){
+      print(colnames(dataset))
+      print("reference")
+      print(referenceBreath)
+      stop("No breathing ion in the dataset")}
   }
+  if(sum(ions%in%colnames(dataset))!=length(ions)){print(ions%in%colnames(dataset));stop("some ions are not in the dataset")}
+  dataset=dataset[,c(timeCol,ions)]
+
   if(!is.null(timePeriod))
   {
       dataset=dataset[dataset[,timeCol]<timePeriod[2]&dataset[,timeCol]>timePeriod[1],]
@@ -205,7 +209,10 @@ ptrvIntensityByTime=function(dataset,timeCol="RelTime",colToRemove=c("AbsTime","
     }
 
     res2=resultMeanT
-    return(list(res=res2,gg=list(p_smoothbreath=gg_cycles$p2,p_cyclelimits=gg_cycles$p3,p_smoothcycle=p_sc,p_breath=p_breath),correction=correction, maxNoise=maxNoise,sdNoise=sdNoise,avgNoise=avgNoise))
+    param=list(correction=correction, maxNoise=maxNoise,sdNoise=sdNoise,avgNoise=avgNoise)
+
+    res=list(res=res2,gg=list(p_smoothbreath=gg_cycles$p2,p_cyclelimits=gg_cycles$p3,p_smoothcycle=p_sc,p_breath=p_breath), detectCycle=cycles,param=param)
+    return(res)
     }
     else
     {
@@ -215,8 +222,6 @@ ptrvIntensityByTime=function(dataset,timeCol="RelTime",colToRemove=c("AbsTime","
                                    funAggregate=funAggregate,smoothMethod=smoothMethod,minimalDuration=minimalDuration,
                                    minExpi=minExpi,maxInspi=maxInspi,forMinExpiDivideMaxIntBy=forMinExpiDivideMaxIntBy,forMaxInspiDivideMaxIntBy=forMaxInspiDivideMaxIntBy)
 
-
-      res[["detectCycle"]]=cycles
       return(res)
     }
   }

@@ -6,6 +6,9 @@ colnames(res)=c("abs","time","cycle","ion","intensity","id")
 referenceBreath="m69.06989..isoprene...Conc."
 res1=res[res[,"ion"]==as.character(referenceBreath),]
 cyclesDefault=detectCycle(df=res1)
+names(cyclesDefault)
+cyclesDefault$cycles[1:7]
+cyclesDefault$peaktable
 cyclesDefault$gg$p2 # to check the smoothing impact
 
 cyclesDefault$param

@@ -2,8 +2,7 @@
 % Please edit documentation in R/detectCycles.r
 \name{detectCycle}
 \alias{detectCycle}
-\title{detectCycle
-Detects breathing cycles (negative peaks with smoothing methods). A breaking cycle begins half of an inspiration, then a full expiration, then an last half of inspiration}
+\title{detectCycle}
 \usage{
 detectCycle(
   df,
@@ -12,7 +11,7 @@ detectCycle(
   smoothMethod = "MovingAverage",
   method = "MAD",
   halfWindowSize = 5,
-  maximum = NULL,
+  timePeriod = NULL,
   SNR = 0,
   minimalDuration = 2,
   forMinExpiDivideMaxIntBy = 4,
@@ -31,11 +30,11 @@ detectCycle(
 
 \item{smoothMethod}{smoothing method. Among "MovingAverage" or "SavitzkyGolay". See MSnbase::smooth for more details.}
 
-\item{method}{method to estimate the noise "MAD" or ""}
+\item{method}{method to estimate the noise "MAD" or "" in the spectra}
 
 \item{halfWindowSize}{required for the smoothing method. Integer corresponding to the half window size to consider.}
 
-\item{maximum}{last value to attribue to the breathing cycle (end of tasting for example)}
+\item{timePeriod}{vector containing the first and last value to attribue to the breathing cycle (start and end of tasting for example). Default to min(time) and max(time)}
 
 \item{SNR}{signal noise ratio (0 by default) required to be considered as a peak}
 
@@ -45,13 +44,15 @@ detectCycle(
 
 \item{forMaxInspiDivideMaxIntBy}{default to 5. When minExpi is null, it is evaluated as the ratio of the maximal intensity and forMinIntensityDivideMaxIntBy}
 
-\item{mobileMinExpi}{a integer higher than 3. If not NULL, the minimal intensity required for an expiration is a mobile one, defined by an mobile average (on the number of points defined in mobileMinExpi) + mobileStd * mobile standard deviations (on the same number of points)}
+\item{mobileMinExpi}{default to NULL, ifelse an integer higher than 3. If not NULL, the minimal intensity required for an expiration is a mobile one, defined by an mobile average (on the number of points defined in mobileMinExpi) + mobileK * mobile standard deviations (on the same number of points)}
 
-\item{mobileMaxInspi}{a integer higher than 3. If not NULL, the maximal intensity required for an inspiration is a mobile one, defined by an mobile average (on the number of points defined in mobileMinExpi) - mobileK * mobile standard deviations (on the same number of points)}
+\item{mobileMaxInspi}{default to NULL, ifelsea integer higher than 3. If not NULL, the maximal intensity required for an inspiration is a mobile one, defined by an mobile average (on the number of points defined in mobileMinExpi) - mobileK * mobile standard deviations (on the same number of points)}
 
-\item{mobileK}{default to 2. a number to be used in mobileMinExpi or mobileMaxInspi if not NULL}
+\item{mobileK}{default to 1. a number to be used in mobileMinExpi or mobileMaxInspi if not NULL}
+}
+\value{
+a list containing the times corresponding to cycle limits (cycles), some plots the reversed smoothed data used for detecting peaks (gg$p2) and raw data with the cycle limits (gg$p3), a table containing information about the selected peaks: finalPeakTable and a table containing all the peaks detected before any filter (peakTable)
 }
 \description{
-detectCycle
 Detects breathing cycles (negative peaks with smoothing methods). A breaking cycle begins half of an inspiration, then a full expiration, then an last half of inspiration
 }

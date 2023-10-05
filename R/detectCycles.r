@@ -1,8 +1,10 @@
 #' detectCycle
+#'
 #' Detects breathing cycles (negative peaks with smoothing methods). A breaking cycle begins half of an inspiration, then a full expiration, then an last half of inspiration
+#'
 #' @param minExpi minimal value for an expiry intensity to be detected as an expiry (blue dotted line in the plot).
 #' @param smoothMethod smoothing method. Among "MovingAverage" or "SavitzkyGolay". See MSnbase::smooth for more details.
-#' @param method method to estimate the noise "MAD" or ""
+#' @param method method to estimate the noise "MAD" or "" in the spectra
 #' @param maxInspi maximal intensity of the original curve required to be considered as a breathing peak (purple dotted line in the plot)
 #' @param SNR signal noise ratio (0 by default) required to be considered as a peak
 #' @param minimalDuration minimalDuration of a breathing cycle (2 by default - as a accelerated breathing frequency corresponds to 20 cycles and more by minut and a low frequency is 12 and less -)
@@ -11,10 +13,11 @@
 #' @param df dataframe with two columns whose colnames are 'intensity','time'
 #' @param forMinExpiDivideMaxIntBy default to 5. When minExpi is null, it is evaluated as the ratio of the maximal intensity and forMinIntensityDivideMaxIntBy
 #' @param forMaxInspiDivideMaxIntBy default to 5. When minExpi is null, it is evaluated as the ratio of the maximal intensity and forMinIntensityDivideMaxIntBy
-#' @param mobileMinExpi a integer higher than 3. If not NULL, the minimal intensity required for an expiration is a mobile one, defined by an mobile average (on the number of points defined in mobileMinExpi) + mobileStd * mobile standard deviations (on the same number of points)
-#' @param mobileMaxInspi a integer higher than 3. If not NULL, the maximal intensity required for an inspiration is a mobile one, defined by an mobile average (on the number of points defined in mobileMinExpi) - mobileK * mobile standard deviations (on the same number of points)
-#' @param mobileK default to 2. a number to be used in mobileMinExpi or mobileMaxInspi if not NULL
+#' @param mobileMinExpi default to NULL, ifelse an integer higher than 3. If not NULL, the minimal intensity required for an expiration is a mobile one, defined by an mobile average (on the number of points defined in mobileMinExpi) + mobileK * mobile standard deviations (on the same number of points)
+#' @param mobileMaxInspi  default to NULL, ifelsea integer higher than 3. If not NULL, the maximal intensity required for an inspiration is a mobile one, defined by an mobile average (on the number of points defined in mobileMinExpi) - mobileK * mobile standard deviations (on the same number of points)
+#' @param mobileK default to 1. a number to be used in mobileMinExpi or mobileMaxInspi if not NULL
 #' @export
+#' @return a list containing the times corresponding to cycle limits (cycles), some plots the reversed smoothed data used for detecting peaks (gg$p2) and raw data with the cycle limits (gg$p3), a table containing information about the selected peaks: finalPeakTable and a table containing all the peaks detected before any filter (peakTable)
 #' @importFrom stats embed
 detectCycle=function(df,minExpi=NULL,maxInspi=NULL,smoothMethod="MovingAverage",method="MAD",
                      halfWindowSize=5,timePeriod=NULL,SNR=0,minimalDuration=2,forMinExpiDivideMaxIntBy=4,
@@ -184,7 +187,7 @@ detectCycle=function(df,minExpi=NULL,maxInspi=NULL,smoothMethod="MovingAverage",
   }
 
   param=c(minExpi=minExpi,maxInspi=maxInspi,smoothMethod=smoothMethod,method=method,
-          halfWindowSize=halfWindowSize,timePeriod=timePeriod,SNR=SNR,minimalDuration=minimalDuration,forMinExpiDivideMaxIntBy=forMinExpiDivideMaxIntBy,forMaxInspiDivideMaxIntBy=forMaxInspiDivideMaxIntBy)
+          halfWindowSize=halfWindowSize,timePeriod=timePeriod,SNR=SNR,minimalDuration=minimalDuration,forMinExpiDivideMaxIntBy=forMinExpiDivideMaxIntBy,forMaxInspiDivideMaxIntBy=forMaxInspiDivideMaxIntBy,mobileMinExpi=mobileMinExpi,mobileMaxInspi=mobileMaxInspi,mobileK=mobileK)
 
   if(length(timeToUseForBreathing)==1){warning("No peak was detected. Please change the parameters: minimalDuration (is it in the proper unity?),
                                                maxInspi or minExpi (is that coherent with the data?). ")}

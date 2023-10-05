@@ -26,7 +26,8 @@ ptrvListIntensityByTime(
   minExpi = NULL,
   maxInspi = NULL,
   forMinExpiDivideMaxIntBy = 5,
-  forMaxInspiDivideMaxIntBy = 4
+  forMaxInspiDivideMaxIntBy = 4,
+  wd = getwd()
 )
 }
 \arguments{
@@ -71,6 +72,8 @@ ptrvListIntensityByTime(
 \item{forMinExpiDivideMaxIntBy}{default to 5. When minExpi is null, it is evaluated as the ratio of the maximal intensity and forMinIntensityDivideMaxIntBy}
 
 \item{forMaxInspiDivideMaxIntBy}{default to 5. When minExpi is null, it is evaluated as the ratio of the maximal intensity and forMinIntensityDivideMaxIntBy}
+
+\item{wd}{working directory where the files of listFiles are.}
 }
 \value{
 a list containing : total intensity: AUC (or tmax, etc) in a long format, time: data containing the corrected timepoints, listRes: AUC in a wide format

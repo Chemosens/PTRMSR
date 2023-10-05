@@ -30,7 +30,8 @@ ptrvListIntensity(
   nameEndMeta = "finTimeSens_s",
   nameInMouthMeta = "miseEnBouche_s",
   nameFileMeta = "file",
-  removeNoise = TRUE
+  removeNoise = TRUE,
+  wd = getwd()
 )
 }
 \arguments{
@@ -85,6 +86,8 @@ ptrvListIntensity(
 \item{nameFileMeta}{default to "file". Name of the column of metaData file containing the names of the files (with their extension ! for example file1.txt)}
 
 \item{removeNoise}{if TRUE, the averaged intensity obtained during the timeBlank period is removed from the signal}
+
+\item{wd}{working directory where the files of listFiles are.}
 }
 \description{
 ptrvListIntensity

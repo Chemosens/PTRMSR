@@ -9,18 +9,19 @@
 #' @param nameEndMeta default to "finTimeSens_s". Name of the metaData column containing the end of the tasting
 #' @param nameInMouthMeta default to "miseEnBouche_s". Name of the column of metaData file containing the time of the beginning of the tasting (after the blank)
 #' @param nameFileMeta default to "file". Name of the column of metaData file containing the names of the files (with their extension ! for example file1.txt)
+#' @param wd working directory where the files of listFiles are.
 #' @inheritParams ptrvIntensityByTime
 #' @importFrom utils read.table
 #' @export
 ptrvListIntensity=function(listFiles,metaData=NULL,sep="\t",timeCol="RelTime",colToRemove=c("AbsTime","Cycle"),format="wide",correction="cycle",stat="area", halfWindowSize=5, total=FALSE,breathRatio=FALSE,method="MAD",SNR=0,ions=NULL,
-                           funAggregate="mean",smoothMethod="MovingAverage",minimalDuration=2,minExpi=NULL,maxInspi=NULL,forMinExpiDivideMaxIntBy=5,forMaxInspiDivideMaxIntBy=4,nameBreathMeta="resp",nameEndMeta="finTimeSens_s",nameInMouthMeta="miseEnBouche_s",nameFileMeta="file",removeNoise=TRUE)
+                           funAggregate="mean",smoothMethod="MovingAverage",minimalDuration=2,minExpi=NULL,maxInspi=NULL,forMinExpiDivideMaxIntBy=5,forMaxInspiDivideMaxIntBy=4,nameBreathMeta="resp",nameEndMeta="finTimeSens_s",nameInMouthMeta="miseEnBouche_s",nameFileMeta="file",removeNoise=TRUE,wd=getwd())
 {
   res=data.frame()
   for(i in 1:length(listFiles))
   {
     file=listFiles[i]
     print(file)
-    dataset=read.table(file,sep=sep,header=T)
+    dataset=read.table(paste0(wd,"/",file),sep=sep,header=T)
     metaInfo=metaData[metaData[,nameFileMeta]==file,]
     print(metaInfo)
     result_all=ptrvIntensityByTime(dataset=dataset,timeCol=timeCol,colToRemove=colToRemove,referenceBreath=metaInfo[nameBreathMeta],correction=correction,timePeriod=c(0,metaInfo[nameEndMeta]),

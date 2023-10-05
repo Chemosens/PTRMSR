@@ -12,9 +12,12 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Introduction and settings
 This vignette shows how to use PTRMSR package to read .txt files, calculate AUC and return statistical analyses. 
+# Generalities
 
+## Installation and settings
+
+devtools package is required to import PTRMSR package from github. To install both packages, enter:
 ```{r, eval=FALSE}
 if (!require("devtools", quietly = TRUE))
     install.packages("devtools")
@@ -23,21 +26,31 @@ library(devtools)
 install_github("https://github.com/ChemoSens/PTRMSR")
 ``` 
 
-Then, the PTRMSR package should be loaded.
+Then, the PTRMSR package is installed on your computer and should be loaded with the following command:
 
 ```{r, eval=FALSE}
 library(PTRMSR)
 ``` 
 
-# Step 1: Observing the data for one or two files
+## General principle
+In this package, the functions beginning by ptrv use a single dataset as input. The functions beginning by ptrvList use names of several files to be used and a metaData file containing information about the different files. 
+The objective of this paper is to use files produced by ptrViewer (or any other preprocessing of PTR-MS device returning files with ion, intensity and time as columns) then return curves and relevant statistics on the evaluations. 
+Several biases can be corrected:  (i) the breathing of the subject by calculating statistics by breathing cycle (use the parameter correction="cycle"), (ii) blank period during the evaluation that can be removed from the intensities (use blankCorrection = TRUE and noisePeriod=). 
+Some statistics are returned.
+
+### Pipeline
+### Inputs of the packages
+
+##Step 1: Observing the data for one or two files
 ## Outputs for one given file
 It could be interesting to see the raw data of one file. In this purpose, the function ptrReport returns several plots which could help to interpretation. 
-```{r,eval=FALSE}
-wd="C:/INRA/Data/Donnees Cantin/Cantin-DTS-PTRviewer" 
+```{r,eval=TRUE}
+print(getwd())
+wd="/./../../extdata" 
 setwd(wd)
 listFiles=list.files(pattern="*.txt")
 referenceBreath="m69.06906 (69.06906) (Conc)"
-file=listFiles[3]
+file=listFiles[2]
 dataset=read.table(file=file,header=TRUE,sep="\t",check.names=FALSE)
 report=ptrvReport(dataset,selecIons="evolving",
                   listIons=NULL,
@@ -45,7 +58,7 @@ report=ptrvReport(dataset,selecIons="evolving",
                   methodDetectStart="startPeakProportion",
                   noisePeriodIBT=c(0,30),noisePeriodSig=c(0,30),
                   noisePeriodDS=c(0,30),
-                  proportionOfMax=0.3,halfWindowSize=4,forMinExpiDivideMaxIntBy = 7,forMaxInspiDivideMaxIntBy =)
+                  proportionOfMax=0.3,halfWindowSize=4,forMinExpiDivideMaxIntBy = 7,forMaxInspiDivideMaxIntBy =9)
 names(report$gg)
 report$gg$p_breath$p_cyclelimits
 report$gg$p_breath$p_smoothbreath
@@ -96,10 +109,9 @@ head(metaData2[,-c(2:3)])
 
 ### Selection of relevant ions only
 This function returns the names of ions whose maximal intensity is 3 times higher than the maximal intensity during the noise period. It returns a list containing (i) a list containing for each file the ratio maximal intensity during the tasting/maximal intensity during the noise period, (ii) a vector (intersection) containing the ions which are significant in all files (iii) a vector (union) containing the ions which are significant in at least one file
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 setwd(wd)
-
-sigIons=ptrvListSignificantSNRIons(listFiles=listFiles[1:4],
+sigIons=ptrvListSignificantSNRIons(listFiles=listFiles[1:2],
                metaData=metaData2,noisePeriod=c(0,25))
 ionSigUnique=sigIons$union
 ```
