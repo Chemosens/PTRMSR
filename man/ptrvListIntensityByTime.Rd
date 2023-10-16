@@ -3,7 +3,7 @@
 \name{ptrvListIntensityByTime}
 \alias{ptrvListIntensityByTime}
 \title{ptrvListIntensityByTime
-A function automizing all pretreatements for}
+A function automating all pretreatements for several files,removing the noise and the breathing biases}
 \usage{
 ptrvListIntensityByTime(
   listFiles,
@@ -80,5 +80,5 @@ a list containing : total intensity: AUC (or tmax, etc) in a long format, time: 
 }
 \description{
 ptrvListIntensityByTime
-A function automizing all pretreatements for
+A function automating all pretreatements for several files,removing the noise and the breathing biases
 }

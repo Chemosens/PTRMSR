@@ -35,7 +35,7 @@ resCorrected=ptrvListIntensityByTime(listFiles=listFiles,metaData=metaData,timeC
                         sep="\t",correction="cycle",timeBlank=c(0,30),halfWindowSize=5,
                         method="MAD",total=FALSE,breathRatio=FALSE,stat="area",minimalDuration=2,
                         smoothMethod="MovingAverage",minExpi=NULL,maxInspi=NULL,forMinExpiDivideMaxIntBy=5,
-                        forMaxInspiDivideMaxIntBy=4,wd=wd)
+                        forMaxInspiDivideMaxIntBy=5,wd=wd)
 
 
 resCorrected$totalIntensity
@@ -43,3 +43,4 @@ resCorrected$time
 resCorrected$listRes
 
 grid.arrange(grobs=resCorrected$cycleLimits)
+

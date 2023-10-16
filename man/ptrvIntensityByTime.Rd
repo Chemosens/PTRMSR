@@ -80,3 +80,6 @@ a list containing the obtained result (res), ggplot object containing different 
 \description{
 Calculates the intensity by time for PTRViewer files. The calculation can be done by breathing cycle or on raw data.Breathing cycles are calculated on a reference ion (referenceBreath) with peak picking algorithms
 }
+\details{
+if 'cycle' is selected in correction option, the breathing cycles are calculated
+}

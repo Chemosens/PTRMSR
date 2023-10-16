@@ -4,12 +4,12 @@
 \alias{ptrvComparableData}
 \title{ptrvComparableData}
 \usage{
-ptrvComparableData(df, miseEnBouche = 0, stopTime = Inf, timeColumn = "time")
+ptrvComparableData(df, into = 0, stopTime = Inf, timeColumn = "time")
 }
 \arguments{
 \item{df}{data.frame with time column to be translated}
 
-\item{miseEnBouche}{Number corresponding to the starting time of tasting}
+\item{into}{Number corresponding to the starting time of tasting}
 
 \item{stopTime}{End of the tasting time}
 

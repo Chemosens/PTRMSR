@@ -17,6 +17,7 @@
 #' @param funAggregate "mean", "maximal" or "sum"
 #' @param timeCol name of the column of dataset containing the time
 #' @param colToRemove vector containing the names of the columns of datasets to be removed in the analysis (column that are neither the time nor ions names)
+#' @details if 'cycle' is selected in correction option, the breathing cycles are calculated
 #' @return a list containing the obtained result (res), ggplot object containing different plots (gg) and, if correction='cycle' the cycle results are also added (detectCycle)
 #' @export
 #' @inheritParams detectCycle
@@ -210,7 +211,6 @@ ptrvIntensityByTime=function(dataset,timeCol="RelTime",colToRemove=c("AbsTime","
 
     res2=resultMeanT
     param=list(correction=correction, maxNoise=maxNoise,sdNoise=sdNoise,avgNoise=avgNoise)
-
     res=list(res=res2,gg=list(p_smoothbreath=gg_cycles$p2,p_cyclelimits=gg_cycles$p3,p_smoothcycle=p_sc,p_breath=p_breath), detectCycle=cycles,param=param)
     return(res)
     }

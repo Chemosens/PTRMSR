@@ -4,7 +4,14 @@
 \alias{ptrvListComparableData}
 \title{ptrvListComparableData}
 \usage{
-ptrvListComparableData(df, metaData, timeColumn = "time")
+ptrvListComparableData(
+  df,
+  metaData,
+  timeColumn = "time",
+  nameInMouthMeta = "miseEnBouche_s",
+  nameFileMeta = "file",
+  nameEndMeta = "finTimeSens_s"
+)
 }
 \arguments{
 \item{df}{data.frame with time column}
@@ -12,6 +19,12 @@ ptrvListComparableData(df, metaData, timeColumn = "time")
 \item{metaData}{metaData containing these columns: "finPTR_s","miseEnBouche_s"}
 
 \item{timeColumn}{name of the time column in df}
+
+\item{nameInMouthMeta}{default to "miseEnBouche_s". Name of the column of metaData file containing the time of the beginning of the tasting (after the blank)}
+
+\item{nameFileMeta}{default to "file". Name of the column of metaData file containing the names of the files (with their extension ! for example file1.txt)}
+
+\item{nameEndMeta}{default to "finTimeSens_s". Name of the metaData column containing the end of the tasting}
 }
 \description{
 ptrvListComparableData

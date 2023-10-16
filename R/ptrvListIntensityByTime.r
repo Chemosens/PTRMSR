@@ -1,5 +1,5 @@
 #' @title ptrvListIntensityByTime
-#' A function automizing all pretreatements for
+#' A function automating all pretreatements for several files,removing the noise and the breathing biases
 #' @param listFiles list of the file names to be imported
 #' @param metaData A data.frame with colnames as "file","product","subject","rep","breathing","into","swallow","end")
 #' @param dec_vec Vector with the same length as listFiles containing the decimal separator used in the list of files

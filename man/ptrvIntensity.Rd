@@ -7,7 +7,7 @@
 ptrvIntensity(result, timePeriod = NULL, negativeAsNull = TRUE)
 }
 \arguments{
-\item{result}{is a result of ptrvIntensityByTime$res}
+\item{result}{is a result of ptrvIntensityByTime$res: a dataframe with colnames as 'time','duration','ion' and  'intensity'}
 
 \item{timePeriod}{vector with two numbers indicating an interval to calculate the intensities}
 

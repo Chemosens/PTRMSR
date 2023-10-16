@@ -65,23 +65,23 @@ ptrvReport=function(dataset,selecIons="evolving",listIons=NULL,referenceBreath,s
   if(detectingStart==TRUE)
   {
     resds2=ptrvDetectStart(res=res_cyc,starts=starts, method=methodDetectStart,noisePeriod=noisePeriodDS,proportionOfMax=proportionOfMax,startPeriod=startPeriod)
-    start0=ptrvComparableData(res_sum,miseEnBouche=resds2$tx,timeColumn = "time")
-    start1=ptrvComparableData(resTimeCyc,miseEnBouche=resds2$tx,timeColumn = "time")
+    start0=ptrvComparableData(res_sum,into=resds2$tx,timeColumn = "time")
+    start1=ptrvComparableData(resTimeCyc,into=resds2$tx,timeColumn = "time")
   }
   if(is.numeric(detectingStart))
   {
     resds2=list()
     resds2$tx=detectingStart
-    start0=ptrvComparableData(res_sum,miseEnBouche=resds2$tx,timeColumn = "time")
-    start1=ptrvComparableData(resTimeCyc,miseEnBouche=resds2$tx,timeColumn = "time")
+    start0=ptrvComparableData(res_sum,into=resds2$tx,timeColumn = "time")
+    start1=ptrvComparableData(resTimeCyc,into=resds2$tx,timeColumn = "time")
 
   }
   if(!is.numeric(detectingStart)&detectingStart!=TRUE)
   {
     resds2=list()
     resds2$tx=0
-    start0=ptrvComparableData(res_sum,miseEnBouche=resds2$tx,timeColumn = "time")
-    start1=ptrvComparableData(resTimeCyc,miseEnBouche=resds2$tx,timeColumn = "time")
+    start0=ptrvComparableData(res_sum,into=resds2$tx,timeColumn = "time")
+    start1=ptrvComparableData(resTimeCyc,into=resds2$tx,timeColumn = "time")
 
   }
 

@@ -15,60 +15,41 @@ knitr::opts_chunk$set(echo = TRUE)
 This vignette shows how to use PTRMSR package to read .txt files, calculate AUC and return statistical analyses. 
 # Generalities
 
-## Installation and settings
-
-devtools package is required to import PTRMSR package from github. To install both packages, enter:
-```{r, eval=FALSE}
-if (!require("devtools", quietly = TRUE))
-    install.packages("devtools")
-
-library(devtools)
-install_github("https://github.com/ChemoSens/PTRMSR")
-``` 
-
-Then, the PTRMSR package is installed on your computer and should be loaded with the following command:
-
-```{r, eval=FALSE}
-library(PTRMSR)
-``` 
-
 ## General principle
 In this package, the functions beginning by ptrv use a single dataset as input. The functions beginning by ptrvList use names of several files to be used and a metaData file containing information about the different files. 
 The objective of this paper is to use files produced by ptrViewer (or any other preprocessing of PTR-MS device returning files with ion, intensity and time as columns) then return curves and relevant statistics on the evaluations. 
-Several biases can be corrected:  (i) the breathing of the subject by calculating statistics by breathing cycle (use the parameter correction="cycle"), (ii) blank period during the evaluation that can be removed from the intensities (use blankCorrection = TRUE and noisePeriod=). 
+Several biases can be corrected:  (i) the breathing of the subject by calculating statistics by breathing cycle (use the parameter correction="cycle"), (ii) blank period during the evaluation that can be removed from the intensities (use blankCorrection = TRUE and noisePeriod=...). 
 Some statistics are returned.
 
-### Pipeline
-### Inputs of the packages
-
 ##Step 1: Observing the data for one or two files
+
 ## Outputs for one given file
 It could be interesting to see the raw data of one file. In this purpose, the function ptrReport returns several plots which could help to interpretation. 
 ```{r,eval=TRUE}
-print(getwd())
-wd="/./../../extdata" 
+library(PTRMSR)
+wd="./../inst/extdata" 
 setwd(wd)
 listFiles=list.files(pattern="*.txt")
 referenceBreath="m69.06906 (69.06906) (Conc)"
-file=listFiles[2]
+file=listFiles[1]
 dataset=read.table(file=file,header=TRUE,sep="\t",check.names=FALSE)
 report=ptrvReport(dataset,selecIons="evolving",
                   listIons=NULL,
                   referenceBreath=referenceBreath,
                   methodDetectStart="startPeakProportion",
-                  noisePeriodIBT=c(0,30),noisePeriodSig=c(0,30),
+                  noisePeriodIBT=c(0,25),noisePeriodSig=c(0,25),
                   noisePeriodDS=c(0,30),
-                  proportionOfMax=0.3,halfWindowSize=4,forMinExpiDivideMaxIntBy = 7,forMaxInspiDivideMaxIntBy =9)
+                  proportionOfMax=0.3,halfWindowSize=4,forMinExpiDivideMaxIntBy = 7,
+                  forMaxInspiDivideMaxIntBy =9)
 names(report$gg)
 report$gg$p_breath$p_cyclelimits
-report$gg$p_breath$p_smoothbreath
+report$gg$p_breath$p_smoothcycle
 ```
 
 Regarding the breathing cycle detection, these two outputs gives the results of cycle limits and the smooth data for breathing (useful to adjust the parameters halfWindowSize and maxPeaks)
 
 ```{r,eval=FALSE}
 plot(report$gg$p_breath$p_cyclelimits)
-plot(report$gg$p_breath$p_smoothbreath)
 ```
 
 Regarding the ions distributions
@@ -83,7 +64,7 @@ plot(report$gg$p_curves$p_breath_raw)
 plot(report$gg$p_curves$p_breath_cycle)
 ```
 
-Do not hesitate to use plotly for interactive graphs
+Do not hesitate to use plotly for interactive graphs to adjust the parameters
 ```{r,eval=FALSE}
 library(plotly)
 ggplotly(report$gg$p_curves$p_breath_raw)
@@ -94,42 +75,22 @@ ggplotly(report$gg$p_curves$p_breath_raw)
 
 ## Loading metadata
 All the data files (.txt from ptrViewer) and the metadata file (.csv) should be in a single repository (wd)
-```{r, eval=FALSE}
-wd="C:/INRA/Data/Donnees Cantin/Cantin-DTS-PTRviewer" 
-setwd(wd)
+```{r, eval=TRUE}
 listFiles=list.files(pattern="*.txt")[-1]
 metaData2=read.table("metaData2.csv",sep=";",header=T)
 head(metaData2[,-c(2:3)])
 ```
 
-## Checks
 
-
-## Analysis of PTR-Viewer files
-
-### Selection of relevant ions only
-This function returns the names of ions whose maximal intensity is 3 times higher than the maximal intensity during the noise period. It returns a list containing (i) a list containing for each file the ratio maximal intensity during the tasting/maximal intensity during the noise period, (ii) a vector (intersection) containing the ions which are significant in all files (iii) a vector (union) containing the ions which are significant in at least one file
-```{r, eval=TRUE}
-setwd(wd)
-sigIons=ptrvListSignificantSNRIons(listFiles=listFiles[1:2],
-               metaData=metaData2,noisePeriod=c(0,25))
-ionSigUnique=sigIons$union
-```
-
-
-
-To obtain further help for this (or any) function, enter: 
-```{r, eval=FALSE}
-?ptrvListSignificantSNRIons
-```
+## Analysis of several PTR-Viewer files
 
 
 ## AUC calculations
 This function allows statistics to be calculated for each file after breathing correction
 ```{r,eval=FALSE,warning=FALSE,message=FALSE,include=FALSE}
 setwd(wd)
-res_auc=ptrvListIntensityByTime(listFiles=listFiles[1:4],
-                                metaData=metaData2,ions=ionSigUnique)
+res_auc=ptrvListIntensityByTime(listFiles=listFiles,
+                                metaData=metaData2,ions=ion)
 ```
 
 The results can be saved into csv files
@@ -143,89 +104,3 @@ The stat option can be used to select the statistic.
 res_tmax=ptrvListIntensityByTime(listFiles=listFiles,metaData=metaData2,ions=ionSigUnique,stat="tmax")
 ```
 
-## Statistical analysis
-In this part, the evaluations can be normalized (a total abundance of 1 for each evaluation) or logged. 
-### PCA of observations
-```{r,eval=FALSE}
-respca=ptrvListPCA(ptrvList$totalIntensity,dataType="productMeans",log=FALSE)
-# rajouter projetions individuelles plutot qu'ellipses
-plotPCAgg(respca,type="ind")
-plotPCAgg(respca,type="var",text=FALSE)
-p=plotPCAgg(respca,type="var",text=FALSE)
-p
-library(plotly)
-ggplotly(p)
-
-p=plotPCAgg(respca,type="cor1",n=80)
-plotPCAgg(respca,type="cor2")
-
-respca=ptrvListPCA(ptrvList$totalIntensity,dataType="raw")
-p=plotPCAgg(respca,type="ind",text=FALSE)
-ggplotly(p)
-plotPCAgg(respca,type="var",text=FALSE)
-
-```
-
-### Anova results
-```{r,eval=FALSE,warning=FALSE}
-resanova=ptrvListAnova(ptrvList$totalIntensity[ptrvList$totalIntensity[,"ion"]=="m101.09",],normalizeByEval=FALSE)
-```
-
-### Heatmaps
-```{r,eval=FALSE}
-ptrvListHeatmap(df=ptrvList$totalIntensity,formula=as.formula(product+subject+rep~ion),
-                fun.aggregate="mean",clusterRows=T,clusterCols=T)
-ptrvListHeatmap(df=ptrvList$totalIntensity,formula=as.formula(product+subject+rep~ion),
-                fun.aggregate="mean",clusterRows=T,clusterCols=T)
-ptrvListHeatmap(df=ptrvList$totalIntensity,formula=as.formula(product+subject+rep~ion),
-                fun.aggregate="max",clusterRows=T,clusterCols=T)
-ptrvListHeatmap(df=ptrvList$totalIntensity,formula=as.formula(product+subject~ion),
-                fun.aggregate="max",clusterRows=T,clusterCols=T,showRownames=T)
-ptrvListHeatmap(df=ptrvList$totalIntensity,formula=as.formula(product+subject~ion),
-                fun.aggregate="mean",normalization="row",clusterRows=T,clusterCols=T,showRownames=T)
-ptrvListHeatmap(df=ptrvList$totalIntensity,formula=as.formula(product+subject~ion),
-                fun.aggregate="mean",normalization="row",clusterRows=T,clusterCols=T,showRownames=T,annotationRow="subject")
-
-```
-
-
-
-## Appendix
-### Help for filling meta-data
-```{r, eval=FALSE}
-ptrvCreateMetaFile(wd,subject=c(9,12),product=NULL,replicate=NULL,sep=";")
-metaData=read.csv("metaData.csv",sep=";",header=TRUE,dec=",")
-metaData[,"resp"]=referenceBreath
-``` 
-###[OPTIONAL] Completing meta-data file with the tasting time
-```{r, eval=FALSE}
-# courbes + lissage
- t0=tn=suj=ordre_produit=product=repet=finTS=rep(NA,nrow(metaData))
-  names(t0)=listFiles
-  for(i in 1:nrow(metaData))
-  {
-    print("dataset")
-    print(i)
-    dataset=read.table(listFiles[i],sep="\t",dec=dec_vec[i],header=T)
-    dataset[,"RelTime"]=as.numeric(dataset[,"RelTime"])
-   # dataset[,ions]=apply(dataset[,ions],2,as.numeric)
-    res_intensity=ptrvIntensityByTime(dataset,ions=ionSigAll
-                                      ,referenceBreath=referenceBreath,
-                                      correction = "cycle",
-                                      removeNoise=TRUE,breathRatio =FALSE,timeBlank=c(0,25),
-                                    halfWindowSize=12,maxPeaks=30,method="SuperSmoother",total=FALSE)
-    t0[i]=ptrvDetectStart(res=res_intensity,starts=ionSigAll, method="startPeakProportion",proportionOfMax=0.1,graph=FALSE,
-                          noisePeriod=c(0,25),startPeriod=c(25,100))$tx
-    tn[i]=max(res_intensity$res[,"time"])
-    suj[i]=substr(listFiles[i],9,12)
-    ordre_produit[i]=substr(listFiles[i],14,14)
-    tds_raw_i=tds_raw[tds_raw[,"SubjectCode"]==suj[i]&tds_raw[,"Rang.produit"]==ordre_produit[i],]
-    product[i]=unique(tds_raw_i[,"ProductCode"])
-    repet[i]=unique(tds_raw_i[,"Replicate"])
-    finTS[i]=max(tds_raw_i[,"Time"])
-  }
-metaData[,"miseEnBouche_s"]=t0;metaData[,"finPTR_s"]=tn;
-metaData[,"finTimeSens_s"]=finTS
-metaData[,"product"]=product;metaData[,"subject"]=suj;metaData[,"rep"]=repet
-write.table(metaData,file="metaData2.csv",sep=";",row.names=F,dec=".")
-```

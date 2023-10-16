@@ -1,14 +1,14 @@
-setwd("C:/Users/capeltier/Desktop/DataAnalysis/Old scripts/Christopher PTR/Caroline_Peltier/A1")
+setwd("C:/Users/capeltier/Nextcloud/MyDrive/DataAnalysis/Old scripts/Christopher PTR/Caroline_Peltier/A1")
 files=list.files()
 file=files[1]
 library(openxlsx)
 e2mb="m131.09549..Ethyl.2methylbutyrate...Conc."
 ptrvFile_i=read.table(file,sep="\t",header=T)
-tempsSequences=read.xlsx(xlsxFile="C:/Users/capeltier/Desktop/DataAnalysis/Old scripts/Christopher PTR/Caroline_Peltier/Temps_sequence.xlsx",startRow=6)[1:2,]
+tempsSequences=read.xlsx(xlsxFile="C:/Users/capeltier/Nextcloud/MyDrive/DataAnalysis/Old scripts/Christopher PTR/Caroline_Peltier/Temps_sequence.xlsx",startRow=6)[1:2,]
 startPeaks=t(as.vector(tempsSequences[tempsSequences[,"Temps.apparition"]==substr(file,8,11),-1]))
 minTime=tempsSequences[tempsSequences[,"Temps.apparition"]==substr(file,8,11),2]
 
-stat3=read.xlsx(xlsxFile="C:/Users/capeltier/Desktop/DataAnalysis/Old scripts/Christopher PTR/Caroline_Peltier/Statistique_3.xlsx")
+stat3=read.xlsx(xlsxFile="C:/Users/capeltier/Nextcloud/MyDrive/DataAnalysis/Old scripts/Christopher PTR/Caroline_Peltier/Statistique_3.xlsx")
 manual=data.frame(X1=as.numeric(stat3[stat3[,"Fichier"]==substr(file,1,23),"Latence"])/1000)
 #setwd("C:/INRA/PTRMSR/Data")
 #save(manual,file="manual.RData")
