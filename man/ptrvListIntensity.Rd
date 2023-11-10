@@ -5,89 +5,23 @@
 \title{ptrvListIntensity}
 \usage{
 ptrvListIntensity(
-  listFiles,
-  metaData = NULL,
-  sep = "\\t",
-  timeCol = "RelTime",
-  colToRemove = c("AbsTime", "Cycle"),
+  df,
   format = "wide",
-  correction = "cycle",
   stat = "area",
-  halfWindowSize = 5,
-  total = FALSE,
-  breathRatio = FALSE,
-  method = "MAD",
-  SNR = 0,
-  ions = NULL,
-  funAggregate = "mean",
-  smoothMethod = "MovingAverage",
-  minimalDuration = 2,
-  minExpi = NULL,
-  maxInspi = NULL,
-  forMinExpiDivideMaxIntBy = 5,
-  forMaxInspiDivideMaxIntBy = 4,
-  nameBreathMeta = "resp",
-  nameEndMeta = "finTimeSens_s",
-  nameInMouthMeta = "miseEnBouche_s",
-  nameFileMeta = "file",
-  removeNoise = TRUE,
-  wd = getwd()
+  timePeriod = NULL,
+  negativeAsNull = TRUE
 )
 }
 \arguments{
-\item{listFiles}{vector containing the file names of the files to be read (they are read by read.table function, header=TRUE). Please add an header to your file containing the time ("RelTime" by default -can be modified in colTime variable) a column by ion}
+\item{df}{a result of ptrvListIntensityByFiles ($res) ie a data.frame whose colnames are  'time ' 'ion' 'intensity' 'duration' 'file' and others}
 
-\item{metaData}{metaData required containing a line per file in listFiles, then a column specifying the ion to follow for breathing (in a column named as the parameter nameBreathMeta -default to resp- ), the total duration of the evaluation (in a column named as nameEndMeta -default to finTimeSens_s-), the moment of tasting (to define the noise, in a column named as nameInMouthMeta, default to 'miseEnBouche_s')}
+\item{format}{"wide" by default, can also be 'long'}
 
-\item{sep}{separator(has to be the same for all files in listFiles). Default to tabulation.}
+\item{stat}{"area" by default but can also be "tmax" or "max"}
 
-\item{timeCol}{name of the column of dataset containing the time}
+\item{timePeriod}{vector with two numbers indicating an interval to calculate the intensities}
 
-\item{colToRemove}{vector containing the names of the columns of datasets to be removed in the analysis (column that are neither the time nor ions names)}
-
-\item{format}{"wide" by default}
-
-\item{correction}{"cycle" by default.}
-
-\item{stat}{"area" by default but can also be tmax or max}
-
-\item{halfWindowSize}{parameter used to determine the smooth for the peak-picking used in break detection}
-
-\item{total}{if TRUE, the total intensity is calculated and added as a supplementary column}
-
-\item{breathRatio}{if TRUE, the ratio between the intensity of ion and the breath is calculated}
-
-\item{method}{method used for peak picking ("MAD" by default)}
-
-\item{SNR}{Signal noise ratio parameter used in peak picking}
-
-\item{ions}{vector contatining all ions to be used in the analysis (by default all ions are used)}
-
-\item{funAggregate}{"mean", "maximal" or "sum"}
-
-\item{smoothMethod}{NULL, "SavitzkyGolay" or "MovingAverage"}
-
-\item{minimalDuration}{minimalDuration of a breathing cycle (2 by default - as a accelerated breathing frequency corresponds to 20 cycles and more by minut and a low frequency is 12 and less -)}
-
-\item{minExpi}{minimal value for an expiry intensity to be detected as an expiry (blue dotted line in the plot).}
-
-\item{maxInspi}{maximal intensity of the original curve required to be considered as a breathing peak (purple dotted line in the plot)}
-
-\item{forMinExpiDivideMaxIntBy}{default to 5. When minExpi is null, it is evaluated as the ratio of the maximal intensity and forMinIntensityDivideMaxIntBy}
-
-\item{forMaxInspiDivideMaxIntBy}{default to 5. When minExpi is null, it is evaluated as the ratio of the maximal intensity and forMinIntensityDivideMaxIntBy}
-
-\item{nameBreathMeta}{default to "resp". Name of the metaData column containing the ion corresponding to breathing for each file}
-
-\item{nameEndMeta}{default to "finTimeSens_s". Name of the metaData column containing the end of the tasting}
-
-\item{nameInMouthMeta}{default to "miseEnBouche_s". Name of the column of metaData file containing the time of the beginning of the tasting (after the blank)}
-
-\item{nameFileMeta}{default to "file". Name of the column of metaData file containing the names of the files (with their extension ! for example file1.txt)}
-
-\item{removeNoise}{if TRUE, the averaged intensity obtained during the timeBlank period is removed from the signal}
-
-\item{wd}{working directory where the files of listFiles are.}
+\item{negativeAsNull}{If TRUE, all negative value are replaced by 0}
 }
 \description{
 ptrvListIntensity

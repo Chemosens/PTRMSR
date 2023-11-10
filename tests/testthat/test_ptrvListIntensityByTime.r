@@ -24,7 +24,7 @@ colnames(metaData)
 
 resNone=ptrvListIntensityByTime(listFiles=listFiles,metaData=metaData,timeCol="RelTime",colToRemove=c("AbsTime","Cycle"),
                         removeBlankTime=FALSE,ions=NULL,dec_vec=rep(".",length(listFiles)),
-                        sep="\t",correction="none",timeBlank=c(0,30),halfWindowSize=5,
+                        sep="\t",correction="none",halfWindowSize=5,
                         method="MAD",total=FALSE,breathRatio=FALSE,stat="area",minimalDuration=2,
                         smoothMethod="MovingAverage",minExpi=NULL,maxInspi=NULL,forMinExpiDivideMaxIntBy=5,
                         forMaxInspiDivideMaxIntBy=4,wd=wd)
@@ -32,15 +32,17 @@ resNone=ptrvListIntensityByTime(listFiles=listFiles,metaData=metaData,timeCol="R
 # avec metadata correction=cycle
 resCorrected=ptrvListIntensityByTime(listFiles=listFiles,metaData=metaData,timeCol="RelTime",colToRemove=c("AbsTime","Cycle"),
                         removeBlankTime=FALSE,ions=NULL,dec_vec=rep(".",length(listFiles)),
-                        sep="\t",correction="cycle",timeBlank=c(0,30),halfWindowSize=5,
+                        sep="\t",correction="cycle",halfWindowSize=5,
                         method="MAD",total=FALSE,breathRatio=FALSE,stat="area",minimalDuration=2,
                         smoothMethod="MovingAverage",minExpi=NULL,maxInspi=NULL,forMinExpiDivideMaxIntBy=5,
                         forMaxInspiDivideMaxIntBy=5,wd=wd)
 
 
-resCorrected$totalIntensity
-resCorrected$time
-resCorrected$listRes
+resCorrected$res
 
-grid.arrange(grobs=resCorrected$cycleLimits)
+#grid.arrange(grobs=resCorrected$cycleLimits)
 
+
+res_area=ptrvListIntensity(resCorrected$res)
+res_max=ptrvListIntensity(resCorrected$res,stat="max")
+res_none=ptrvListIntensity(resNone$res)

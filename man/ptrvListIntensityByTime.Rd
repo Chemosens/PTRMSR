@@ -15,7 +15,6 @@ ptrvListIntensityByTime(
   sep = "\\t",
   metaData = NULL,
   correction = "cycle",
-  timeBlank = c(0, 30),
   halfWindowSize = 5,
   method = "MAD",
   total = FALSE,
@@ -31,13 +30,13 @@ ptrvListIntensityByTime(
 )
 }
 \arguments{
-\item{listFiles}{list of the file names to be imported}
+\item{listFiles}{list of the file names to be imported. These files should contain a culmn of time (timeCol) then columns containing ions.}
 
 \item{timeCol}{name of the column of dataset containing the time}
 
 \item{colToRemove}{vector containing the names of the columns of datasets to be removed in the analysis (column that are neither the time nor ions names)}
 
-\item{removeBlankTime}{boolean. If TRUE, the time of blank time is substracted from the time column}
+\item{removeBlankTime}{boolean. If TRUE, the time of blank time is removed from the time column}
 
 \item{ions}{vector of ion to be analyzed}
 
@@ -45,11 +44,9 @@ ptrvListIntensityByTime(
 
 \item{sep}{separator used in the files to be read}
 
-\item{metaData}{A data.frame with colnames as "file","product","subject","rep","breathing","into","swallow","end")}
+\item{metaData}{A data.frame with colnames as "file","product","subject","rep","breathing","into","swallow","start","stop").See details}
 
 \item{correction}{"none" or "cycle". See Details.}
-
-\item{timeBlank}{vector of two numbers. Indicates the interval to take as a blank period.}
 
 \item{halfWindowSize}{parameter used to determine the smooth for the peak-picking used in break detection}
 
@@ -76,9 +73,20 @@ ptrvListIntensityByTime(
 \item{wd}{working directory where the files of listFiles are.}
 }
 \value{
-a list containing : total intensity: AUC (or tmax, etc) in a long format, time: data containing the corrected timepoints, listRes: AUC in a wide format
+a list containing :  res (data containing the corrected timepoints), metaData, cycleLimits and call.
 }
 \description{
 ptrvListIntensityByTime
 A function automating all pretreatements for several files,removing the noise and the breathing biases
+}
+\details{
+The "file" column of metaData correspond to the identifier of an evaluation.
+The 'start' column contains the time corresponding to the beginning of the measurement (when the subject begins to breath in PTR device)
+The "into" column correspond to the time when the sample is put into the mouth of the subject. The blank period is calculated as between the 'start' and the 'into" period.
+The 'nothing' column is not useful for this version of package but should contain the time when the subject has nothing more in the mouth
+The 'stop' column contains the time of the end of the evaluation (not the time of swallowing)
+The 'swallow"  column should contain the time of swallowing but is not used in this version of the package.
+The 'breathing"  column should contains the name of the ion used to evaluate breathing  (the name of the column of your files that contains isoprene or acetone, for example)
+
+Remark: maxInspi and minExpi can also take the value 'median' that indicates that the median of the breathing ion intensity is chosen as limit to detect inspiration or expiration as peak
 }

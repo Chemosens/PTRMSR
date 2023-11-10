@@ -99,7 +99,7 @@ detectCycle=function(df,minExpi=NULL,maxInspi=NULL,smoothMethod="MovingAverage",
     interestingTimes=MSnbase::mz(respicks)
   }
 
-  if(length(interestingTimes)==0){warning("no peak detected. Maybe choose maxInspi higher ?(or forMaxInspiDivideMaxIntBy")}
+  if(length(interestingTimes)==0){warning("detectCycles: no peak detected. Maybe choose maxInspi higher ?(or forMaxInspiDivideMaxIntBy")}
 
 
   timeToUseForBreathing=unique(c(timePeriod[1],interestingTimes,timePeriod[2]))
@@ -112,13 +112,15 @@ detectCycle=function(df,minExpi=NULL,maxInspi=NULL,smoothMethod="MovingAverage",
   for(i in 1:(length(timeToUseForBreathing)-1))
   {
    # print(i)
-    intensityPerCycle=df[df[,"time"]>=timeToUseForBreathing[i]  & df[,"time"]<=timeToUseForBreathing[i+1],"intensity"]
+    cycleIndex=df[,"time"]>=timeToUseForBreathing[i]  & df[,"time"]<=timeToUseForBreathing[i+1]
+    timeCycle=df[cycleIndex,"time"]
+    intensityPerCycle=df[ cycleIndex,"intensity"]
     maxIntensityPerCycle[i]=max(intensityPerCycle,na.rm=T)
-    dfInt=df[df[,"time"]==timeToUseForBreathing[i+1] ,"intensity"]
-    if(length(dfInt)==1)
-    {
-      Inspiration[i]=dfInt
-    }
+    # dfInt=df[df[,"time"]==timeToUseForBreathing[i+1] ,"intensity"]
+    # if(length(dfInt)==1)
+    # {
+      Inspiration[i]=intensityPerCycle[which.max(timeCycle)]
+#    }
 
     if(!is.null(mobileMinExpi)){minExpiCycle[i]=mean(minExpi[df[,"time"]==timeToUseForBreathing[i+1]],na.rm=T)}
     if(!is.null(mobileMaxInspi)){maxInspiCycle[i]=mean(maxInspi[df[,"time"]==timeToUseForBreathing[i+1]],na.rm=T)}
@@ -131,8 +133,12 @@ detectCycle=function(df,minExpi=NULL,maxInspi=NULL,smoothMethod="MovingAverage",
   peakTable[,"toRemove"]=FALSE
   if(is.null(mobileMinExpi)&is.null(mobileMaxInspi))
   {
-    peakTable[durationPerCycle<minimalDuration|Inspiration>maxInspi|maxIntensityPerCycle<minExpi,"toRemove"]=TRUE
-    removingStrangeCycles=which(durationPerCycle<minimalDuration|Inspiration>maxInspi|maxIntensityPerCycle<minExpi)+1
+    indexToRemove=!is.na(Inspiration)& durationPerCycle<minimalDuration|Inspiration>maxInspi|maxIntensityPerCycle<minExpi
+    if(length(indexToRemove)>0)
+    {
+      peakTable[indexToRemove,"toRemove"]=TRUE
+      removingStrangeCycles=which(indexToRemove)+1
+    }
   }
   else
   {

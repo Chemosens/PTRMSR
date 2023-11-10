@@ -1,6 +1,7 @@
-#' @param listFiles
+#' @param listFiles the list of files to be read
+#' @param sep separator of the files
 #' @export
-diagnosis=function(listFiles)
+diagnosis=function(listFiles,sep=sep)
 {
   comparisonOfColumns=function(colnamesfiles)
   {
@@ -22,7 +23,7 @@ diagnosis=function(listFiles)
   colnamesfiles=list()
   for(file in listFiles)
   {
-    datafile=read.table(file,sep="\t",header=TRUE)
+    datafile=read.table(file,sep=sep,header=TRUE)
     ncolfile[file]=ncol(datafile)
     colnamesfiles[[file]]=colnames(datafile)
   }

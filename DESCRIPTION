@@ -4,8 +4,7 @@ Title: Analysis of PTRMS data
 Version: 0.1.0
 Author: Caroline Peltier
 Maintainer: Caroline Peltier <caroline.peltier@inrae.fr>
-Description: R for PTR-MS data (from PTR-Viewer)
-    It is used for pretreatement for correcting breathing.
+Description: R for PTR-MS data (from PTR-Viewer).It is used for pretreatement for correcting breathing.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true

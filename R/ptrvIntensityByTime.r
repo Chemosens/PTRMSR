@@ -40,7 +40,8 @@ ptrvIntensityByTime=function(dataset,timeCol="RelTime",colToRemove=c("AbsTime","
       ions=colnames(dataset)[-indToRemove]
     }
 
-    }else{ions=unique(c(referenceBreath,ions))}
+  }else{ions=unique(c(referenceBreath,ions))}
+
   if(any(colnames(dataset)%in%colToRemove)){dataset=dataset[,-which(colnames(dataset)%in%colToRemove)]}
   if(correction=="cycle")
   {
