@@ -30,12 +30,24 @@ ptrvListIntensityByTime=function(listFiles,timeCol="RelTime",colToRemove=c("AbsT
   if(!"into"%in%colnames(metaData)){stop("'into' should be a colname of metaData")}
   if(!"breathing"%in%colnames(metaData)){stop("'breathing' should be a colname of metaData")}
   if(!"file"%in%colnames(metaData)){stop("'file' should be a colname of metaData")}
+
   cycleLimits=NULL
   match.arg(stat ,c("sum","moy","sd","n","min","max","tmax","area"))
   call=list(ions=ions,correction=correction,halfWindowSize=halfWindowSize,method=method)
   res=data.frame()
   result_df=data.frame()
   if(is.null(metaData)){stop("Please enter a metaData data.frame with 'file', 'start', 'stop', 'into' and 'breathing' as columns")}
+  minExpiMedian=maxInspiMedian=FALSE
+  if(!is.null(minExpi))
+  {
+    if(minExpi=="median")  {minExpiMedian=TRUE}
+  }
+
+  if(!is.null(maxInspi))
+  {
+    if(maxInspi=="median"){maxInspiMedian=TRUE}
+  }
+
   for(i in 1:length(listFiles))
   {
    file=listFiles[i]
@@ -45,17 +57,15 @@ ptrvListIntensityByTime=function(listFiles,timeCol="RelTime",colToRemove=c("AbsT
 
    metaInfo=metaData[metaData[,"file"]==file,]
    if(!file%in%metaData[,"file"]){stop(paste0(file," is not in metaData"))}
-   if(!is.null(minExpi))
+   if(minExpiMedian)
    {
-     if(minExpi=="median")
-     {minExpi=median(dataset[,metaInfo[1,"breathing"]])}
-   }
+     minExpi=median(dataset[,metaInfo[1,"breathing"]])
+    }
 
-   if(!is.null(maxInspi))
+   if(maxInspiMedian)
    {
-     if(maxInspi=="median"){maxInspi=median(dataset[,metaInfo[1,"breathing"]])}
+     maxInspi=median(dataset[,metaInfo[1,"breathing"]])
    }
-
    result_all=ptrvIntensityByTime(dataset=dataset,timeCol=timeCol, colToRemove=colToRemove,ions=ions,referenceBreath=metaInfo[1,"breathing"],
                                    timeStart=metaInfo[1,"start"],correction=correction,timePeriod=c(metaInfo[1,"start"],metaInfo[1,"stop"]),
                                    removeNoise=TRUE,timeBlank = c(metaInfo[1,"start"],metaInfo[1,"into"]),

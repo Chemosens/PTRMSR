@@ -45,7 +45,6 @@ detectCycle=function(df,minExpi=NULL,maxInspi=NULL,smoothMethod="MovingAverage",
   }
 
 
-
   # The spectra is returned for identifying Inspirations
   sp1=new("Spectrum1",mz=df[!is.na(df[,"intensity"]),"time"],intensity=maxInt-df[!is.na(df[,"intensity"]),"intensity"],centroided=F)
   spSmoothed=MSnbase::smooth(sp1,method=smoothMethod,halfWindowSize = halfWindowSize)
@@ -195,7 +194,7 @@ detectCycle=function(df,minExpi=NULL,maxInspi=NULL,smoothMethod="MovingAverage",
   param=c(minExpi=minExpi,maxInspi=maxInspi,smoothMethod=smoothMethod,method=method,
           halfWindowSize=halfWindowSize,timePeriod=timePeriod,SNR=SNR,minimalDuration=minimalDuration,forMinExpiDivideMaxIntBy=forMinExpiDivideMaxIntBy,forMaxInspiDivideMaxIntBy=forMaxInspiDivideMaxIntBy,mobileMinExpi=mobileMinExpi,mobileMaxInspi=mobileMaxInspi,mobileK=mobileK)
 
-  if(length(timeToUseForBreathing)==1){warning("No peak was detected. Please change the parameters: minimalDuration (is it in the proper unity?),
+  if(length(timeToUseForBreathing)==1){stop("No peak was detected. Please change the parameters: minimalDuration (is it in the proper unity?),
                                                maxInspi or minExpi (is that coherent with the data?). ")}
  return(list(cycles=timeToUseForBreathing,gg=list(p2=p2,p3=p3),finalPeakTable=finalPeakTable,peakTable=peakTable,param=param))
 }

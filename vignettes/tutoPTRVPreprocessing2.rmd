@@ -1,0 +1,77 @@
+---
+title: "Using PTRMSR for automatizing pre-processing"
+output:
+  pdf_document: default
+  toc: false
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+\tableofcontents
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+This vignette shows how to use PTRMSR package to read .txt files, calculate AUC and return statistical analyses. 
+
+## General principle
+In this package, the functions beginning by ptrv use a single dataset as input. The functions beginning by ptrvList use names of several files to be used and a metaData file containing information about the different files. 
+The objective of this paper is to use files produced by ptrViewer (or any other preprocessing of PTR-MS device returning files with ion, intensity and time as columns) then return curves and relevant statistics on the evaluations. 
+Several biases can be corrected:  (i) the breathing of the subject by calculating statistics by breathing cycle (use the parameter correction="cycle"), (ii) blank period during the evaluation that can be removed from the intensities (use blankCorrection = TRUE and noisePeriod=...). 
+Some statistics are returned.
+
+## Loading the library
+```{r,eval=FALSE}
+library(PTRMSR)
+```
+
+## Loading metadata and list of files to be processed
+All the data files (.txt from ptrViewer) and the metadata file (.csv) should be in a single repository 
+```{r, eval=TRUE}
+repo="./../inst/extdata"
+listFiles=list.files(repo,pattern="*.txt")
+metaData=read.table(paste0(repo,"/metaData.csv"),sep=";",header=T)
+head(metaData)
+```
+
+
+
+## AUC calculations of several PTR-Viewer files with noise and breathing correction
+This function allows statistics to be calculated for each file after breathing correction
+```{r,eval=FALSE,warning=FALSE,message=FALSE,include=FALSE}
+setwd(repo)
+res_auc=ptrvListIntensityByTime(listFiles=listFiles,
+                                metaData=metaData,ions=c("m31.0183", "m31.0259", "m33.0324"))
+head(res_auc$listRes)
+```
+
+The results can be saved into csv files
+```{r,eval=FALSE}
+write.table(file="auc.csv",sep=";",res_auc$listRes,row.names=F)
+```
+
+The stat option can be used to select the statistic.
+```{r,eval=FALSE}
+res_tmax=ptrvListIntensityByTime(listFiles=listFiles,metaData=metaData,ions=c("m31.0183", "m31.0259",
+                                                                              "m33.0324"),stat="tmax")
+```
+
+The breathing cycles can be observed with this command.
+```{r,eval=FALSE}
+grid.arrange(grobs=res_tmax$cycleLimits[1:4])
+```
+
+## Documentations on the functions are available in the R documentation
+```{r,eval=FALSE}
+?detectCycle
+?ptrvIntensityByTime # for only one dataset, 
+?ptrvIntensity # for summarizing the time of one dataset
+?ptrvListIntensityByTime # for only one dataset, 
+?ptrvListIntensity # for summarizing several datasets
+```
+
+

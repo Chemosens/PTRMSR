@@ -56,6 +56,9 @@ ptrvIntensityByTime=function(dataset,timeCol="RelTime",colToRemove=c("AbsTime","
 
   if(!is.null(timePeriod))
   {
+    if(is.na(timePeriod[1])|!is.numeric(timePeriod[1])){stop("Please enter a time period with two numbers (the start time seems to be not numeric)")}
+    if(is.na(timePeriod)[2]|!is.numeric(timePeriod[2])){stop("Please enter a time period with two numbers (the stop time seems to be not numeric)")}
+
       dataset=dataset[dataset[,timeCol]<timePeriod[2]&dataset[,timeCol]>timePeriod[1],]
   }
   dataset[,timeCol]=as.numeric(as.character(dataset[,timeCol]))
@@ -114,7 +117,8 @@ ptrvIntensityByTime=function(dataset,timeCol="RelTime",colToRemove=c("AbsTime","
     res1=res[res[,"ion"]==as.character(referenceBreath),c("time","intensity")]
     colnames(res1)=c("time","intensity")
     #print(res1)
-    cycles=detectCycle(df=res1,smoothMethod=smoothMethod,method=method,halfWindowSize=halfWindowSize,timePeriod=timePeriod,SNR=SNR,minimalDuration=minimalDuration, minExpi=minExpi,maxInspi=maxInspi,forMinExpiDivideMaxIntBy=forMinExpiDivideMaxIntBy,forMaxInspiDivideMaxIntBy=forMaxInspiDivideMaxIntBy)
+    cycles=detectCycle(df=res1,smoothMethod=smoothMethod,method=method,halfWindowSize=halfWindowSize,timePeriod=timePeriod,SNR=SNR,minimalDuration=minimalDuration,
+                       minExpi=minExpi,maxInspi=maxInspi,forMinExpiDivideMaxIntBy=forMinExpiDivideMaxIntBy,forMaxInspiDivideMaxIntBy=forMaxInspiDivideMaxIntBy)
    # cycles=detectCycle(df=res1,maxPeaks=maxPeaks,smoothMethod=smoothMethod,method=method,halfWindowSize=5,maximum=max(dataset[,"RelTime"]),SNR=SNR,minimalDuration=0.5)
 
     gg_cycles=cycles$gg

@@ -4,7 +4,7 @@
 #' @return a list containing ncol (the number of column in each file) and colnames (the colnames in each file). They should be identical.
 #' @export
 #' @importFrom stats sd median
-diagnosis=function(listFiles)
+diagnosis=function(listFiles,sep=sep)
 {
   comparisonOfColumns=function(colnamesfiles)
   {
@@ -26,7 +26,7 @@ diagnosis=function(listFiles)
   colnamesfiles=list()
   for(file in listFiles)
   {
-    datafile=read.table(file,sep="\t",header=TRUE)
+    datafile=read.table(file,sep=sep,header=TRUE)
     ncolfile[file]=ncol(datafile)
     colnamesfiles[[file]]=colnames(datafile)
   }
