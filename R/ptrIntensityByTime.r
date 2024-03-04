@@ -5,7 +5,7 @@
 #'@param integrationTable If not NULL, gives the intensity by time according to an integrationTable
 #'@export
 #' @title ptrvIntensity
-ptrIntensityByTime=function(ptr,rt=NULL,mz=NULL,integrationTable=NULL)
+ptrIntensityByTime=function(ptr,rt=NULL,mz=NULL,integrationTable=NULL,concentration=NULL,primaryIons=NULL)
 {
   Time=ptr$Time
   duplicatedTime=duplicated(Time)
