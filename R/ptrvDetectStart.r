@@ -68,7 +68,7 @@
 ptrvDetectStart=function(res,starts,method="startPeakProportion",proportionOfMax=0.1,multiplyNoiseBy=3,
                          peakChoice="maxIntensity",statOfNoise="max",noisePeriod=NULL,timeChoice="interpolation",
                          startPeriod=NULL,smooth=FALSE,nPoints=1,order=1,firstAmongHighThreshold=50,
-                         detectionThreshold=NULL)
+                         detectionThreshold=NULL, detection="beforePeak")
 {
   # Internal functions
   closestTime=function(vec,number,option="lower")
@@ -92,7 +92,7 @@ ptrvDetectStart=function(res,starts,method="startPeakProportion",proportionOfMax
 
     }
   }
-  choosePeak=function(resion,startPeriod,period,peakChoice,smooth,nPoints,firstAmongHighThreshold,detectionThreshold)
+  choosePeak=function(resion,startPeriod,period,peakChoice,smooth,nPoints,firstAmongHighThreshold,detectionThreshold,detection="beforePeak")
   {
   # resion df containing time, intensity as column
   # nPoints : required for smoothing in pickingPeaks
@@ -272,16 +272,37 @@ ptrvDetectStart=function(res,starts,method="startPeakProportion",proportionOfMax
             {
               if(!is.na(t_peak))
               {
-                t0=closestTime(resion[indexes,"time"],number=t_peak,option="lower")
-                if(!is.na(t0))
+                if(detection=="beforePeak")
                 {
-                  if(t0<=t_peak)
+                  t0=closestTime(resion[indexes,"time"],number=t_peak,option="lower")
+                  if(!is.na(t0))
                   {
-                    ind=which(resion[,"time"]==t0)
-                    tx_tmp=chooseTime(resion=resion,t0=t0,ind=ind,Ix=Ix,timeChoice=timeChoice)
-                  }
-                  if(t0>t_peak){ t0=tx_tmp=NA; diagnosis[start]="IntensityNotReached"}
-                }else{tx_tmp=NA;diagnosis[start]="IntensityNotReached"}
+
+                    if(t0<=t_peak)
+                    {
+                      ind=which(resion[,"time"]==t0)
+                      tx_tmp=chooseTime(resion=resion,t0=t0,ind=ind,Ix=Ix,timeChoice=timeChoice)
+                    }
+                    if(t0>t_peak){ t0=tx_tmp=NA; diagnosis[start]="IntensityNotReached"}
+
+                  }else{tx_tmp=NA;diagnosis[start]="IntensityNotReached"}
+                }
+                if(detection=="afterPeak")
+                {
+                  t0=closestTime(resion[indexes,"time"],number=t_peak,option="higher")
+                  if(!is.na(t0))
+                  {
+
+                    if(t0>=t_peak)
+                    {
+                      ind=which(resion[,"time"]==t0)
+                      tx_tmp=chooseTime(resion=resion,t0=t0,ind=ind,Ix=Ix,timeChoice=timeChoice)
+                    }
+                    if(t0<t_peak){ t0=tx_tmp=NA; diagnosis[start]="IntensityNotReached"}
+
+                  }else{tx_tmp=NA;diagnosis[start]="IntensityNotReached"}
+                }
+
               }else{tx_tmp=NA}
             }
           }else{tx_tmp=NA}

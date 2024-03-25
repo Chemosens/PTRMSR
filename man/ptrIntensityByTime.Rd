@@ -4,7 +4,14 @@
 \alias{ptrIntensityByTime}
 \title{ptrIntensityByTime}
 \usage{
-ptrIntensityByTime(ptr, rt = NULL, mz = NULL, integrationTable = NULL)
+ptrIntensityByTime(
+  ptr,
+  rt = NULL,
+  mz = NULL,
+  integrationTable = NULL,
+  concentration = NULL,
+  primaryIons = NULL
+)
 }
 \arguments{
 \item{ptr}{a ptr object (from ptrRead function)}

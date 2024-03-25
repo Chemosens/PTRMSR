@@ -58,8 +58,7 @@ ptrvIntensityByTime=function(dataset,timeCol="RelTime",colToRemove=c("AbsTime","
   {
     if(is.na(timePeriod[1])|!is.numeric(timePeriod[1])){stop("Please enter a time period with two numbers (the start time seems to be not numeric)")}
     if(is.na(timePeriod)[2]|!is.numeric(timePeriod[2])){stop("Please enter a time period with two numbers (the stop time seems to be not numeric)")}
-
-      dataset=dataset[dataset[,timeCol]<timePeriod[2]&dataset[,timeCol]>timePeriod[1],]
+    dataset=dataset[dataset[,timeCol]<timePeriod[2]&dataset[,timeCol]>timePeriod[1],]
   }
   dataset[,timeCol]=as.numeric(as.character(dataset[,timeCol]))
   dataset[,timeCol]=dataset[,timeCol]-timeStart
@@ -156,12 +155,13 @@ ptrvIntensityByTime=function(dataset,timeCol="RelTime",colToRemove=c("AbsTime","
     maxNoise=sdNoise=avgNoise=rep(NA,length(unique(res[,"ion"])));
     names(avgNoise)=names(maxNoise)=names(sdNoise)=unique(res[,"ion"])
   #  print("beforeRemoved")
+    if(!is.null(timePeriod))
+    {
+      if(timeBlank[1]<timePeriod[1]||timeBlank[2]>timePeriod[2]){stop("timeBlank period should be included in timePeriod")}
+    }
     if(removeNoise)
     {
-      if(!is.null(timePeriod))
-      {
-        if(timeBlank[1]<timePeriod[1]||timeBlank[2]>timePeriod[2]){stop("No noise possible with timeblank not in the chosen interval")}
-      }
+
      resultMeanT2=NULL
       for(ion in unique(res[,"ion"]))
       {

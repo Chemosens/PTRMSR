@@ -14,9 +14,9 @@ manual=data.frame(X1=as.numeric(stat3[stat3[,"Fichier"]==substr(file,1,23),"Late
 #save(manual,file="manual.RData")
 #save(startPeaks,file="startPeaks.RData")
 #save(ptrvFile_i,file="ptrvFile_i.RData")
-data(manual)
+#data(manual)
 #data(stimulation)
-data(ptrvFile_i)
+#data(ptrvFile_i)
 res=detectStartsInFile(ptrFile_i=ptrvFile_i,ion=e2mb,startPeaks=startPeaks,nPoints=31,multiplyNoiseBy=2.576 ,statOfNoise="blperiod",smooth=TRUE,proportionOfMax=0.005,order=2,peakChoice="firstAmongHigh")
 res_manual=detectStartsInFile(ptrFile_i=ptrvFile_i,ion=e2mb,startPeaks=startPeaks,nPoints=31,multiplyNoiseBy=2.576 ,statOfNoise="blperiod",smooth=TRUE,proportionOfMax=0.005,order=2,peakChoice="firstAmongHigh",manual=manual)
 

@@ -19,7 +19,8 @@ ptrvDetectStart(
   nPoints = 1,
   order = 1,
   firstAmongHighThreshold = 50,
-  detectionThreshold = NULL
+  detectionThreshold = NULL,
+  detection = "beforePeak"
 )
 }
 \arguments{

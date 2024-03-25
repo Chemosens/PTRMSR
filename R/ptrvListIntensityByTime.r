@@ -54,7 +54,6 @@ ptrvListIntensityByTime=function(listFiles,timeCol="RelTime",colToRemove=c("AbsT
    print(paste0(i,"/",length(listFiles)))
    pathFile=paste0(wd,"/",file)
    dataset=read.table(pathFile,sep=sep,header=T,dec=dec_vec[i])
-
    metaInfo=metaData[metaData[,"file"]==file,]
    if(!file%in%metaData[,"file"]){stop(paste0(file," is not in metaData"))}
    if(minExpiMedian)

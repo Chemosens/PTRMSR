@@ -8,7 +8,7 @@ Description: R for PTR-MS data (from PTR-Viewer).It is used for pretreatement fo
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 Depends: R (>= 3.5.0)
 VignetteBuilder: knitr
 Imports: MSnbase,gridExtra, plyr, reshape2, rhdf5, stats, utils,ggplot2,pheatmap,CSUtils,signal,car, lme4, lmerTest, lsmeans, multcomp
