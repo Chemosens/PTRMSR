@@ -22,6 +22,8 @@ ptrvListIntensityByTime(
   stat = "area",
   minimalDuration = 2,
   smoothMethod = "MovingAverage",
+  spar = NULL,
+  smoothMethodBreath = "MovingAverage",
   minExpi = NULL,
   maxInspi = NULL,
   forMinExpiDivideMaxIntBy = 5,

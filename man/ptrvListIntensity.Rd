@@ -19,7 +19,7 @@ ptrvListIntensity(
 
 \item{stat}{"area" by default but can also be "tmax" or "max"}
 
-\item{timePeriod}{vector with two numbers indicating an interval to calculate the intensities}
+\item{timePeriod}{calculates on a specific time period. If not null, can be a vector with two values (start and stop) or a data.frame whose colnames are file, start and stop}
 
 \item{negativeAsNull}{If TRUE, all negative value are replaced by 0}
 }

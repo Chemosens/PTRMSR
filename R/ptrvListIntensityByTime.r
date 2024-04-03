@@ -22,7 +22,7 @@
 #' @inheritParams ptrvIntensityByTime
 #' @export
 #'
-ptrvListIntensityByTime=function(listFiles,timeCol="RelTime",colToRemove=c("AbsTime","Cycle"),removeBlankTime=FALSE,ions=NULL,dec_vec=rep(".",length(listFiles)),sep="\t",metaData=NULL,correction="cycle",halfWindowSize=5,method="MAD",total=FALSE,breathRatio=FALSE,stat="area",minimalDuration=2,smoothMethod="MovingAverage",minExpi=NULL,maxInspi=NULL,forMinExpiDivideMaxIntBy=5,forMaxInspiDivideMaxIntBy=4,wd=getwd())
+ptrvListIntensityByTime=function(listFiles,timeCol="RelTime",colToRemove=c("AbsTime","Cycle"),removeBlankTime=FALSE,ions=NULL,dec_vec=rep(".",length(listFiles)),sep="\t",metaData=NULL,correction="cycle",halfWindowSize=5,method="MAD",total=FALSE,breathRatio=FALSE,stat="area",minimalDuration=2,smoothMethod="MovingAverage",spar=NULL,smoothMethodBreath="MovingAverage",minExpi=NULL,maxInspi=NULL,forMinExpiDivideMaxIntBy=5,forMaxInspiDivideMaxIntBy=4,wd=getwd())
 {
 
   if(!"start"%in%colnames(metaData)){stop("'start' should be a colname of metaData corresponding to the start of the evaluation")}
@@ -69,15 +69,22 @@ ptrvListIntensityByTime=function(listFiles,timeCol="RelTime",colToRemove=c("AbsT
                                    timeStart=metaInfo[1,"start"],correction=correction,timePeriod=c(metaInfo[1,"start"],metaInfo[1,"stop"]),
                                    removeNoise=TRUE,timeBlank = c(metaInfo[1,"start"],metaInfo[1,"into"]),
                                    halfWindowSize=halfWindowSize,method=method,total=total,breathRatio=breathRatio,
-                                   smoothMethod=smoothMethod,minimalDuration=minimalDuration,minExpi=minExpi,maxInspi=maxInspi,
+                                   smoothMethod=smoothMethodBreath,minimalDuration=minimalDuration,minExpi=minExpi,maxInspi=maxInspi,
                                    forMinExpiDivideMaxIntBy=forMinExpiDivideMaxIntBy,forMaxInspiDivideMaxIntBy=forMaxInspiDivideMaxIntBy)
     cycleLimits[[i]]=result_all$gg$p_cyclelimits
+
     result_all_df=result_all$res
+
+    #result_all_df=ptrvSmooth(dataset=result_all_df,smoothMethod=smoothMethod,spar=spar,sameTime=TRUE,time_x=NULL,method="Spline",negativeValuesToZero=TRUE)
+
+    #result_all_df=ptrvRemoveNoise()
+
     result_all_df[,"file"]=file
     result_all_df[,"product"]=metaInfo["product"]
     result_all_df[,"subject"]=metaInfo["subject"]
     result_all_df[,"rep"]=metaInfo["rep"]
     if(removeBlankTime){ result_all_df=ptrvComparableData(df=result_all_df,into=metaInfo[i,"into"],timeColumn="time")}
+
     result_df=rbind(result_df,result_all_df)
   #   res_cycle=ptrvIntensity(result_all_df)[,c("ion",stat)]
   #

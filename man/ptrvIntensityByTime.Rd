@@ -13,7 +13,7 @@ ptrvIntensityByTime(
   timePeriod = NULL,
   ions = NULL,
   funAggregate = "mean",
-  removeNoise = TRUE,
+  removeNoise = FALSE,
   timeBlank = c(0, 30),
   total = FALSE,
   breathRatio = FALSE,
@@ -30,7 +30,7 @@ ptrvIntensityByTime(
 )
 }
 \arguments{
-\item{dataset}{whose names are IN THIS ORDER: RelTime, Cycle, Ion1,... ,Ionp.}
+\item{dataset}{whose names are timeCol, Ion1,... ,Ionp.}
 
 \item{timeCol}{name of the column of dataset containing the time}
 

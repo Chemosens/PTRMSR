@@ -26,7 +26,7 @@ ptrvReport(
 )
 }
 \arguments{
-\item{dataset}{whose names are IN THIS ORDER: RelTime, Cycle, Ion1,... ,Ionp.}
+\item{dataset}{whose names are timeCol, Ion1,... ,Ionp.}
 
 \item{selecIons}{if "evolving", the selected ions are the ones found as significant in ptrvSignificantSNRIons with noisePeriodSig and max method.If "namely", only the ions present in listIons are selected}
 

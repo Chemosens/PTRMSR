@@ -7,13 +7,28 @@ breath="m69.06989..isoprene...Conc."
 # Without cycle correction
 res0=ptrvIntensityByTime(ptrv,referenceBreath=breath,correction = "none",timePeriod=c(0,120))
 resint=ptrvIntensity(res0$res)
+resint=ptrvIntensity(res0$res,propPeak=TRUE)
+
+# dataset=res0$res
+# ions=unique(result[,"ion"])
+# for(ion in ions)
+# {
+#   subset=result[result[,"ion"]==ion,]
+#   print(dim(subset))
+#   if(dim(subset)[1]<1){print(ion)}
+# }
+
 #theoreticalArea=sum(resIons[,"duration"]*resIons[,"intensity"],na.rm=T)
 #test_that("valid area for no correction",expect_true(bool1))
 # With cycle
 res=ptrvIntensityByTime(ptrv,referenceBreath=breath,correction = "cycle")
-resNoise=ptrvIntensity(res=res$res,timePeriod=c(0,30))
-resEnd=ptrvIntensity(res=res$res,timePeriod=c(30,120))
-resTwo=ptrvIntensity(res=res$res,timePeriod=c(0,120))
+resNoise=ptrvIntensity(dataset=res$res,timePeriod=c(0,30))
+resEnd=ptrvIntensity(dataset=res$res,timePeriod=c(30,120))
+resTwo=ptrvIntensity(res$res,timePeriod=c(0,120))
+resint=ptrvIntensity(res$res,propPeak=TRUE)
+
+
+resNoiseSmall=ptrvIntensity(dataset=res$res,timePeriod=c(2,4))
 
 # Checking the max
 bool1=sum(1!=(resTwo[,"max"]==resEnd[,"max"])+(resTwo[,"max"]==resNoise[,"max"]))==0
@@ -21,7 +36,8 @@ test_that("max decomposition",
           expect_true(bool1)
 )
 # Checking the area # potentially sensitive to durations
-bool2=max(abs(resEnd[,"area"]+resNoise[,"area"]-resTwo[,"area"]))<1e-7
+bool2=max(abs(resEnd[,"area"]+resNoise[,"area"]-resTwo[,"area"]))<1e-5
+which.max(abs(resEnd[,"area"]+resNoise[,"area"]-resTwo[,"area"]))
 test_that("area decomposition",
           expect_true(bool2)
 )

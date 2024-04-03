@@ -1,50 +1,58 @@
-#' @param  result is a result of ptrvIntensityByTime$res: a dataframe with colnames as 'time','duration','ion' and  'intensity'
+#' @param  dataset is a result of ptrvIntensityByTime$res: a dataframe with colnames as 'time','duration','ion' and  'intensity'
 #' @param negativeAsNull If TRUE, all negative value are replaced by 0
 #' @param  timePeriod vector with two numbers indicating an interval to calculate the intensities
 #' @export
 #' @title ptrvIntensity
 #' @importFrom reshape2 dcast
 #' @importFrom stats sd
-ptrvIntensity=function(result,timePeriod=NULL,negativeAsNull=TRUE)
+ptrvIntensity=function(dataset,timePeriod=NULL,negativeAsNull=TRUE,propPeak=FALSE, proportion=0.75,timing="last")
 {
-   if(is.null(timePeriod)){timePeriod=c(min(result[,"time"]),max(result[,"time"]))}
-  if(negativeAsNull){result[result<0]=0}
+  if(is.null(timePeriod)){timePeriod=c(min(dataset[,"time"]),max(dataset[,"time"]))}
+  if(negativeAsNull){dataset[dataset<0]=0}
 
-  result=result[result[,"time"]>=timePeriod[1]&result[,"time"]<=timePeriod[2],]
-
-  resultMax0=dcast(result,ion~., value.var="intensity",fun.aggregate=function(x) return(max(x,na.rm=T)))
-  resultMin0=dcast(result,ion~., value.var="intensity",fun.aggregate=function(x) return(min(x,na.rm=T)))
-
-  resultMean0=dcast(result,ion~., value.var="intensity",fun.aggregate=function(x) return(mean(x,na.rm=T)))
-  resultSd0=dcast(result,ion~., value.var="intensity",fun.aggregate=function(x) return(sd(x,na.rm=T)))
-  resultN0=dcast(result,ion~., value.var="intensity",fun.aggregate=function(x) return(sum(!is.na(x),na.rm=T)))
-
-  resultSum0=dcast(result,ion~., value.var="intensity",fun.aggregate=function(x) return(sum(x,na.rm=T)))
-  colnames(resultMax0)=colnames(resultSd0)=colnames(resultN0)=colnames(resultMean0)=colnames(resultSum0)=colnames(resultMin0)=c("ion","intensity")
-  resultFinal=data.frame(ion=resultSum0[,"ion"],sum=resultSum0[,"intensity"],moy=resultMean0[,"intensity"],max=resultMax0[,"intensity"],min=resultMin0[,"intensity"],n=resultN0[,"intensity"],sd=resultSd0[,"intensity"])
-
-  res_wide=dcast(result[,c("time","ion","intensity")],time~ion,value.var="intensity",fun.aggregate=function(x){return(max(x,na.rm=T))})
+  dataset=dataset[dataset[,"time"]>=timePeriod[1]&dataset[,"time"]<=timePeriod[2],]
+  if(dim(dataset)[1]==0){stop("No time in this time period.")}
+  datasetMax0=dcast(dataset,ion~., value.var="intensity",fun.aggregate=function(x) return(max(x,na.rm=T)),fill=0)
+  datasetMin0=dcast(dataset,ion~., value.var="intensity",fun.aggregate=function(x) return(min(x,na.rm=T)),fill=0)
+  datasetMean0=dcast(dataset,ion~., value.var="intensity",fun.aggregate=function(x) return(mean(x,na.rm=T)),fill=0)
+  datasetSd0=dcast(dataset,ion~., value.var="intensity",fun.aggregate=function(x) return(sd(x,na.rm=T)),fill=0)
+  datasetN0=dcast(dataset,ion~., value.var="intensity",fun.aggregate=function(x) return(sum(!is.na(x),na.rm=T)),fill=0)
+  datasetSum0=dcast(dataset,ion~., value.var="intensity",fun.aggregate=function(x) return(sum(x,na.rm=T)),fill=0)
+  colnames(datasetMax0)=colnames(datasetSd0)=colnames(datasetN0)=colnames(datasetMean0)=colnames(datasetSum0)=colnames(datasetMin0)=c("ion","intensity")
+  datasetFinal=data.frame(ion=datasetSum0[,"ion"],sum=datasetSum0[,"intensity"],moy=datasetMean0[,"intensity"],max=datasetMax0[,"intensity"],min=datasetMin0[,"intensity"],n=datasetN0[,"intensity"],sd=datasetSd0[,"intensity"])
+  # tmax
+  res_wide=dcast(dataset[,c("time","ion","intensity")],time~ion,value.var="intensity",fun.aggregate=function(x){return(max(x,na.rm=T))},fill=0)
   if(dim(res_wide)[2]>2)
   {
-    resultTmax= res_wide[apply(res_wide[,-c(1)],2,which.max),"time"]
+    datasetTmax= res_wide[apply(res_wide[,-c(1)],2,which.max),"time"]
   }
   else
   {
-    resultTmax=res_wide[which.max(res_wide[,2]),"time"]
+    datasetTmax=res_wide[which.max(res_wide[,2]),"time"]
   }
-  names(resultTmax)=colnames(res_wide)[-c(1)]
-  df_tmax=data.frame(ion=names(resultTmax),tmax=resultTmax)
+  names(datasetTmax)=colnames(res_wide)[-c(1)]
+  df_tmax=data.frame(ion=names(datasetTmax),tmax=datasetTmax)
 
-
-  if("duration"%in%colnames(result))
+  # Area
+  if("duration"%in%colnames(dataset))
   {
-    result[,"area"]=result[,"intensity"]*result[,"duration"]
-    resultArea=dcast(result,ion~., value.var="area",fun.aggregate=function(x) return(sum(x,na.rm=T)) )
-    colnames(resultArea)=c("ion","intensity")
-    resultFinal[,"area"]=resultArea[,"intensity"]
+    dataset[,"area"]=dataset[,"intensity"]*dataset[,"duration"]
+    datasetArea=dcast(dataset,ion~., value.var="area",fun.aggregate=function(x) return(sum(x,na.rm=T)) )
+    colnames(datasetArea)=c("ion","intensity")
+    datasetFinal[,"area"]=datasetArea[,"intensity"]
+  }
+  datasetFinal2=merge(datasetFinal,df_tmax,by="ion")
+
+  # T percentage
+  if(propPeak)
+  {
+    datasetFinal2[,paste0("t",proportion,timing)]=NA
+    for(ion in datasetFinal2[,"ion"])
+    {
+      time_prop=timeForPropPeak(time=dataset[dataset[,"ion"]==ion,"time"],intensity=dataset[dataset[,"ion"]==ion,"intensity"],proportion=proportion,timing=timing)
+      datasetFinal2[datasetFinal2[,"ion"]==ion,paste0("t",proportion,timing)]=time_prop
+    }
   }
 
-  resultFinal2=merge(resultFinal,df_tmax,by="ion")
-
-  return(resultFinal2)
+  return(datasetFinal2)
 }

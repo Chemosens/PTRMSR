@@ -1,6 +1,6 @@
 #' @title ptrvIntensityByTime
 #' @description Calculates the intensity by time for PTRViewer files. The calculation can be done by breathing cycle or on raw data.Breathing cycles are calculated on a reference ion (referenceBreath) with peak picking algorithms
-#' @param dataset whose names are IN THIS ORDER: RelTime, Cycle, Ion1,... ,Ionp.
+#' @param dataset whose names are timeCol, Ion1,... ,Ionp.
 #' @param referenceBreath name of the ion taken as reference for breathing
 #' @param correction "none" or "cycle". See Details.
 #' @param timePeriod vector containing starting and stopping point to get the statistics
@@ -25,10 +25,9 @@
 #' @importFrom MSnbase smooth
 #' @importFrom reshape2 dcast
 ptrvIntensityByTime=function(dataset,timeCol="RelTime",colToRemove=c("AbsTime","Cycle"),correction="none",referenceBreath=NULL,timePeriod=NULL,
-                             ions=NULL,funAggregate="mean",removeNoise=TRUE,timeBlank=c(0,30),total=FALSE,breathRatio=FALSE,
+                             ions=NULL,funAggregate="mean",removeNoise=FALSE,timeBlank=c(0,30),total=FALSE,breathRatio=FALSE,
                              minExpi=NULL,maxInspi=NULL,smoothMethod="MovingAverage",minimalDuration=2,forMinExpiDivideMaxIntBy=4,forMaxInspiDivideMaxIntBy=5,halfWindowSize=5, method="MAD",SNR=0,timeStart=0)
 {
-
   time=intensity=NULL
   p_sc=p_breath=NULL
   match.arg(correction,c("none","cycle"))
@@ -99,7 +98,6 @@ ptrvIntensityByTime=function(dataset,timeCol="RelTime",colToRemove=c("AbsTime","
   }
   if(correction=="cycle")
   {
-
     dataset=as.data.frame(dataset)
     dataset[,timeCol]=as.numeric(as.character(dataset[,timeCol]))
 
@@ -159,28 +157,19 @@ ptrvIntensityByTime=function(dataset,timeCol="RelTime",colToRemove=c("AbsTime","
     {
       if(timeBlank[1]<timePeriod[1]||timeBlank[2]>timePeriod[2]){stop("timeBlank period should be included in timePeriod")}
     }
+
     if(removeNoise)
     {
 
-     resultMeanT2=NULL
+      #resultMeanT=ptrvRemoveNoise(df=resultMeanT,timeBlank=timeBlank,stat="max", k=3,removeNegative=TRUE)
+
       for(ion in unique(res[,"ion"]))
       {
        #average of the noise to be removed
         maxNoise[ion]=max(resultMeanT[resultMeanT[,"time"]<=timeBlank[2]&resultMeanT[,"time"]>=timeBlank[1]&resultMeanT[,"ion"]==ion,"intensity"],na.rm=T)
         avgNoise[ion]=mean(resultMeanT[resultMeanT[,"time"]<=timeBlank[2]&resultMeanT[,"time"]>=timeBlank[1]&resultMeanT[,"ion"]==ion,"intensity"],na.rm=T)
         sdNoise[ion]=sd(resultMeanT[resultMeanT[,"time"]<=timeBlank[2]&resultMeanT[,"time"]>=timeBlank[1]&resultMeanT[,"ion"]==ion,"intensity"],na.rm=T)
-
-
-        resultMeanT[resultMeanT[,"ion"]==ion,"intensity"]=resultMeanT[resultMeanT[,"ion"]==ion,"intensity"]-avgNoise[ion]
-
-        # if(!is.null(smoothMethod))
-        # {
-        #   resultMeanT[!is.na(resultMeanT[,"intensity"])&resultMeanT[,"intensity"]<0,"intensity"]=0
-        #   spMT=new("Spectrum1",mz=resultMeanT[!is.na(resultMeanT[,"intensity"]),"time"],intensity=resultMeanT[!is.na(resultMeanT[,"intensity"]),"intensity"],centroided=F)
-        #   spMT2=MSnbase::smooth(spMT,method=smoothMethod,halfWindowSize = halfWindowSize)
-        #   resultMeanT2=rbind(resultMeanT2,data.frame(ion=ion,time=MSnbase::mz(spMT2),intensity=MSnbase::intensity(spMT2)))
-        # }
-
+       resultMeanT[resultMeanT[,"ion"]==ion,"intensity"]=resultMeanT[resultMeanT[,"ion"]==ion,"intensity"]-avgNoise[ion]
      }
       # if(!is.null(smoothMethod))
       # {

@@ -22,7 +22,7 @@ ptrvSignificantSNRIons(
 )
 }
 \arguments{
-\item{dataset}{whose names are IN THIS ORDER: RelTime, Cycle, Ion1,... ,Ionp.}
+\item{dataset}{whose names are timeCol, Ion1,... ,Ionp.}
 
 \item{method}{"max" or "ttest" (TODO "tangente")}
 
