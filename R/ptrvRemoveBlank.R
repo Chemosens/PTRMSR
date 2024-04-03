@@ -2,7 +2,8 @@
 #' @param timeBlank a vector of length two corresponding to the period of blank.
 #' @param stat "max", "avg", "avgKsd" or "med': statistic to be removed from the rest of the data
 #' @param k if stat ="avgKsd" is chosen, represents the average + k*the standard deviations or "med': statistic to be removed from the rest of the data
-#'@param removeNegative if TRUE any negative value is put to zero after the
+#' @param removeNegative if TRUE any negative value is put to zero after the
+#' @export
 ptrvRemoveNoise=function(dataset,timeBlank,stat="max", k=3,removeNegative=TRUE)
 {
   ions=unique(dataset[,"ion"])

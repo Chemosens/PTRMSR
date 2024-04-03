@@ -18,9 +18,9 @@ ptrvReport=function(dataset,selecIons="evolving",listIons=NULL,referenceBreath,s
   if(!is.null(listIons)){selecIons="namely"}
   ion=snratio=time=NULL
   #dataset=read.table(listFiles[1],sep="\t",dec=",",header=T)
-  res_raw=ptrvIntensityByTime(dataset=dataset,referenceBreath=referenceBreath,correction="none",timePeriod=NULL,timeStart=0,removeNoise=FALSE,timeBlank=noisePeriodIBT,halfWindowSize=halfWindowSize,smoothMethod=smoothMethod, method="MAD",total=FALSE,breathRatio=FALSE,minimalDuration=minimalDuration,minExpi=minExpi,maxInspi=maxInspi,forMinExpiDivideMaxIntBy=forMinExpiDivideMaxIntBy,forMaxInspiDivideMaxIntBy=forMaxInspiDivideMaxIntBy)
-  res_cyc=ptrvIntensityByTime(dataset=dataset,referenceBreath=referenceBreath,correction="cycle",timePeriod=NULL,timeStart=0,removeNoise=TRUE,timeBlank=noisePeriodIBT,halfWindowSize=halfWindowSize,smoothMethod=smoothMethod, method="MAD",total=FALSE,breathRatio=FALSE,minimalDuration=minimalDuration,minExpi=minExpi,maxInspi=maxInspi,forMinExpiDivideMaxIntBy=forMinExpiDivideMaxIntBy,forMaxInspiDivideMaxIntBy=forMaxInspiDivideMaxIntBy)
-  res_bratio=ptrvIntensityByTime(dataset=dataset,referenceBreath=referenceBreath,correction="cycle",timePeriod=NULL,timeStart=0,removeNoise=TRUE,timeBlank=noisePeriodIBT,halfWindowSize=halfWindowSize,smoothMethod=smoothMethod, method="MAD",total=FALSE,breathRatio=TRUE,minimalDuration=minimalDuration,minExpi=minExpi,maxInspi=maxInspi,forMinExpiDivideMaxIntBy=forMinExpiDivideMaxIntBy,forMaxInspiDivideMaxIntBy=forMaxInspiDivideMaxIntBy)
+  res_raw=ptrvIntensityByTime(dataset=dataset,referenceBreath=referenceBreath,correction="none",timePeriod=NULL,timeStart=0,halfWindowSize=halfWindowSize,smoothMethod=smoothMethod, method="MAD",total=FALSE,breathRatio=FALSE,minimalDuration=minimalDuration,minExpi=minExpi,maxInspi=maxInspi,forMinExpiDivideMaxIntBy=forMinExpiDivideMaxIntBy,forMaxInspiDivideMaxIntBy=forMaxInspiDivideMaxIntBy)
+  res_cyc=ptrvIntensityByTime(dataset=dataset,referenceBreath=referenceBreath,correction="cycle",timePeriod=NULL,timeStart=0,halfWindowSize=halfWindowSize,smoothMethod=smoothMethod, method="MAD",total=FALSE,breathRatio=FALSE,minimalDuration=minimalDuration,minExpi=minExpi,maxInspi=maxInspi,forMinExpiDivideMaxIntBy=forMinExpiDivideMaxIntBy,forMaxInspiDivideMaxIntBy=forMaxInspiDivideMaxIntBy)
+  res_bratio=ptrvIntensityByTime(dataset=dataset,referenceBreath=referenceBreath,correction="cycle",timePeriod=NULL,timeStart=0,halfWindowSize=halfWindowSize,smoothMethod=smoothMethod, method="MAD",total=FALSE,breathRatio=TRUE,minimalDuration=minimalDuration,minExpi=minExpi,maxInspi=maxInspi,forMinExpiDivideMaxIntBy=forMinExpiDivideMaxIntBy,forMaxInspiDivideMaxIntBy=forMaxInspiDivideMaxIntBy)
   resBreathRaw=res_raw$res[res_raw$res[,"ion"]==referenceBreath,]
   resBreathCyc=res_cyc$res[res_cyc$res[,"ion"]==referenceBreath,]
   resBreathBratio=res_bratio$res[res_bratio$res[,"ion"]==referenceBreath,]
@@ -28,7 +28,7 @@ ptrvReport=function(dataset,selecIons="evolving",listIons=NULL,referenceBreath,s
   # Select significant ions
   if(selecIons=="evolving")
   {
-    sigionres=ptrvSignificantSNRIons(dataset,referenceBreath=referenceBreath,noisePeriod=noisePeriodSig,correction="cycle",multiplyNoiseBy = 3,removeNoise=FALSE,method="max")
+    sigionres=ptrvSignificantSNRIons(dataset,referenceBreath=referenceBreath,noisePeriod=noisePeriodSig,correction="cycle",multiplyNoiseBy = 3,method="max")
     dfrat=data.frame(ion=names(sigionres$snRatio),snratio=sigionres$snRatio)
     dfrat2=dfrat[dfrat[,"snratio"]>3,]
     dfrat3=dfrat2[order(dfrat2[,"snratio"],decreasing=T),]

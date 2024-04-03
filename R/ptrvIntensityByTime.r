@@ -12,7 +12,6 @@
 #' @param method method used for peak picking ("MAD" by default)
 #' @param SNR Signal noise ratio parameter used in peak picking
 #' @param ions vector contatining all ions to be used in the analysis (by default all ions are used)
-#' @param timeBlank vector of two numbers. Indicates the interval to take as a blank period.
 #' @param smoothMethod NULL, "SavitzkyGolay" or "MovingAverage"
 #' @param funAggregate "mean", "maximal" or "sum"
 #' @param timeCol name of the column of dataset containing the time
@@ -25,8 +24,8 @@
 #' @importFrom MSnbase smooth
 #' @importFrom reshape2 dcast
 ptrvIntensityByTime=function(dataset,timeCol="RelTime",colToRemove=c("AbsTime","Cycle"),correction="none",referenceBreath=NULL,timePeriod=NULL,
-                             ions=NULL,funAggregate="mean",removeNoise=FALSE,timeBlank=c(0,30),total=FALSE,breathRatio=FALSE,
-                             minExpi=NULL,maxInspi=NULL,smoothMethod="MovingAverage",minimalDuration=2,forMinExpiDivideMaxIntBy=4,forMaxInspiDivideMaxIntBy=5,halfWindowSize=5, method="MAD",SNR=0,timeStart=0)
+                             ions=NULL,funAggregate="mean",total=FALSE,breathRatio=FALSE,
+                             minExpi=NULL,maxInspi=NULL,smoothMethodBreath="MovingAverage",minimalDuration=2,forMinExpiDivideMaxIntBy=4,forMaxInspiDivideMaxIntBy=5,halfWindowSize=5, method="MAD",SNR=0,timeStart=0)
 {
   time=intensity=NULL
   p_sc=p_breath=NULL
@@ -61,6 +60,7 @@ ptrvIntensityByTime=function(dataset,timeCol="RelTime",colToRemove=c("AbsTime","
   }
   dataset[,timeCol]=as.numeric(as.character(dataset[,timeCol]))
   dataset[,timeCol]=dataset[,timeCol]-timeStart
+
   indexIons=which(colnames(dataset)%in%ions)
   if(length(ions)>1)
   {
@@ -114,7 +114,7 @@ ptrvIntensityByTime=function(dataset,timeCol="RelTime",colToRemove=c("AbsTime","
     res1=res[res[,"ion"]==as.character(referenceBreath),c("time","intensity")]
     colnames(res1)=c("time","intensity")
     #print(res1)
-    cycles=detectCycle(df=res1,smoothMethod=smoothMethod,method=method,halfWindowSize=halfWindowSize,timePeriod=timePeriod,SNR=SNR,minimalDuration=minimalDuration,
+    cycles=detectCycle(df=res1,smoothMethod=smoothMethodBreath,method=method,halfWindowSize=halfWindowSize,timePeriod=timePeriod,SNR=SNR,minimalDuration=minimalDuration,
                        minExpi=minExpi,maxInspi=maxInspi,forMinExpiDivideMaxIntBy=forMinExpiDivideMaxIntBy,forMaxInspiDivideMaxIntBy=forMaxInspiDivideMaxIntBy)
    # cycles=detectCycle(df=res1,maxPeaks=maxPeaks,smoothMethod=smoothMethod,method=method,halfWindowSize=5,maximum=max(dataset[,"RelTime"]),SNR=SNR,minimalDuration=0.5)
 
@@ -153,43 +153,12 @@ ptrvIntensityByTime=function(dataset,timeCol="RelTime",colToRemove=c("AbsTime","
     maxNoise=sdNoise=avgNoise=rep(NA,length(unique(res[,"ion"])));
     names(avgNoise)=names(maxNoise)=names(sdNoise)=unique(res[,"ion"])
   #  print("beforeRemoved")
-    if(!is.null(timePeriod))
-    {
-      if(timeBlank[1]<timePeriod[1]||timeBlank[2]>timePeriod[2]){stop("timeBlank period should be included in timePeriod")}
-    }
-
-    if(removeNoise)
-    {
-
-      #resultMeanT=ptrvRemoveNoise(df=resultMeanT,timeBlank=timeBlank,stat="max", k=3,removeNegative=TRUE)
-
-      for(ion in unique(res[,"ion"]))
-      {
-       #average of the noise to be removed
-        maxNoise[ion]=max(resultMeanT[resultMeanT[,"time"]<=timeBlank[2]&resultMeanT[,"time"]>=timeBlank[1]&resultMeanT[,"ion"]==ion,"intensity"],na.rm=T)
-        avgNoise[ion]=mean(resultMeanT[resultMeanT[,"time"]<=timeBlank[2]&resultMeanT[,"time"]>=timeBlank[1]&resultMeanT[,"ion"]==ion,"intensity"],na.rm=T)
-        sdNoise[ion]=sd(resultMeanT[resultMeanT[,"time"]<=timeBlank[2]&resultMeanT[,"time"]>=timeBlank[1]&resultMeanT[,"ion"]==ion,"intensity"],na.rm=T)
-       resultMeanT[resultMeanT[,"ion"]==ion,"intensity"]=resultMeanT[resultMeanT[,"ion"]==ion,"intensity"]-avgNoise[ion]
-     }
-      # if(!is.null(smoothMethod))
-      # {
-      #   p_sc=ggplot(resultMeanT2[resultMeanT2[,"ion"]!=referenceBreath,],aes(x=time,y=intensity,group=ion,color=ion,name=ion))+geom_line()+theme_bw()+theme(legend.position="none")
-      #   p_breath=ggplot(resultMeanT2[resultMeanT2[,"ion"]==referenceBreath,],aes(x=time,y=intensity,group=ion,color=ion,name=ion))+geom_line()+theme_bw()+theme(legend.position="none")
-      #
-      #
-      # }
-      # else
-      # {
-        p_sc=ggplot(resultMeanT[resultMeanT[,"ion"]!=referenceBreath,],aes(x=time,y=intensity,group=ion,color=ion,name=ion))+geom_line()+theme_bw()+theme(legend.position="none")
-        p_breath=ggplot(resultMeanT[resultMeanT[,"ion"]==referenceBreath,],aes(x=time,y=intensity,group=ion,color=ion,name=ion))+geom_line()+theme_bw()+theme(legend.position="none")
-     # }
-
-    }
-    if(!removeNoise)
-    {
-      p_sc=ggplot(resultMeanT[resultMeanT[,"ion"]!=referenceBreath,],aes(x=time,y=intensity,group=ion,color=ion,name=ion))+geom_line()+theme_bw()+theme(legend.position="none")
-      p_breath=ggplot(resultMeanT[resultMeanT[,"ion"]==referenceBreath,],aes(x=time,y=intensity,group=ion,color=ion,name=ion))+geom_line()+theme_bw()+theme(legend.position="none")
-    }
+    # if(!is.null(timePeriod))
+    # {
+    #   if(timeBlank[1]<timePeriod[1]||timeBlank[2]>timePeriod[2]){stop("timeBlank period should be included in timePeriod")}
+    # }
+    p_sc=ggplot(resultMeanT[resultMeanT[,"ion"]!=referenceBreath,],aes(x=time,y=intensity,group=ion,color=ion,name=ion))+geom_line()+theme_bw()+theme(legend.position="none")
+    p_breath=ggplot(resultMeanT[resultMeanT[,"ion"]==referenceBreath,],aes(x=time,y=intensity,group=ion,color=ion,name=ion))+geom_line()+theme_bw()+theme(legend.position="none")
 
     if(breathRatio)
     {
@@ -211,8 +180,8 @@ ptrvIntensityByTime=function(dataset,timeCol="RelTime",colToRemove=c("AbsTime","
     else
     {
       warning("No cycle was detected. The 'none' correction was conducted. If you want to modify the parameters to detect cycles, you can see the graph corresponding to the previous parameters in the results: res$detectCycle$gg$p3 for the graph and the restriction on the peak Table (res$detectCycle$peakTable) in order to understand why no peaks have been detected")
-      res=ptrvIntensityByTime(dataset,timeCol=timeCol,colToRemove=colToRemove,referenceBreath=NULL,correction="none",timePeriod=timePeriod,timeStart=timeStart,removeNoise=removeNoise,timeBlank=timeBlank,
-                                   halfWindowSize=halfWindowSize, total=total,breathRatio=breathRatio,method=method,SNR=SNR,ions=ions,
+      res=ptrvIntensityByTime(dataset,timeCol=timeCol,colToRemove=colToRemove,referenceBreath=NULL,correction="none",timePeriod=timePeriod,timeStart=timeStart,#removeNoise=removeNoise,timeBlank=timeBlank,
+                                   halfWindowSize=halfWindowSize, total=total,breathRatio=breathRatio,SNR=SNR,ions=ions,
                                    funAggregate=funAggregate,smoothMethod=smoothMethod,minimalDuration=minimalDuration,
                                    minExpi=minExpi,maxInspi=maxInspi,forMinExpiDivideMaxIntBy=forMinExpiDivideMaxIntBy,forMaxInspiDivideMaxIntBy=forMaxInspiDivideMaxIntBy)
 

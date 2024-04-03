@@ -4,7 +4,7 @@ breath="m69.06989..isoprene...Conc."
 sigIons=ptrvSignificantSNRIons(ptrv,referenceBreath=breath,method="max")
 sigIonst=ptrvSignificantSNRIons(ptrv,referenceBreath=breath,method="ttest")
 sigIonst$listIons
-result_deg=ptrvIntensityByTime(dataset=ptrv,referenceBreath=breath,correction="cycle",timePeriod=NULL,removeNoise=FALSE)
+result_deg=ptrvIntensityByTime(dataset=ptrv,referenceBreath=breath,correction="cycle",timePeriod=NULL)
 restoplot=result_deg$res[result_deg$res[,"ion"]%in%sigIons$listIons,]
 restoplott=result_deg$res[result_deg$res[,"ion"]%in%sigIonst$listIons,]
 

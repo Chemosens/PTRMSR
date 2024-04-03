@@ -22,7 +22,10 @@
 #' @inheritParams ptrvIntensityByTime
 #' @export
 #'
-ptrvListIntensityByTime=function(listFiles,timeCol="RelTime",colToRemove=c("AbsTime","Cycle"),removeBlankTime=FALSE,ions=NULL,dec_vec=rep(".",length(listFiles)),sep="\t",metaData=NULL,correction="cycle",halfWindowSize=5,method="MAD",total=FALSE,breathRatio=FALSE,stat="area",minimalDuration=2,smoothMethod="MovingAverage",spar=NULL,smoothMethodBreath="MovingAverage",minExpi=NULL,maxInspi=NULL,forMinExpiDivideMaxIntBy=5,forMaxInspiDivideMaxIntBy=4,wd=getwd())
+ptrvListIntensityByTime=function(listFiles,timeCol="RelTime",colToRemove=c("AbsTime","Cycle"),removeBlankTime=FALSE,ions=NULL,dec_vec=rep(".",length(listFiles)),sep="\t",
+                                 metaData=NULL,correction="cycle",halfWindowSize=5,smoothMethodBreath="MovingAverage",method="MAD",total=FALSE,breathRatio=FALSE,stat="area",minimalDuration=2,minExpi=NULL,maxInspi=NULL,forMinExpiDivideMaxIntBy=5,forMaxInspiDivideMaxIntBy=4,wd=getwd(),
+                                 removeNoise=FALSE,statNoise="avg", k=3,removeNegative=TRUE,
+                                 smoothing=FALSE,smoothMethod="Spline",spar=NULL,sameTime=TRUE,time_x=NULL,negativeValuesToZero=TRUE)
 {
 
   if(!"start"%in%colnames(metaData)){stop("'start' should be a colname of metaData corresponding to the start of the evaluation")}
@@ -67,17 +70,21 @@ ptrvListIntensityByTime=function(listFiles,timeCol="RelTime",colToRemove=c("AbsT
    }
    result_all=ptrvIntensityByTime(dataset=dataset,timeCol=timeCol, colToRemove=colToRemove,ions=ions,referenceBreath=metaInfo[1,"breathing"],
                                    timeStart=metaInfo[1,"start"],correction=correction,timePeriod=c(metaInfo[1,"start"],metaInfo[1,"stop"]),
-                                   removeNoise=TRUE,timeBlank = c(metaInfo[1,"start"],metaInfo[1,"into"]),
                                    halfWindowSize=halfWindowSize,method=method,total=total,breathRatio=breathRatio,
-                                   smoothMethod=smoothMethodBreath,minimalDuration=minimalDuration,minExpi=minExpi,maxInspi=maxInspi,
+                                   smoothMethodBreath=smoothMethodBreath,minimalDuration=minimalDuration,minExpi=minExpi,maxInspi=maxInspi,
                                    forMinExpiDivideMaxIntBy=forMinExpiDivideMaxIntBy,forMaxInspiDivideMaxIntBy=forMaxInspiDivideMaxIntBy)
     cycleLimits[[i]]=result_all$gg$p_cyclelimits
 
     result_all_df=result_all$res
-
-    #result_all_df=ptrvSmooth(dataset=result_all_df,smoothMethod=smoothMethod,spar=spar,sameTime=TRUE,time_x=NULL,method="Spline",negativeValuesToZero=TRUE)
-
-    #result_all_df=ptrvRemoveNoise()
+    if(smoothing)
+    {
+      result_all_df=ptrvSmooth(dataset=result_all_df,spar=spar,sameTime=sameTime,time_x=time_x,method=smoothMethod,negativeValuesToZero=negativeValuesToZero)
+    }
+    if(removeNoise)
+    {
+      result_all_df=ptrvRemoveNoise(dataset=result_all_df,timeBlank=c(metaInfo[1,"start"],metaInfo[1,"into"]),stat=statNoise, k=k,removeNegative=removeNegative
+        )
+    }
 
     result_all_df[,"file"]=file
     result_all_df[,"product"]=metaInfo["product"]

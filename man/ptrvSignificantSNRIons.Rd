@@ -11,14 +11,14 @@ ptrvSignificantSNRIons(
   noisePeriod = c(0, 30),
   correction = "cycle",
   multiplyNoiseBy = 3,
-  removeNoise = FALSE,
   minimalDuration = 2,
   halfWindowSize = 5,
   smoothMethod = "MovingAverage",
   minExpi = NULL,
   maxInspi = NULL,
   forMinExpiDivideMaxIntBy = 5,
-  forMaxInspiDivideMaxIntBy = 4
+  forMaxInspiDivideMaxIntBy = 4,
+  removeNoise = FALSE
 )
 }
 \arguments{
@@ -34,8 +34,6 @@ ptrvSignificantSNRIons(
 
 \item{multiplyNoiseBy}{a number such as a ion whose maximal intensity during tasting/maximal intensity during blank period > multiplyNoiseBy is detected as significant (used for method=="max")}
 
-\item{removeNoise}{if TRUE, the noise is removed in the calculation of intensity by time}
-
 \item{minimalDuration}{minimalDuration of a breathing cycle (2 by default - as a accelerated breathing frequency corresponds to 20 cycles and more by minut and a low frequency is 12 and less -)}
 
 \item{halfWindowSize}{parameter used to determine the smooth for the peak-picking used in break detection}
@@ -49,6 +47,8 @@ ptrvSignificantSNRIons(
 \item{forMinExpiDivideMaxIntBy}{default to 5. When minExpi is null, it is evaluated as the ratio of the maximal intensity and forMinIntensityDivideMaxIntBy}
 
 \item{forMaxInspiDivideMaxIntBy}{default to 5. When minExpi is null, it is evaluated as the ratio of the maximal intensity and forMinIntensityDivideMaxIntBy}
+
+\item{removeNoise}{if TRUE, the noise is removed in the calculation of intensity by time}
 }
 \description{
 ptrvSignificantSNRIons

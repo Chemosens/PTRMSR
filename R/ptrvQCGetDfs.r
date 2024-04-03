@@ -24,7 +24,7 @@ ptrvQCGetDfs=function(repo,ncharDays=c(9,10),ncharProd=c(12,15),ncharRep=17)
     res_intensity=ptrvIntensityByTime(dataset,ions=NULL
                                       ,referenceBreath=NULL,
                                       correction = "none",
-                                      removeNoise=FALSE,breathRatio =FALSE,timeBlank=c(0,25),
+                                      breathRatio =FALSE,
                                       halfWindowSize=12,method="SuperSmoother",total=FALSE,
                                       minimalDuration=2,minExpi=NULL,maxInspi=NULL,
                                       forMinExpiDivideMaxIntBy=4,forMaxInspiDivideMaxIntBy=5)

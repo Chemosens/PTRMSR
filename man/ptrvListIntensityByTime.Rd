@@ -16,19 +16,27 @@ ptrvListIntensityByTime(
   metaData = NULL,
   correction = "cycle",
   halfWindowSize = 5,
+  smoothMethodBreath = "MovingAverage",
   method = "MAD",
   total = FALSE,
   breathRatio = FALSE,
   stat = "area",
   minimalDuration = 2,
-  smoothMethod = "MovingAverage",
-  spar = NULL,
-  smoothMethodBreath = "MovingAverage",
   minExpi = NULL,
   maxInspi = NULL,
   forMinExpiDivideMaxIntBy = 5,
   forMaxInspiDivideMaxIntBy = 4,
-  wd = getwd()
+  wd = getwd(),
+  removeNoise = FALSE,
+  noiseStat = "avg",
+  k = 3,
+  removeNegative = TRUE,
+  smoothing = FALSE,
+  smoothMethod = "Spline",
+  spar = NULL,
+  sameTime = TRUE,
+  time_x = NULL,
+  negativeValuesToZero = TRUE
 )
 }
 \arguments{
@@ -62,8 +70,6 @@ ptrvListIntensityByTime(
 
 \item{minimalDuration}{minimalDuration of a breathing cycle (2 by default - as a accelerated breathing frequency corresponds to 20 cycles and more by minut and a low frequency is 12 and less -)}
 
-\item{smoothMethod}{NULL, "SavitzkyGolay" or "MovingAverage"}
-
 \item{minExpi}{minimal value for an expiry intensity to be detected as an expiry (blue dotted line in the plot).}
 
 \item{maxInspi}{maximal intensity of the original curve required to be considered as a breathing peak (purple dotted line in the plot)}
@@ -73,6 +79,10 @@ ptrvListIntensityByTime(
 \item{forMaxInspiDivideMaxIntBy}{default to 5. When minExpi is null, it is evaluated as the ratio of the maximal intensity and forMinIntensityDivideMaxIntBy}
 
 \item{wd}{working directory where the files of listFiles are.}
+
+\item{removeNoise}{if TRUE, the averaged intensity obtained during the timeBlank period is removed from the signal}
+
+\item{smoothMethod}{NULL, "SavitzkyGolay" or "MovingAverage"}
 }
 \value{
 a list containing :  res (data containing the corrected timepoints), metaData, cycleLimits and call.

@@ -4,10 +4,10 @@ library(ggplot2)
 library(signal)
 
 breath="m69.06989..isoprene...Conc."
-res_intensity=ptrvIntensityByTime(ptrv,referenceBreath=breath,correction = "cycle",removeNoise=FALSE,breathRatio = FALSE)
+res_intensity=ptrvIntensityByTime(ptrv,referenceBreath=breath,correction = "cycle",breathRatio = FALSE)
 res_intensity=ptrvIntensityByTime(ptrv,referenceBreath=breath,correction = "cycle")
 
-sigIons=ptrvSignificantSNRIons(ptrv,referenceBreath=breath,multiplyNoiseBy=4,removeNoise=FALSE)
+sigIons=ptrvSignificantSNRIons(ptrv,referenceBreath=breath,multiplyNoiseBy=4)
 listSig=sigIons$listIons
 summary(sigIons$snRatio)
 IonToUse=names(sigIons$snRatio)[which.max(sigIons$snRatio)]

@@ -34,8 +34,8 @@ resCorrected=ptrvListIntensityByTime(listFiles=listFiles,metaData=metaData,timeC
                         removeBlankTime=FALSE,ions=NULL,dec_vec=rep(".",length(listFiles)),
                         sep="\t",correction="cycle",halfWindowSize=5,
                         method="MAD",total=FALSE,breathRatio=FALSE,stat="area",minimalDuration=2,
-                        smoothMethod="MovingAverage",minExpi=NULL,maxInspi=NULL,forMinExpiDivideMaxIntBy=5,
-                        forMaxInspiDivideMaxIntBy=5,wd=wd)
+                        smoothMethodBreath="MovingAverage",minExpi=NULL,maxInspi=NULL,forMinExpiDivideMaxIntBy=5,
+                        forMaxInspiDivideMaxIntBy=5,wd=wd,removeNoise=TRUE)
 
 
 resCorrected$res

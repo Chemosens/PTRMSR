@@ -4,7 +4,7 @@ ptrvListQC=function(listFiles,starts="")
   for(i in 1:length(listFiles))
   {
      dataset=read.table(listFiles[i],sep="\t",header=T)
-     ibt=ptrvIntensityByTime(dataset,referenceBreath="",correction="none",timePeriod=NULL,timeStart=0,removeNoise=FALSE,timeBlank=30,halfWindowSize=10,minimalDuration=2,minExpi=NULL,maxInspi=NULL,forMinExpiDivideMaxIntBy=4,forMaxInspiDivideMaxIntBy=5)
+     ibt=ptrvIntensityByTime(dataset,referenceBreath="",correction="none",timePeriod=NULL,timeStart=0,halfWindowSize=10,minimalDuration=2,minExpi=NULL,maxInspi=NULL,forMinExpiDivideMaxIntBy=4,forMaxInspiDivideMaxIntBy=5)
      startTime=ptrvDetectStart(ibt,starts=starts,proportionOfMax=0.01)
      print(startTime)
      intensity=ptrvIntensity(ibt$res)[,c("ion","area")]

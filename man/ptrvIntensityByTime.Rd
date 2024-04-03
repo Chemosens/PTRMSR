@@ -13,13 +13,11 @@ ptrvIntensityByTime(
   timePeriod = NULL,
   ions = NULL,
   funAggregate = "mean",
-  removeNoise = FALSE,
-  timeBlank = c(0, 30),
   total = FALSE,
   breathRatio = FALSE,
   minExpi = NULL,
   maxInspi = NULL,
-  smoothMethod = "MovingAverage",
+  smoothMethodBreath = "MovingAverage",
   minimalDuration = 2,
   forMinExpiDivideMaxIntBy = 4,
   forMaxInspiDivideMaxIntBy = 5,
@@ -46,10 +44,6 @@ ptrvIntensityByTime(
 
 \item{funAggregate}{"mean", "maximal" or "sum"}
 
-\item{removeNoise}{if TRUE, the averaged intensity obtained during the timeBlank period is removed from the signal}
-
-\item{timeBlank}{vector of two numbers. Indicates the interval to take as a blank period.}
-
 \item{total}{if TRUE, the total intensity is calculated and added as a supplementary column}
 
 \item{breathRatio}{if TRUE, the ratio between the intensity of ion and the breath is calculated}
@@ -57,8 +51,6 @@ ptrvIntensityByTime(
 \item{minExpi}{minimal value for an expiry intensity to be detected as an expiry (blue dotted line in the plot).}
 
 \item{maxInspi}{maximal intensity of the original curve required to be considered as a breathing peak (purple dotted line in the plot)}
-
-\item{smoothMethod}{NULL, "SavitzkyGolay" or "MovingAverage"}
 
 \item{minimalDuration}{minimalDuration of a breathing cycle (2 by default - as a accelerated breathing frequency corresponds to 20 cycles and more by minut and a low frequency is 12 and less -)}
 
@@ -73,6 +65,12 @@ ptrvIntensityByTime(
 \item{SNR}{Signal noise ratio parameter used in peak picking}
 
 \item{timeStart}{timeStart is a value to be removed of the relTime column}
+
+\item{removeNoise}{if TRUE, the averaged intensity obtained during the timeBlank period is removed from the signal}
+
+\item{timeBlank}{vector of two numbers. Indicates the interval to take as a blank period.}
+
+\item{smoothMethod}{NULL, "SavitzkyGolay" or "MovingAverage"}
 }
 \value{
 a list containing the obtained result (res), ggplot object containing different plots (gg) and, if correction='cycle' the cycle results are also added (detectCycle)

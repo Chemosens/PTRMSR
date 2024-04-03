@@ -69,8 +69,7 @@ ions=unique(res$res[,"ion"])
 # checking results
 
 resultp=ptrvIntensityByTime(ptrv,referenceBreath=breath,correction="cycle",
-                             timePeriod=NULL,timeStart=0,removeNoise=FALSE,
-                             timeBlank=c(0,30),halfWindowSize=10, maxInspi =50,
+                             timePeriod=NULL,timeStart=0,halfWindowSize=10, maxInspi =50,
                              total=FALSE,breathRatio=FALSE)
 summary(resultp$res)
 
@@ -88,7 +87,7 @@ p4=resultp$gg[[2]]
 grid.arrange(grobs=list(p1,p2,p3,p4),nrow=4)
 
 res1=ptrvIntensityByTime(ptrv,correction="cycle",referenceBreath=breath,smoothMethod="SavitzkyGolay",ion=c("m89.07743..C5H13O....Conc."))
-res=ptrvIntensityByTime(ptrv,correction="cycle",referenceBreath=breath,removeNoise=FALSE,ion=c("m89.07743..C5H13O....Conc."))
+res=ptrvIntensityByTime(ptrv,correction="cycle",referenceBreath=breath,ion=c("m89.07743..C5H13O....Conc."))
 ggplotly(res$gg$p_smoothcycle)
  p=res$gg$p_breath
  p2=res$gg$p_cyclelimits

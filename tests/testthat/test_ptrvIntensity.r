@@ -56,24 +56,25 @@ ggplotly(p_resp_raw)
 # Jeu de données brutes sans corrections
 res=ptrvIntensityByTime(dataset=ptrv,
                         referenceBreath=breath,correction="none",
-                        timePeriod=NULL,timeStart=0,removeNoise=FALSE,timeBlank=c(0,30),halfWindowSize=10)
+                        timePeriod=NULL,timeStart=0,halfWindowSize=10)
 p=ggplot(res$res,aes(x=time,y=intensity,group=ion,color=ion))+geom_line()+theme_bw()
 ggplotly(p)
 
 # visualiser un jeu données avec corrections de cycles (mais pas de bruit)
 res_corrige=ptrvIntensityByTime(dataset=ptrv,
                         referenceBreath=breath,correction="cycle",
-                        timePeriod=NULL,timeStart=0,removeNoise=FALSE,timeBlank=c(0,30),halfWindowSize=10)
+                        timePeriod=NULL,timeStart=0,halfWindowSize=10)
 p=ggplot(res_corrige$res,aes(x=time,y=intensity,group=ion,color=ion))+geom_line()+theme_bw()
 ggplotly(p)
 
 # visualiser un jeu données avec corrections de cycles et de bruit
 res_corrige=ptrvIntensityByTime(dataset=ptrv,
                                 referenceBreath=breath,correction="cycle",
-                                timePeriod=NULL,timeStart=0,removeNoise=TRUE,timeBlank=c(0,30),halfWindowSize=10)
+                                timePeriod=NULL,timeStart=0,halfWindowSize=10)
 
-p=ggplot(res_corrige$res,aes(x=time,y=intensity,group=ion,color=ion))+geom_line()+theme_bw()
-ggplotly(p)
+noiseRemoved=ptrvRemoveNoise(res_corrige$res,timeBlank=c(0,30))
+p=ggplot(noiseRemoved,aes(x=time,y=intensity,group=ion,color=ion))+geom_line()+theme_bw()
+#ggplotly(p)
 
 
 
@@ -82,7 +83,7 @@ ggplotly(p)
                          referenceBreath=breath,
                          correction="cycle",
                          timePeriod=c(0,120),
-                         timeStart=0,removeNoise=FALSE,timeBlank=c(0,30),
+                         timeStart=0,
                          halfWindowSize=5,
                          maxInspi=50)
 
