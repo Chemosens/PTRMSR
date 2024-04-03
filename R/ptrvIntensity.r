@@ -7,8 +7,9 @@
 #' @importFrom stats sd
 ptrvIntensity=function(dataset,timePeriod=NULL,negativeAsNull=TRUE,propPeak=FALSE, proportion=0.75,timing="last",fill=NULL)
 {
+  dataset=dataset[!is.na(dataset[,"intensity"]),]
   if(is.null(timePeriod)){timePeriod=c(min(dataset[,"time"]),max(dataset[,"time"]))}
-  if(negativeAsNull){dataset[dataset<0]=0}
+  if(negativeAsNull){dataset[dataset[,"intensity"]<0,"intensity"]=0}
 
   if(length(timePeriod)!=2){stop("Please enter a timePeriod of length 2 (start and stop of period) ")}
   dataset=dataset[dataset[,"time"]>=timePeriod[1]&dataset[,"time"]<=timePeriod[2],]
@@ -21,7 +22,8 @@ ptrvIntensity=function(dataset,timePeriod=NULL,negativeAsNull=TRUE,propPeak=FALS
   datasetSum0=dcast(dataset,ion~., value.var="intensity",fun.aggregate=function(x) return(sum(x,na.rm=T)),fill=fill)
   colnames(datasetMax0)=colnames(datasetSd0)=colnames(datasetN0)=colnames(datasetMean0)=colnames(datasetSum0)=colnames(datasetMin0)=c("ion","intensity")
   datasetFinal=data.frame(ion=datasetSum0[,"ion"],sum=datasetSum0[,"intensity"],moy=datasetMean0[,"intensity"],max=datasetMax0[,"intensity"],min=datasetMin0[,"intensity"],n=datasetN0[,"intensity"],sd=datasetSd0[,"intensity"])
-  # tmax
+
+    # tmax
   res_wide=dcast(dataset[,c("time","ion","intensity")],time~ion,value.var="intensity",fun.aggregate=function(x){return(max(x,na.rm=T))},fill=fill)
   if(dim(res_wide)[2]>2)
   {
@@ -42,6 +44,7 @@ ptrvIntensity=function(dataset,timePeriod=NULL,negativeAsNull=TRUE,propPeak=FALS
     colnames(datasetArea)=c("ion","intensity")
     datasetFinal[,"area"]=datasetArea[,"intensity"]
   }
+
   datasetFinal2=merge(datasetFinal,df_tmax,by="ion")
   datasetFinal2=as.data.frame(datasetFinal2)
   # T percentage
