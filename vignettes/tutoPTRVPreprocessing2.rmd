@@ -31,7 +31,7 @@ library(PTRMSR)
 
 ## Loading metadata and list of files to be processed
 All the data files (.txt from ptrViewer) and the metadata file (.csv) should be in a single repository 
-```{r, eval=TRUE}
+```{r, eval=FALSE}
 repo="./../inst/extdata"
 listFiles=list.files(repo,pattern="*.txt")
 metaData=read.table(paste0(repo,"/metaData.csv"),sep=";",header=T)

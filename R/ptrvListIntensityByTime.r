@@ -83,7 +83,7 @@ ptrvListIntensityByTime=function(listFiles,timeCol="RelTime",colToRemove=c("AbsT
     if(removeNoise)
     {
       result_all_df=ptrvRemoveNoise(dataset=result_all_df,timeBlank=c(metaInfo[1,"start"],metaInfo[1,"into"]),stat=statNoise, k=k,removeNegative=removeNegative
-        )
+     )
     }
 
     result_all_df[,"file"]=file

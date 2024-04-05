@@ -6,7 +6,7 @@
 #' @inheritParams ptrvIntensity
 #' @importFrom utils read.table
 #' @export
-ptrvListIntensity=function(df,format="wide",stat="area", timePeriod = NULL, negativeAsNull = TRUE)
+ptrvListIntensity=function(df,format="wide",stat="area", timePeriod = NULL, negativeAsNull = TRUE,fill=NULL)
 {
   listFiles=levels(factor(df[,"file"]))
   for(i in 1:length(listFiles))
@@ -23,13 +23,13 @@ ptrvListIntensity=function(df,format="wide",stat="area", timePeriod = NULL, nega
         }
         else{ timePeriodFile=timePeriod}
 
-        res_cycle=ptrvIntensity(result_all,timePeriod=timePeriodFile,negativeAsNull=negativeAsNull)[,c("ion",stat)]
+        res_cycle=ptrvIntensity(result_all,timePeriod=timePeriodFile,negativeAsNull=negativeAsNull,fill=fill)[,c("ion",stat)]
         if(i==1) { res=res_cycle;colnames(res)[2]=listFiles[1]}
         if(i>1){ res=merge(res,res_cycle,by="ion");colnames(res)[i+1]=listFiles[i]}
     }
     if(format=="long")
    {
-     res_cycle=ptrvIntensity(result_all,timePeriod=timePeriod,negativeAsNull=negativeAsNull)[,c("ion",stat)]
+     res_cycle=ptrvIntensity(result_all,timePeriod=timePeriod,negativeAsNull=negativeAsNull,fill=fill)[,c("ion",stat)]
      res_cycle[,"file"]=listFiles[i]
      res=rbind(res,res_cycle)
     }

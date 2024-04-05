@@ -10,6 +10,7 @@ ptrvSmooth=function(dataset,spar=NULL,sameTime=TRUE,time_x=NULL,method="Spline",
     dataset_ion=dataset_ion0[order(dataset_ion0[,"time"]),]
     res_smooth=smoothIntensityByTime(time=dataset_ion[,"time"],intensity=dataset_ion[,"intensity"],method=method,spar=spar,sameTime=sameTime,time_x=time_x,negativeValuesToZero=negativeValuesToZero)
     df_i=data.frame(time=res_smooth$time,intensity=res_smooth$intensity,ion=ion)
+    colnames(df_i)=c("time","intensity","ion")
     df_i[,"duration"]=c(df_i[-1,"time"]-df_i[-dim(df_i)[1],"time"],0)
     df=rbind(df,df_i)
   }
