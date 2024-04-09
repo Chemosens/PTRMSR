@@ -1,35 +1,119 @@
 ---
 title: "Using PTRMSR for automatizing pre-processing"
+vignette: "%\\VignetteIndexEntry{Vignette Title} %\\VignetteEngine{knitr::rmarkdown}
+  %\\VignetteEncoding{UTF-8}\n"
 output:
-  pdf_document: default
-  toc: false
-vignette: >
-  %\VignetteIndexEntry{Vignette Title}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+  html_document
 ---
 
 
 \tableofcontents
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+This vignette shows how to use PTRMSR package to read .txt files and calculate some statistics 
+
+## Preliminary work
+
+### Installing PTRMSR packages
+
+The package can be uploaded with the following instructions. It requires several external packages that should also beinstalled. 
+
+```{r eval=FALSE}
+# remove.packages("PTRMSR)
+# install.packages("devtools")
+# install.packages("BiocManager")
+# BiocManager::install("rhdf5") #<- update packages: no for faster
+# BiocManager::install("MSnbase")#<- update packages: no for faster
+library(rhdf5)
+library(MSnbase)
+library(devtools)
+install_github("https://github.com/ChemoSens/PTRMSR")
 ```
 
-This vignette shows how to use PTRMSR package to read .txt files, calculate AUC and return statistical analyses. 
-
-## General principle
-In this package, the functions beginning by ptrv use a single dataset as input. The functions beginning by ptrvList use names of several files to be used and a metaData file containing information about the different files. 
+### General principle
+In this package, the functions beginning by ptrv use a single dataset as input. The functions beginning by ptrvList use several files and a metaData file containing information about the different files. 
 The objective of this paper is to use files produced by ptrViewer (or any other preprocessing of PTR-MS device returning files with ion, intensity and time as columns) then return curves and relevant statistics on the evaluations. 
-Several biases can be corrected:  (i) the breathing of the subject by calculating statistics by breathing cycle (use the parameter correction="cycle"), (ii) blank period during the evaluation that can be removed from the intensities (use blankCorrection = TRUE and noisePeriod=...). 
+Several biases can be corrected:  (i) the breathing of the subject by calculating statistics by breathing cycle (use the parameter correction="cycle"),(ii) smoothing can be applied (instead of breathing cycle correction) (iii) blank period during the evaluation that can be removed from the intensities (use removeNoise = TRUE and noisePeriod=...). 
 Some statistics are returned.
 
-## Loading the library
-```{r,eval=FALSE}
+### Loading the library
+```{r,eval=TRUE}
+library(ggplot2)
+library(gridExtra)
 library(PTRMSR)
 ```
 
-## Loading metadata and list of files to be processed
+## Pre-processing only one file
+### Loading a dataset
+The first step is to load a dataset whose colnames are 'time', then the different ions. Each evaluation is a line of the dataset. 
+
+ptrv is an example object where the time column is 'RelTime', with two supplementary columns to remove (AbsTime and Cycle).
+
+
+### Correcting the breathing (or not)
+ptrvIntensityByTime allows the breath to be corrected by calculating the breathing cycles than calculating a statistic per breathing cycle (funAggreagte='mean' for average or funAggregate="max" for maximum for example)
+```{r, eval =TRUE}
+data(ptrv)
+resptrv=ptrvIntensityByTime(dataset=ptrv,timeCol="RelTime",colToRemove=c("AbsTime","Cycle"),correction="cycle",referenceBreath="m69.06989..isoprene...Conc.",timePeriod=NULL,
+             ions=NULL,funAggregate="mean",                     minExpi=NULL,maxInspi=NULL,smoothMethodBreath="MovingAverage",minimalDuration=2,forMinExpiDivideMaxIntBy=4,forMaxInspiDivideMaxIntBy=5,halfWindowSize=5, method="MAD",SNR=0)
+names(resptrv)
+resptrv$gg$p_cyclelimits
+head(resptrv$res)
+```
+
+The obtained results contains a dataframe in a long format (as used in ggplot) whose colnames are time, intensity, ion and duration.
+Running the same function with the parameter correction="none"  returns the raw data in a similar format without any correction of the breath. 
+```{r, eval =TRUE}
+resptrv_none=ptrvIntensityByTime(dataset=ptrv,timeCol="RelTime",colToRemove=c("AbsTime","Cycle"),correction="none")
+head(resptrv_none$res)
+```
+
+
+
+### Smoothing
+The resulting data can be smoothed using ptrvSmooth function. It allows different methods of smoothing to be tested.
+```{r}
+smoothed_df=ptrvSmooth(resptrv$res,method="Loess",spar=0.2,sameTime=FALSE)
+```
+
+```{r}
+ggplot(smoothed_df,aes(x=time,y=intensity,col=ion))+geom_line()+theme(legend.position="none")
+```
+
+### Correcting by the noise
+
+The time period can be corrected using ptrvRemoveNoise function
+
+```{r, eval =TRUE}
+df_noiseCorrected=ptrvRemoveNoise(smoothed_df,timeBlank=c(0,30))
+```
+
+```{r}
+p=ggplot(df_noiseCorrected,aes(x=time,y=intensity,col=ion))+geom_line()+theme(legend.position="none")
+#ggplotly(p)
+```
+
+### Visualization of all corrections for one given ion
+
+This part allows the different steps of pretreatemnt to be vizualized. 
+```{r, eval =TRUE}
+p1=ggplot(ptrv,aes(y=m45.03349...C2H4O.H....Conc.,x=RelTime))+geom_line()+ggtitle("Raw data")
+
+resion=resptrv$res[resptrv$res[,"ion"]=="m45.03349...C2H4O.H....Conc.",]
+resion_none=resptrv_none$res[resptrv_none$res[,"ion"]=="m45.03349...C2H4O.H....Conc.",]
+p2=ggplot(resion,aes(x=time,y=intensity))+geom_line()+ggtitle("breath correction")
+
+
+p3=ggplot(smoothed_df[smoothed_df[,"ion"]=="m45.03349...C2H4O.H....Conc.",],aes(x=time,y=intensity))+geom_line()+ggtitle("breath correction + smooth")
+smoothed_raw_df=ptrvSmooth(resion_none,method="Loess",spar=0.2,sameTime=FALSE)
+p4=ggplot(smoothed_raw_df,aes(x=time,y=intensity))+geom_line()+ggtitle("smoothed raw data")
+p_noise=ggplot(df_noiseCorrected[df_noiseCorrected[,"ion"]=="m45.03349...C2H4O.H....Conc.",],aes(x=time,y=intensity))+geom_line()+ggtitle("noise correction")
+grid.arrange(p1,p2,p3,p4,p_noise)
+```
+
+
+## Managing several PTR-Viewer files with noise and breathing correction
+
+### Loading metadata and list of files to be processed
 All the data files (.txt from ptrViewer) and the metadata file (.csv) should be in a single repository 
 ```{r, eval=FALSE}
 repo="./../inst/extdata"
@@ -40,15 +124,16 @@ head(metaData)
 
 
 
-## AUC calculations of several PTR-Viewer files with noise and breathing correction
+### AUC calculations of several PTR-Viewer files with noise and breathing correction
 This function allows statistics to be calculated for each file after breathing correction
-```{r,eval=FALSE,warning=FALSE,message=FALSE,include=FALSE}
+```{r,eval=FALSE}
 setwd(repo)
 res_auc=ptrvListIntensityByTime(listFiles=listFiles,
-                                metaData=metaData,ions=c("m31.0183", "m31.0259", "m33.0324"))
+                                metaData=metaData,correction="cycle", ions=c("m31.0183", "m31.0259", "m33.0324"))
 head(res_auc$listRes)
 ```
 
+Parameters can be added using smoothing=TRUE then smoothing parameters and removeNoise=TRUE then removeNoise parameters (time)
 The results can be saved into csv files
 ```{r,eval=FALSE}
 write.table(file="auc.csv",sep=";",res_auc$listRes,row.names=F)
@@ -56,8 +141,8 @@ write.table(file="auc.csv",sep=";",res_auc$listRes,row.names=F)
 
 The stat option can be used to select the statistic.
 ```{r,eval=FALSE}
-res_tmax=ptrvListIntensityByTime(listFiles=listFiles,metaData=metaData,ions=c("m31.0183", "m31.0259",
-                                                                              "m33.0324"),stat="tmax")
+repo="./../inst/extdata"
+res_tmax=ptrvListIntensityByTime(listFiles=listFiles,metaData=metaData,ions=c("m31.0183", "m31.0259",                                                "m33.0324"),correction="cycle",stat="tmax")
 ```
 
 The breathing cycles can be observed with this command.
@@ -69,7 +154,9 @@ grid.arrange(grobs=res_tmax$cycleLimits[1:4])
 ```{r,eval=FALSE}
 ?detectCycle
 ?ptrvIntensityByTime # for only one dataset, 
-?ptrvIntensity # for summarizing the time of one dataset
+?ptrvIntensity # for summarizing the times of one dataset
+?ptrvSmooth
+?ptrvRemoveNoise
 ?ptrvListIntensityByTime # for only one dataset, 
 ?ptrvListIntensity # for summarizing several datasets
 ```
