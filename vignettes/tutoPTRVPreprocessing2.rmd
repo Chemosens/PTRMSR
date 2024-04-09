@@ -9,7 +9,7 @@ output:
 
 \tableofcontents
 
-This vignette shows how to use PTRMSR package to read .txt files and calculate some statistics 
+This vignette shows how to use PTRMSR package to read .txt files and calculate some statistics.
 
 ## Preliminary work
 
