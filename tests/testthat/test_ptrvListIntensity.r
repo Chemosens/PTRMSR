@@ -19,24 +19,24 @@ listFiles=c("file1.txt","file2.txt")
 # write.table(f2,"file2.txt",sep="\t",row.names=F)
 
 # # sans metadata correction='none'
-# metaData=read.csv(file=paste0(wd,"/","metaData.csv"),header=T,sep=";")
+ metaData=read.csv(file=paste0(wd,"/","metaData.csv"),header=T,sep=";")
 # colnames(metaData)
 #
-# resNone=ptrvListIntensityByTime(listFiles=listFiles,metaData=metaData,timeCol="RelTime",colToRemove=c("AbsTime","Cycle"),
-#                         removeBlankTime=FALSE,ions=NULL,dec_vec=rep(".",length(listFiles)),
-#                         sep="\t",correction="none",timeBlank=c(0,30),halfWindowSize=5,
-#                         method="MAD",total=FALSE,breathRatio=FALSE,stat="area",minimalDuration=2,
-#                         smoothMethod="MovingAverage",minExpi=NULL,maxInspi=NULL,forMinExpiDivideMaxIntBy=5,
-#                         forMaxInspiDivideMaxIntBy=4,wd=wd)
-#
-# # avec metadata correction=cycle
-# resCorrected=ptrvListIntensityByTime(listFiles=listFiles,metaData=metaData,timeCol="RelTime",colToRemove=c("AbsTime","Cycle"),
-#                         removeBlankTime=FALSE,ions=NULL,dec_vec=rep(".",length(listFiles)),
-#                         sep="\t",correction="cycle",timeBlank=c(0,30),halfWindowSize=5,
-#                         method="MAD",total=FALSE,breathRatio=FALSE,stat="area",minimalDuration=2,
-#                         smoothMethod="MovingAverage",minExpi=NULL,maxInspi=NULL,forMinExpiDivideMaxIntBy=5,
-#                         forMaxInspiDivideMaxIntBy=5,wd=wd)
-#
-# ptrvListIntensity(resNone)
-# ptrvListIntensity(resCorrected)
+ resNone=ptrvListIntensityByTime(listFiles=listFiles,metaData=metaData,timeCol="RelTime",colToRemove=c("AbsTime","Cycle"),
+                         removeBlankTime=FALSE,ions=NULL,dec_vec=rep(".",length(listFiles)),                         sep="\t",correction="none",halfWindowSize=5,
+                         method="MAD",total=FALSE,breathRatio=FALSE,stat="area",minimalDuration=2,
+                         smoothMethod="MovingAverage",minExpi=NULL,maxInspi=NULL,forMinExpiDivideMaxIntBy=5,
+                         forMaxInspiDivideMaxIntBy=4,wd=wd)
 
+ # avec metadata correction=cycle
+ resCorrected=ptrvListIntensityByTime(listFiles=listFiles,metaData=metaData,timeCol="RelTime",colToRemove=c("AbsTime","Cycle"),
+                         removeBlankTime=FALSE,ions=NULL,dec_vec=rep(".",length(listFiles)),
+                         sep="\t",correction="cycle",halfWindowSize=5,
+                         method="MAD",total=FALSE,breathRatio=FALSE,stat="area",minimalDuration=2,
+                         smoothMethod="MovingAverage",minExpi=NULL,maxInspi=NULL,forMinExpiDivideMaxIntBy=5,
+                         forMaxInspiDivideMaxIntBy=5,wd=wd)
+#
+ ptrvListIntensity(resNone$res)
+ ptrvListIntensity(resCorrected$res)
+
+ ptrvListIntensity(resCorrected$res,timePeriod=c(1,2))

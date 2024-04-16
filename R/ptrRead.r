@@ -48,7 +48,6 @@ ptrRead=function(file,wd=getwd(),mz=NULL,threshold=0,sumSpectraOnly=FALSE,integr
 
   if(sumSpectraOnly)
   {
-    print("ok")
     res=list(MassAxis=MassAxis,SumSpectrum=SumSpectrum,PeakTable=PeakTable,indexMass=indexMass,Time=as.vector(TimingData))
   }
   else

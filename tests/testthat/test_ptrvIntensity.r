@@ -9,6 +9,7 @@ res0=ptrvIntensityByTime(ptrv,referenceBreath=breath,correction = "none",timePer
 resint=ptrvIntensity(res0$res)
 resint=ptrvIntensity(res0$res,propPeak=TRUE)
 
+
 # dataset=res0$res
 # ions=unique(result[,"ion"])
 # for(ion in ions)
@@ -27,6 +28,8 @@ resEnd=ptrvIntensity(dataset=res$res,timePeriod=c(30,120))
 resTwo=ptrvIntensity(res$res,timePeriod=c(0,120))
 resint=ptrvIntensity(res$res,propPeak=TRUE)
 
+resintOne=ptrvIntensity(res$res,timePeriod=c(2,3),propPeak=TRUE)
+resintNo=ptrvIntensity(res$res,timePeriod=c(2,2.5),propPeak=TRUE)
 
 resNoiseSmall=ptrvIntensity(dataset=res$res,timePeriod=c(2,4))
 
