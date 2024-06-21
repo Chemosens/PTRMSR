@@ -28,7 +28,7 @@ ptrvListIntensityByTime(
   forMaxInspiDivideMaxIntBy = 4,
   wd = getwd(),
   removeNoise = FALSE,
-  noiseStat = "avg",
+  statNoise = "avg",
   k = 3,
   removeNegative = TRUE,
   smoothing = FALSE,

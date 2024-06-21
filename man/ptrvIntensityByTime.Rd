@@ -68,8 +68,6 @@ ptrvIntensityByTime(
 
 \item{removeNoise}{if TRUE, the averaged intensity obtained during the timeBlank period is removed from the signal}
 
-\item{timeBlank}{vector of two numbers. Indicates the interval to take as a blank period.}
-
 \item{smoothMethod}{NULL, "SavitzkyGolay" or "MovingAverage"}
 }
 \value{

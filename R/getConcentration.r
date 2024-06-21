@@ -2,7 +2,6 @@
 #' @param processedTransmission a datatable with two lines; the first one contains the m/z of the ions of the transmission to get a curve, the second one contain the transmission.
 #' @param processedRawData  a data frame with as many columns as measured times and rows as ions (with names that are used in processedTransmission or processedMultipliers)
 #' @param primaryMultipliers a vector whose names are names of ions that are rownames in processedRawData
-#' @param primaryP
 #' @param ki reaction rate constant for reaction of R with H3O
 #' @param V_0 normal volume in cm3 (default to 22400)
 #' @param reducedIonMobility default to 2.8  cm^2V^(-1)s^(-1)

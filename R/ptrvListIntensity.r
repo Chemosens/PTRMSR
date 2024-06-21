@@ -11,6 +11,7 @@ ptrvListIntensity=function(df,format="wide",stat="area", timePeriod = NULL, nega
   listFiles=levels(factor(df[,"file"]))
   for(i in 1:length(listFiles))
   {
+    print(file)
     file=listFiles[i]
     result_all=df[df[,"file"]==file,]
     if(format=="wide")
@@ -19,10 +20,11 @@ ptrvListIntensity=function(df,format="wide",stat="area", timePeriod = NULL, nega
         {
           if(any(!c("file","start","stop")%in%colnames(timePeriod))){stop("timePeriod colnames should be file, start and stop")}
           if(!file%in%timePeriod[,"file"]){stop(paste0("a file is not in timePeriod 'file' column: ",file))}
+          if(dim(timePeriod[timePeriod[,"file"]==file,])[1]>1){stop(paste0(file, "is in the timePeriod dataset more than once"))}
           timePeriodFile=c(timePeriod[timePeriod[,"file"]==file,"start"],timePeriod[timePeriod[,"file"]==file,"stop"])
         }
         else{ timePeriodFile=timePeriod}
-
+        print(timePeriodFile)
         res_cycle=ptrvIntensity(result_all,timePeriod=timePeriodFile,negativeAsNull=negativeAsNull,fill=fill)[,c("ion",stat)]
         if(i==1) { res=res_cycle;colnames(res)[2]=listFiles[1]}
         if(i>1){ res=merge(res,res_cycle,by="ion");colnames(res)[i+1]=listFiles[i]}

@@ -9,7 +9,8 @@ ptrvListIntensity(
   format = "wide",
   stat = "area",
   timePeriod = NULL,
-  negativeAsNull = TRUE
+  negativeAsNull = TRUE,
+  fill = NULL
 )
 }
 \arguments{

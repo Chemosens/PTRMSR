@@ -5,7 +5,7 @@
 #' @title ptrvIntensity
 #' @importFrom reshape2 dcast
 #' @importFrom stats sd
-ptrvIntensity=function(dataset,timePeriod=NULL,negativeAsNull=TRUE,propPeak=FALSE, proportion=0.75,timing="last",fill=NULL)
+ptrvIntensity=function(dataset,timePeriod=NULL,negativeAsNull=TRUE,propPeak=FALSE, proportion=0.75,timing="last",fill=NULL,slope=FALSE)
 {
   dataset0=dataset
   dataset=dataset[!is.na(dataset[,"intensity"]),]
@@ -65,6 +65,11 @@ ptrvIntensity=function(dataset,timePeriod=NULL,negativeAsNull=TRUE,propPeak=FALS
         time_prop=timeForPropPeak(time=dataset[dataset[,"ion"]==ion,"time"],intensity=dataset[dataset[,"ion"]==ion,"intensity"],proportion=proportion,timing=timing)
         datasetFinal2[datasetFinal2[,"ion"]==ion,paste0("t",proportion,timing)]=time_prop
       }
+    }
+    if(slope)
+    {
+      # datasetFinal2[,"slopeAtStart"]=NA
+      # if()
     }
 
   }
