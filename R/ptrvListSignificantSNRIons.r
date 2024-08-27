@@ -23,7 +23,7 @@ ptrvListSignificantSNRIons=function(listFiles,metaData,dec_vec=rep(".",length(li
   {
     print(listFiles[i])
     dataset=read.table(listFiles[i],sep="\t",dec=dec_vec[i],header=T)
-    resIons[[i]]=ptrvSignificantSNRIons(dataset,referenceBreath=metaData[metaData[,"file"]==listFiles[i],"resp"],noisePeriod=noisePeriod,correction="cycle",multiplyNoiseBy = multiplyNoiseBy,removeNoise=removeNoise,halfWindowSize=halfWindowSize,smoothMethod=smoothMethod,minimalDuration=minimalDuration,minExpi=minExpi,maxInspi=maxInspi,forMinExpiDivideMaxIntBy=forMinExpiDivideMaxIntBy,forMaxInspiDivideMaxIntBy=forMaxInspiDivideMaxIntBy)$snRatio
+    resIons[[i]]=ptrvSignificantSNRIons(dataset,referenceBreath=metaData[metaData[,"file"]==listFiles[i],"breathing"],noisePeriod=noisePeriod,correction="cycle",multiplyNoiseBy = multiplyNoiseBy,removeNoise=removeNoise,halfWindowSize=halfWindowSize,smoothMethod=smoothMethod,minimalDuration=minimalDuration,minExpi=minExpi,maxInspi=maxInspi,forMinExpiDivideMaxIntBy=forMinExpiDivideMaxIntBy,forMaxInspiDivideMaxIntBy=forMaxInspiDivideMaxIntBy)$snRatio
     product[i]=metaData[metaData[,"file"]==listFiles[i],"product"]
   }
   resSig=lapply(resIons,function(x){return(names(x[x>multiplyNoiseBy]))})

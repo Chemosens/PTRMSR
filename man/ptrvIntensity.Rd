@@ -11,7 +11,10 @@ ptrvIntensity(
   propPeak = FALSE,
   proportion = 0.75,
   timing = "last",
-  fill = NULL
+  fill = NULL,
+  slope = FALSE,
+  tSlope = 0,
+  span = 0.01
 )
 }
 \arguments{

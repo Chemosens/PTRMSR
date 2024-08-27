@@ -14,7 +14,7 @@ setwd("C:/Users/capeltier/Nextcloud/MyDrive/DataAnalysis/2022_PTR Comparison")
 integrationTable = read.xlsx("table-ions-Zoe-selection.xlsx")
 integrationTable=integrationTable[,1:4]
 colnames(integrationTable)=c("name","inf","mz","sup")
-integrationTable=rbind(integrationTable,c(69.06922,as.numeric(processedPeakData[2:4,14])))
+#integrationTable=rbind(integrationTable,c(69.06922,as.numeric(processedPeakData[2:4,14])))
 
 integrationTable[,"name"]=as.numeric(substr(integrationTable[,"name"],1,8))
 integrationTable[,"name"]=round(integrationTable[,"name"],digits=4)

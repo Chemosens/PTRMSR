@@ -5,7 +5,7 @@
 #' @title ptrvIntensity
 #' @importFrom reshape2 dcast
 #' @importFrom stats sd
-ptrvIntensity=function(dataset,timePeriod=NULL,negativeAsNull=TRUE,propPeak=FALSE, proportion=0.75,timing="last",fill=NULL,slope=FALSE)
+ptrvIntensity=function(dataset,timePeriod=NULL,negativeAsNull=TRUE,propPeak=FALSE, proportion=0.75,timing="last",fill=NULL,slope=FALSE,tSlope=0,span=0.01)
 {
   dataset0=dataset
   dataset=dataset[!is.na(dataset[,"intensity"]),]
@@ -24,7 +24,7 @@ ptrvIntensity=function(dataset,timePeriod=NULL,negativeAsNull=TRUE,propPeak=FALS
   else
   {
     dataset=dataset[inPeriod,]
-    datasetMax0=dcast(dataset,ion~., value.var="intensity",fun.aggregate=function(x) return(max(x,na.rm=T)),fill=fill)
+    datasetMax0=dcast(dataset,ion~., value.var="intensity",fun.aggregate=function(x){ return(max(x,na.rm=T))} ,fill=fill)
     datasetMin0=dcast(dataset,ion~., value.var="intensity",fun.aggregate=function(x) return(min(x,na.rm=T)),fill=fill)
     datasetMean0=dcast(dataset,ion~., value.var="intensity",fun.aggregate=function(x) return(mean(x,na.rm=T)),fill=fill)
     datasetSd0=dcast(dataset,ion~., value.var="intensity",fun.aggregate=function(x) return(sd(x,na.rm=T)),fill=fill)
@@ -68,12 +68,26 @@ ptrvIntensity=function(dataset,timePeriod=NULL,negativeAsNull=TRUE,propPeak=FALS
     }
     if(slope)
     {
-      # datasetFinal2[,"slopeAtStart"]=NA
-      # if()
+      for(ion in datasetFinal2[,"ion"])
+      {
+        slope_at_point <- function(model, x0)
+        {
+          eps <- 1e-7
+          (predict(model, data.frame(x = x0 + eps)) - predict(model, data.frame(x = x0))) / eps
+        }
+        x=dataset[dataset[,"ion"]==ion,"time"]
+        y=dataset[dataset[,"ion"]==ion,"intensity"]
+        data <- data.frame(x, y)
+        # Application du lissage LOESS
+        loess_fit <- loess(y ~ x, data = data,span=span)
+
+        # Extraction des valeurs lissées
+        smoothed_y <- predict(loess_fit)
+        slope_origin <- slope_at_point(loess_fit, x0=tSlope)
+        datasetFinal2[datasetFinal2[,"ion"]==ion,"slope"]=slope_origin
+
+      }
     }
-
   }
-
-
   return(datasetFinal2)
 }
