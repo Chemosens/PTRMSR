@@ -6,7 +6,7 @@ PTRMSR package
 The installation of PTRMSR requires the installation of other packages
 ```R
 if (!require("BiocManager", quietly = TRUE)) {install.packages("BiocManager")}
-if (!require("devtools", quietly = TRUE)) {install.packages("BiocManager")}
+if (!require("devtools", quietly = TRUE)) {install.packages("devtools")}
 BiocManager::install("rhdf5")
 BiocManager::install("MSnbase")
 install.packages(c("reshape2","pheatmap","ggplot2","ellipse","plotly","FactoMineR")
