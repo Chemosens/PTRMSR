@@ -23,6 +23,7 @@ ptrvIntensity=function(dataset,timePeriod=NULL,negativeAsNull=TRUE,propPeak=FALS
   }
   else
   {
+
     dataset=dataset[inPeriod,]
     datasetMax0=dcast(dataset,ion~., value.var="intensity",fun.aggregate=function(x){ return(max(x,na.rm=T))} ,fill=fill)
     datasetMin0=dcast(dataset,ion~., value.var="intensity",fun.aggregate=function(x) return(min(x,na.rm=T)),fill=fill)
@@ -52,7 +53,7 @@ ptrvIntensity=function(dataset,timePeriod=NULL,negativeAsNull=TRUE,propPeak=FALS
       datasetArea=dcast(dataset,ion~., value.var="area",fun.aggregate=function(x) return(sum(x,na.rm=T)) ,fill=0)
       colnames(datasetArea)=c("ion","intensity")
       datasetFinal[,"area"]=datasetArea[,"intensity"]
-    }
+    }else{print("No duration in the dataset")}
 
     datasetFinal2=merge(datasetFinal,df_tmax,by="ion")
     datasetFinal2=as.data.frame(datasetFinal2)

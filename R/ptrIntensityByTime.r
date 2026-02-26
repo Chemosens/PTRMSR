@@ -53,13 +53,13 @@ ptrIntensityByTime=function(ptr,rt=NULL,mz=NULL,integrationTable=NULL,concentrat
       {
         integrationTable=ptr$PeakTable
         colnames(integrationTable)=c("name","mz","inf","sup")
-
       }
     }
 
 
     for(i in 1:dim(integrationTable)[1])
     {
+      print(i)
 #      message(paste0(i,"/",dim(integrationTable)[1]))
       masses_label=MassAxis[ MassAxis>=integrationTable[i,"inf"] &MassAxis<=integrationTable[i,"sup"]]
       tofSubset=tofData[which(MassAxis%in%masses_label),,]
@@ -68,6 +68,7 @@ ptrIntensityByTime=function(ptr,rt=NULL,mz=NULL,integrationTable=NULL,concentrat
         #TODO
 
       }
+      if(length(dim(tofSubset))<3){stop(paste0("Your integration limits are too small, only one mz is detected for",integrationTable[i,"name"]))}
       sumSubset=apply(tofSubset,2:3,sum)
       dfi=data.frame("time"=Time,"intensity"=as.vector(sumSubset)[!duplicatedTime],"mz"=integrationTable[i,"mz"],name=integrationTable[i,"name"])
       df=rbind(df,dfi)
