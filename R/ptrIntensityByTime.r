@@ -68,7 +68,7 @@ ptrIntensityByTime=function(ptr,rt=NULL,mz=NULL,integrationTable=NULL,concentrat
         #TODO
 
       }
-      if(length(dim(tofSubset))<2){warning(paste0("Your integration limits are too small, only one mz is detected for",integrationTable[i,"name"]))}
+      if(length(dim(tofSubset))<3){warning(paste0("Your integration limits are too small, only one mz is detected for",integrationTable[i,"name"]))}
       else{sumSubset=apply(tofSubset,2:3,sum)
       dfi=data.frame("time"=Time,"intensity"=as.vector(sumSubset)[!duplicatedTime],"mz"=integrationTable[i,"mz"],name=integrationTable[i,"name"])
       df=rbind(df,dfi)
