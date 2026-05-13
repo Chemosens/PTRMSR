@@ -78,9 +78,9 @@ ggplotly(p) # for interactive plot
 The area, maximal intensity (imax), time of maximal intensity(tmax) and the sum of signal (sum) can be computed by file.
 ```R
 res=ptrvListIntensity(ptrRes,format="wide",stat="area", timePeriod = NULL, negativeAsNull = TRUE,fill=NULL)
-``
+```
 
-## Getting the whole code (simply copy/paste it)
+## Getting the whole code (simply copy/paste it in your Rstudio code -possibly two separate files - preprocessing.r and analysis.r)
 ```R
 # Installation
 if (!require("BiocManager", quietly = TRUE)) {install.packages("BiocManager")}
